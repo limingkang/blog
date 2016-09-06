@@ -14,43 +14,127 @@
   <body>
        	<div class="big_container">
        		<div class="title" style="margin-top:0;">jquery对异步对象封装时候的调用方法小结</div>
-       		<div class="code">
-       			<pre>
-       				var dfd = $.Deferred(); 
-       				var dfd2 = $.Deferred();
+   			<pre>
+   				var dfd = $.Deferred(); 
+   				var dfd2 = $.Deferred();
 
-       				function fn1(d){
-       				    setTimeout( function(){
-       				       d.resolve('13');
-       				    }, 300);
-       				}
-       				function fn2(d){
-       				    setTimeout( function(){
-       				      d.resolve('2');
-       				    }, 200);
-       				}
+   				function fn1(d){
+   				    setTimeout( function(){
+   				       d.resolve('13');
+   				    }, 300);
+   				}
+   				function fn2(d){
+   				    setTimeout( function(){
+   				      d.resolve('2');
+   				    }, 200);
+   				}
 
-       				fn1(dfd);
-       				fn2(dfd2);
+   				fn1(dfd);
+   				fn2(dfd2);
 
-       				$.when(dfd,dfd2).done(function(data1,data2){
-       				   console.log(data1);
-       				   console.log(data2);
-       				   console.log(3);
-       				}).fail(function(data1,data2){
-       				   console.log(data1);
-       				   console.log(data2);
-       				   console.log(4);
-       				});
-       				console.log(10);
-       			</pre>
-       		</div>
+   				$.when(dfd,dfd2).done(function(data1,data2){
+   				   console.log(data1);
+   				   console.log(data2);
+   				   console.log(3);
+   				}).fail(function(data1,data2){
+   				   console.log(data1);
+   				   console.log(data2);
+   				   console.log(4);
+   				});
+   				console.log(10);
+   			</pre>
        		<div class="explain">先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了</div>
        		
-       		
+            <div class="title">各种常用状态码</div>
+            <pre>
+                100-199 用于指定客户端应相应的某些动作。  
+                200-299 用于表示请求成功。  
+                300-399 用于已经移动的文件并且常被包含在定位头信息中指定新的地址信息。 
+                400-499 用于指出客户端的错误。 
+                400   语义有误，当前请求无法被服务器理解。 
+                401   当前请求需要用户验证  
+                403  服务器已经理解请求，但是拒绝执行它。 
+                500-599 用于支持服务器错误。  
+                503 – 服务不可用
+            </pre>
+            
+            <div class="title">web安全中的攻击</div>
+            <pre>
+                将img标签的src=0 onerror=alert(5)这样就有效荷载可以造成xss攻击
+            </pre>
+            <div class="explain">当src写值的时候可以请求到其他网站的文件，例如js文件就可以进行跨站请求攻击</div>
+
+            <div class="title">jq中extend方法的复制问题</div>
+            <pre>
+                var obj1 = {
+                  'a': 's1',
+                  'b': [1,2,3,{'a':'s2'}],
+                  'c': {'a':'s3', 'b': [4,5,6]}
+                }
+                var obj2 = $.extend(true, {}, obj1);
+                obj2.a='s1s1';
+                obj2.b[0]=100;
+                obj2.c.b[0]=400;
+                console.log(obj1);
+                console.log(obj2);
+            </pre>
+            <div class="explain">通过true或者false来判断，默认false,jq的深复制(一层一层往下复制直到最底层)和浅复制(只复制顶层的基本类型元素)。所以对象中a肯定会被复制</div>
+
+            <div class="title">找到非单字节字符的换成两个单字节的，再求长度，可计总长度</div>
+            <pre>
+                str.replace(/[^\00-xff]/g,"xx").length;
+            </pre>
+            <div class="explain">表单提交按钮类型全部改成submit类型啦,只要表单绑定submit事件，prevent默认提交，于是，既能回车响应，又能验证或者ajax或是原始提交处理</div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
+
+            <div class="title"></div>
+            <pre>
+              
+            </pre>
+            <div class="explain"></div>
 
 
-       		
        	</div>
   </body>
 </html>

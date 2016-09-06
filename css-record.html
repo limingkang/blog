@@ -12,6 +12,250 @@
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
   </head>
   <body>
-       
+       <div class="big_container">
+          <div class="title" style="margin-top:0;">多行文本溢出的样式</div>
+          <pre>
+             overflow: hidden; 
+             text-overflow: ellipsis; 
+             display: box; 
+             display: -webkit-box; 
+             line-clamp: 2; 
+             -webkit-line-clamp: 2; 
+             -webkit-box-orient: vertical;
+          </pre>
+          
+          <div class="title">让overflow:auto页面滚动条出现时不跳动</div>
+          <pre>
+              .wrap-outer {
+                  padding-left: calc(100vw - 100%);
+              }
+          </pre>
+          <div class="explain">
+            .wrap-outer指的是居中定宽主体的父级，如果没有，创建一个（使用主体也是可以实现类似效果，不过本着宽度分离原则，不推荐）；
+            calc是CSS3中的计算，IE10+浏览器支持，IE9浏览器基本支持(不能用在background-position上)；
+            100vw相对于浏览器的window.innerWidth，是浏览器的内部宽度，注意，滚动条宽度也计算在内！而100%是可用宽度，是不含滚动条的宽度。
+            calc(100vw - 100%)就是浏览器滚动条的宽度大小（如果有，如果没有滚动条则是0）！左右都有一个滚动条宽度（或都是0）被占用，主体内容就可以永远居中浏览器啦，从而没有任何跳动！
+          </div>  
+
+          <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
+          <pre>
+              .dotting {
+                  display: inline-block; width: 10px; min-height: 2px;
+                  padding-right: 2px;
+                  border-left: 2px solid currentColor; border-right: 2px solid currentColor;
+                  background-color: currentColor; background-clip: content-box;
+                  box-sizing: border-box;
+                  -webkit-animation: dot 4s infinite step-start both;
+                  animation: dot 4s infinite step-start both;
+                  *zoom: expression(this.innerHTML = '...'); /* IE7 */
+              }
+              .dotting:before { content: '...'; } /* IE8 */
+              .dotting::before { content: ''; }
+              :root .dotting { margin-left: 2px; padding-left: 2px; } /* IE9+ */
+
+              @-webkit-keyframes dot {
+                  25% { border-color: transparent; background-color: transparent; }
+                  50% { border-right-color: transparent; background-color: transparent; }
+                  75% { border-right-color: transparent; }
+              }
+              @keyframes dot {
+                  25% { border-color: transparent; background-color: transparent; }
+                  50% { border-right-color: transparent; background-color: transparent; }
+                  75% { border-right-color: transparent; }
+              }
+              <textarea>
+                <a href="javascript:" class="grebtn">订单提交中<span class="dotting"></span></a>
+              </textarea>
+          </pre>
+          <div class="explain">如果不去兼容低版本浏览器可以去掉上面的一些代码</div>
+
+          <div class="title">zoom-in,zoom-out属性使用</div>
+          <pre>
+              .zoom-in {
+                  cursor: zoom-in; /* 大大大 */
+              }
+              .zoom-out {
+                 cursor: zoom-out; /* 小小小 */
+              }
+          </pre>
+          <div class="explain">可以使得鼠标放在该元素上显示放大镜和缩小镜，让后通过点击换图那么就可以实现简单方法缩小效果,由于兼容性不好，这是只是拓展</div>
+
+          <div class="title">这两个属性可以使得鼠标移到该元素时候显示抓手，和抓住两个样子.</div>
+          <pre>
+              .grab { /* 抓抓抓 */
+                  cursor: -webkit-grab;
+                  cursor: -moz-grab;
+                  cursor: grab;
+              }
+              .grabbing { /* 抓住抓住 */
+                  cursor: -webkit-grabbing;
+                  cursor: -moz-grabbing;
+                  cursor: grabbing;
+              }
+          </pre>
+          <div class="explain">目前和上面一样， 除了IE浏览器（包括IE11），PC端的其他浏览器全线支持grab/grabbing</div>
+
+          <div class="title">css中的记数属性，兼容性还可以,只能和content一起用，所以和before,after成了铁三角关系</div>
+          <pre>
+              body {
+                counter-reset: icecream;
+              }
+              input:checked {
+                counter-increment: icecream;
+              }
+              .total::after {
+                content: counter(icecream);
+              }
+          </pre>
+          <div class="explain">可以使得total中的内容为选中的input个数，counter-reset为设置全局计数变量，counter-increment为使得该变量加一</div>
+
+          <div class="title">清除浮动小计</div>
+          <pre>
+              清除浮动除了用clear还可以用overflow，是因为overflow除了(visible)会重新给他里面的元素建立
+              块级格式化(block formatting context)，其中position absolute, inline-block, table-cell和table-caption都不
+              是块级样式，所以才会用到clear来控制，虽然clear是旧的方式，但还是推荐用clear来做，有些情况会比overflow处理的要好
+          </pre>
+
+          <div class="title">currentColor属性</div>
+          <pre>
+             currentColor除了ie8不兼容其他均可兼容，它会继承当前元素的字体颜色，如果当前字体没写颜色，
+             那么就找其父级元素字体颜色，一层一层往上找
+          </pre>
+
+          <div class="title">对于动画方面的记录</div>
+          <pre>
+             1.SVG animation元素可以实现动画，而且可以沿着SVG所画的路径运动，ie都不支持其他浏览器可以用，所以移动端没什么问题，
+             各系统版本都支持，屏幕的像素密度也可以检测，这和分辨率有关，iphone一般为2,6plus为3
+             2.动画方面的话requestanimationframe兼容性基本和css3一样，但是他可以支持更多的贝塞尔滑动效果，而且有些值css3无法
+             改变，但是它可以，如scrolltop等
+          </pre>
+
+          <div class="title">reset屏幕的样式</div>
+          <pre>
+              body {font:12px Arial,'Microsoft YaHei','SimHei';line-height: 18px;overflow: scroll;-webkit-overflow-scrolling: touch;}
+              html, body, div, span, applet, object, iframe,
+              h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+              a, abbr, acronym, address, big, cite, code,
+              del, dfn, em, img, ins, kbd, q, s, samp,
+              small, strike, strong, sub, sup, tt, var,
+              b, u, i, center,
+              dl, dt, dd, ol, ul, li,
+              fieldset, form, label, legend,
+              table, caption, tbody, tfoot, thead, tr, th, td,
+              article, aside, canvas, details, embed, 
+              figure, figcaption, footer, header, hgroup, 
+              menu, nav, output, ruby, section, summary,
+              time, mark, audio, video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
+              }
+              /* HTML5 display-role reset for older browsers */
+              article, aside, details, figcaption, figure, 
+              footer, header, hgroup, menu, nav, section {
+                display: block;
+              }
+              ol, ul {
+                list-style: none;
+              }
+              blockquote, q {
+                quotes: none;
+              }
+              blockquote:before, blockquote:after,
+              q:before, q:after {
+                content: '';
+                content: none;
+              }
+              table {
+                border-collapse: collapse;
+                border-spacing: 0;
+              }
+              button{outline:none;}
+              a{ text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
+              input {outline: medium;} /*解决input聚焦时候有边框的问题*/
+          </pre>
+          <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
+
+          <div class="title">nofollow有两种用法</div>
+          <pre>
+              1.用于meta元标签:告诉爬虫该页面上所有链接都无需追踪。
+              2.用于a标签：告诉爬虫该页面无需追踪。
+              <textarea>
+                   <meta name="robots" content="nofollow" />
+                   <a href="login.aspx" rel="nofollow">登录</a>
+              </textarea>
+          </pre>
+
+          <div class="title">progress属性</div>
+          <pre>
+              <textarea>
+                   <progress value="22" max="100"></progress>
+              </textarea>
+          </pre>
+          <div class="explain">progress是h5的新属性，可设置border和background-color，这表示总共100份，前22个等分有颜色，如果想做成进度条来回动的样子，就写这个标签然后里面什么属性都不加就行，不过不同浏览器默认颜色不一，请自己加入控制</div>
+
+          <div class="title">布局的时候不使用table的原因以及重绘的理解</div>
+          <pre>
+              1.由于浏览器的流布局，对渲染树的计算通常只需要遍历一次就可以完成。但table及其内部元素除外，它可能需要多次计算才能确定好
+              其在渲染树中节点的属性，通常要花3倍于同等元素的时间,table会先等页面加载完成之后来了数据才显示
+              可能会出现table嵌套table的可能
+              2.重绘是一个元素外观的改变所触发的浏览器行为，例如改变visibility、outline、背景色等属性。浏览器会根据元素的新属性
+              重新绘制，使元素呈现新的外观。重绘不会带来重新布局，并不一定伴随重排
+          </pre>
+
+          <div class="title">将图片至为灰色的方法，该属性兼容性很差，仅做记录</div>
+          <pre>
+              .gray { 
+                  -webkit-filter: grayscale(100%);
+                  -moz-filter: grayscale(100%);
+                  -ms-filter: grayscale(100%);
+                  -o-filter: grayscale(100%);
+                  
+                  filter: grayscale(100%);
+                
+                  filter: gray;
+              }
+          </pre>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+          <div class="title"></div>
+          <pre>
+            
+          </pre>
+          <div class="explain"></div>
+
+        </div>
   </body>
 </html>
