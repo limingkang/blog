@@ -5,8 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Blog by limingkang</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <script src="javascripts/scale.fix.js"></script>
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="前端开发记录">
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
@@ -86,35 +85,267 @@
             </pre>
             <div class="explain">表单提交按钮类型全部改成submit类型啦,只要表单绑定submit事件，prevent默认提交，于是，既能回车响应，又能验证或者ajax或是原始提交处理</div>
 
-            <div class="title"></div>
+            <div class="title">连接地址显示你链接的那个网站的图标</div>
             <pre>
-              
+                element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
+                element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
+                第一个使用的是谷歌的api不过后一个好像更好用些，实例：
+                <textarea style="width:90%;">
+                	<img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
+                	<img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
+                </textarea>
             </pre>
-            <div class="explain"></div>
 
-            <div class="title"></div>
+            <div class="title">css3动画的事件</div>
             <pre>
-              
+                 开始事件 webkitAnimationStart 
+                 结束事件 webkitAnimationEnd 
+                 重复运动事件 webkitAnimationIteration 
+                 tt.addEventListener("webkitAnimationStart", function(){ //动画开始时事件 
+                 console.log(1);//动画开始时，控制台输出1 
+                 }, false); 
+                 tt.addEventListener("webkitAnimationIteration", function(){ //动画重复运动时的事件 
+                 console.log(3);//第一遍动作完成时，控制台输出3 
+                 }, false); 
+                 同样transition也有属性transitionend等同上面一样绑定使用
+                 2.css3动画的强大之处在于，他是在独立于javascript的执行线程的另一个线程中执行的，在多核的设备上，及时javascript的执行线程正在工作，
+                 流畅的动画效果也是可以实现的，当然动画会增加cpu的负荷，但不会降低脚本对事件的及时处理能力
+                 3.requestanimationframe可以直接调用，也可以通过window来调用，接收一个函数作为回调，返回一个ID值，通过把这个ID值传给
+                 window.cancelAnimationFrame()可以取消该次动画。requestAnimationFrame(callback)//callback为回调函数
             </pre>
-            <div class="explain"></div>
 
-            <div class="title"></div>
+            <div class="title">全屏效果JavaScript实现</div>
             <pre>
-              
+                 全屏效果click, mousedwon, mouseup事件才能触发
+                 全屏方法为：全屏元素.requestFullScreen(); 目前不同的浏览器需要不同的前缀，如mozRequestFullScreen或webkitRequestFullScreen
+                 取消全屏为：全屏元素.cancelFullScreen(); 同样，不同浏览器需要添加私有前缀，如mozCancelFullScreen或webkitCancelFullScreen.
+                 可以通过document.fullScreen判断浏览器是否处于全屏状态。注意：FireFox和Chrome写法上有不同，Webkit内核浏览器需要增加个is, 如document.webkitIsFullScreen; 而Firefox则是document.mozFullScreen.
+                 :full-screen{}用在CSS代码中，可以控制全屏元素（及其子元素）全屏状态时的样式。同样，不同浏览器不同前缀。如:-moz-full-screen{}或:- webkit-full-screen{}.
+                 一个页面如果有多个全屏元素，在CSS控制的时候，可以使用类似#element:full-screen{}的选择器分别控制。
             </pre>
-            <div class="explain"></div>
 
-            <div class="title"></div>
+            <div class="title">对于NAN的奇怪现象</div>
             <pre>
-              
+                alert(typeof NaN); //弹出 'Number'
+                alert(NaN === NaN); //为 false
             </pre>
-            <div class="explain"></div>
 
-            <div class="title"></div>
+            <div class="title">关于存储方式的小结</div>
             <pre>
-              
+                1.http缓存也就是cookies的应用
+                2.web storage网络存储就是讲localstorage sessionstorage
+                    网络存储为每个域提供5MB简单的键值形式的存储空间，在ios上网络存储可以存储utf-16格式的字符串文本，这就意味着每个字符需要两倍多的字节，所以在
+                    ios上存储的实际上是2.5MB,从localStorage获取数据比内存中慢得多，还不包括对json字符串的解码增加的成本(localStorage只能存储字符串,而且它最终的值也是存储在本地内存)
+            	3.application storage就是应用缓存，也就是h5的离线缓存,在html标签中写上manifest="clock.manifest"，
+            	并在同级目录下面建立clock.manifest文件，理论上随便什么后缀名都可以，但是一般写manifest
+            		下面说明书写 cache manifest 文件需要遵循的格式。
+            		      首行必须是 CACHE MANIFEST。
+            		      其后，每一行列出一个需要缓存的资源文件名。
+            		      可根据需要列出在线访问的白名单。白名单中的所有资源不会被缓存，在使用时将直接在线访问。声明白名单使用 NETWORK：标识符。
+            		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
+            		      如果要声明某 URI 不能访问时的替补 URI，可以使用 FALLBACK：标识符。其后的每一行包含两个 URI，当第一个 URI 
+            		      不可访问时，浏览器将尝试使用第二个 URI。
+            		      注释要另起一行，以 # 号开头。
+            		示例：
+            		      CACHE MANIFEST 
+            		       # 上一行是必须书写的。
+
+            		      CACHE: 
+            		      style/default.css 
+
+            		      FALLBACK: 
+            		      /files/projects /projects 
+
+            		      NETWORK: 
+            		      comm.cgi
+            		文件的更新是它最大的难点，也是现在慎重使用的原因
+            		自动更新 
+            		    浏览器除了在第一次访问 Web 应用时缓存资源外，只会在 cache manifest 文件本身发生变化时更新缓存。而 cache manifest 
+            		    中的资源文件发生变化并不会触发更新。
+            		手动更新 
+            		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
+            		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
+            		    更新缓存。示范代码如下：
+            		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
+            		            ｛
+            		             window.applicationCache.update(); 
+            		            ｝
+            		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 
+            		表示离线。当网络状态发生变化时，navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
+            		online/offline 事件 
+            		当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者还需要在网络状态发生变化时立刻得到通知，因此 HTML5 
+            		还提供了 online/offline 事件。当在线 / 离线状态切换时，online/offline 事件将触发在 body 元素上，并且沿着 
+            		document.body、document 和 window 的顺序冒泡。因此，开发者可以通过监听它们的 online/offline 事件来获悉网络状态。
+            	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
+				    先介绍三个核心方法
+				        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
+				        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
+				        3、executeSql：这个方法用于执行真实的SQL查询。
             </pre>
-            <div class="explain"></div>
+            <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>
+
+            <div class="title">escape和encodeURIComponent方法的区别</div>
+            <pre>
+                unescape(encondeURIComponent(JSON.stringify(localStorage))).length会给出字符串的大小(以字节为单位)，5MB是1024*1024*5字节，只要可以知道缓存是否溢出
+            	escape() 函数可对字符串进行编码，这样就可以在所有的计算机上读取该字符串。
+	            	语法：escape(string) string必需是要被转义或编码的字符串。
+	            	返回值：返回一个包含了 charstring 内容的字符串值（Unicode 格式）。所有空格、标点、重音符号以及其他非 ASCII字符都用 %xx 编码代替，其中 xx 等于表示该字符的十六进制数。例如，空格返回的是”%20″ 。字符值大于255 的以%uxxxx 格式存储。
+	            	说明：该方法不会对 ASCII 字母和数字进行编码，也不会对下面这些 ASCII 标点符号进行编码： * @ – _ + . / 。其他所有的字符都会被转义序列替换。
+            		unescape 方法，解码用 escape 方法进行了编码的 String 对象，就是字符串了
+            	encodeURIComponent() 函数作用：可把字符串作为URI 组件进行编码。
+	            	1、该方法不会对 ASCII 字母和数字进行编码，也不会对这些 ASCII 标点符号进行编码： - _ . ! ~ * ' ( ) '
+	            	2、其他字符（比如 ：;/?:@&=+$,# 这些用于分隔 URI 组件的标点符号），都是由一个或多个十六进制的转义序列替换的。
+            </pre>
+
+            <div class="title">无刷新改变url，还点击前进后退按钮，ajax只能改变页面内容，这里就得加上pushState,简称pjax</div>
+            <pre>
+                 1、存储当前历史记录点
+                 存储的方式类似于数组的入栈（Array.push()），在window.history里新增一个历史记录点，例如：
+
+                 // 当前的url为：http://www.qingdou.me/index.html
+                 var json={time:new Date().getTime()};
+                 // @状态对象：记录历史记录点的额外对象，可以为空
+                 // @页面标题：目前所有浏览器都不支持
+                 // @可选的url：浏览器不会检查url是否存在，只改变url，url必须同域，不能跨域
+                 window.history.pushState(json,"","http://www.qingdou.me/post-1.html");
+                 var statemy = {
+                         title: title,
+                         url: options.url,
+                         otherkey: othervalue
+                 };
+                 window.history.pushState(statemy, document.title, url);
+                 执行了pushState方法后，页面的url地址为http://www.qingdou.me/post-1.html
+
+                 2、替换当前历史记录点
+                 window.history.replaceState和window.history.pushState类似，不同处在于replaceState不会在window.history里新增
+                 历史记录点，其效果类似于window.location.replace(url)，都是不会在历史记录点里新增一个记录点的。当你为了响应用户的
+                 某些操作而要更新当前历史记录条目的状态对象或URL时，使用replaceState()方法会特别合适。
+
+                 3、监听历史记录点
+                 监听历史记录点，可认为是监听URL的变化，但会忽略URL的hash部分，监听URL的hash部分，HTML5有新的API为onhashchange，
+                 我的博客里也有说到该方法和跨浏览器的兼容解决方案。可以通过window.onpopstate来监听url的变化，并且可以获取存储在该历史
+                 记录点的状态对象，也就是上文说到的json对象，如：
+
+                 // 当前的url为：http://www.qingdou.me/post-1.html
+                 window.onpopstate=function()
+                 {
+                 // 获得存储在该历史记录点的json对象
+                 var json=window.history.state;
+                 // 点击一次回退到：http://www.qingdou.me/index.html
+                 // 获得的json为null
+                 // 再点击一次前进到：http://www.qingdou.me/post-1.html
+                 // 获得json为{time:1369647895656}
+                 }
+            </pre>
+            <div class="explain">值得注意的是：javascript脚本执行window.history.pushState和window.history.replaceState不会触发onpopstate事件
+                 以上再配合ajax就可做到完美,传统锚点无法实现前后键的一个跳转</div>
+
+            <div class="title">自定义一个事件，例如人工合成tap事件</div>
+            <pre>
+                function foo(){
+                    console.log("foo2 is execute");
+                }
+                var ev=document.createEvent('HTMLEvents');
+                ev.initEvent('fakeEvent',false,false);
+                document.addEventListener("fakeEvent",foo,false);  //节点也可以绑定该事件
+                在标准浏览器里的console里执行 document.dispatchEvent(ev); 就可以看到console里显示出来了foo2 is execute
+                createEvent()方法返回新创建的Event对象，支持一个参数，表示事件类型，具体见下表：
+                参数          事件接口      初始化方法
+                HTMLEvents    HTMLEvent     initEvent()
+                MouseEvents   MouseEvent    initMouseEvent()
+                UIEvents      UIEvent       initUIEvent()
+                initEvent()方法用于初始化通过DocumentEvent接口创建的Event的值。支持三个参数：initEvent(eventName, canBubble, preventDefault). 
+                分别表示事件名称，是否可以冒泡，是否阻止事件的默认操作。
+            </pre>
+            <div class="explain">先自定义tap事件然后触发他，在tap事件当中先绑定touchstart,touchend事件，判断事件间隔之后给个回调就行</div>
+
+            <div class="title">对于transform使用matrix矩阵2D详解</div>
+            <pre>
+                 首先单位矩阵是这样的,也就是你不写的时候的样子：
+                        -webkit-transform:matrix(1,0,0,1,0,0);
+                        transform:matrix(1,0,0,1,0,0);
+                 例如：向右移动10像素向下移动20像素可以这样写：
+                         -webkit-transform:matrix(1,0,0,1,10,20);
+                        transform:matrix(1,0,0,1,10,20);
+                 例如：横纵扩2倍可以这样写：
+                         -webkit-transform:matrix(2,0,0,2,0,0);
+                        transform:matrix(2,0,0,2,0,0);
+                 对于旋转scale和扭曲skew则该中间那两个0第一个表示x轴方向第二个表示y轴方向，而且他们在改动的时候，
+                 还要根据三角函数算出第一个和第四个参数的值，因为页面呈现是大小会改动
+            </pre>
+            <div class="explain">当使用3d做gpu渲染的时候，并不能触发重绘，他只能使元素变大小或者旋转等，不能改颜色</div>
+
+            <div class="title">监听横屏竖屏状态</div>
+            <pre>
+                 window.addEventListener("orientationonchange",function(){})
+                 window.orientation为0则它是纵向的，横向的则是90或者-90
+                 但是真个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
+            </pre>
+
+            <div class="title">触摸对象</div>
+            <pre>
+                每个触摸事件被触发后，会生成一个event对象，event对象里额外包括以下三个触摸列表
+                touches:     //当前屏幕上所有手指的列表通过touches[0]以数组的方式来找第几个
+                targetTouches:      //当前dom元素上手指的列表，尽量使用这个代替touches
+                changedTouches:     //涉及当前事件的手指的列表，尽量使用这个代替touches
+
+                这些列表里的每次触摸由touch对象组成，touch对象里包含着触摸信息，主要属性如下：
+                clientX / clientY:      //触摸点相对浏览器窗口的位置
+                pageX / pageY:       //触摸点相对于页面的位置
+                screenX  /  screenY:    //触摸点相对于屏幕的位置
+                identifier:        //touch对象的ID
+                target:       //当前的DOM元素
+            </pre>
+            <div class="explain">document.body.contentEditable='true';利用这个h5的属性可以使得浏览器变得可以编辑</div>
+
+            <div class="title">对js继承的理解</div>
+            <pre>
+                function定义的对象有一个prototype属性，使用new生成的对象没有这个属性，
+                prototype属性又指向了一个prototype对象，这是两个不同的东西，在prototype对象中有一个constructor属性，这个constructor属性同样指向了一个constructor对象，而这个对象指向了function函数本身
+                function Person(name){
+                    this.name=name;
+                    this.showMe=function(){
+                        console.log(this.name);
+                    }
+                };
+                var one =new Person('js');
+                console.log(one.prototype);     //undefined
+                console.log(typeof Person.prototype);   //object   该对向包含两个属性，一个是constructor一个是_proto_
+                console.log(Person.prototype.constructor);  //打印出函数本身
+
+
+                function Person(name){
+                    this.name=name;
+                    this.showMe=function(){
+                        console.log(this.name);
+                    }
+                };
+                Person.prototype.form=function(){
+                  console.log(123)
+                }
+                var one =new Person('js');   //一旦实例化之后就是创建相应的内存区块了，会在堆内存中存储三个属性{name:js,showMe:function(),_proto_},注意_proto_属性指向的就是Person的prototype对象，所以在给其prototype对象加属性之后可以访问到了
+                one.showMe();     //js      
+                one.form();   //123 
+
+                function Person(name){
+                    this.name=name;
+                    this.showMe=function(){
+                        console.log(this.name);
+                    }
+                };
+                Person.prototype.form=function(){
+                  console.log(123)
+                }
+                function sub(){}
+                sub.prototype=new Person();
+                //sub.prototype.constructor=sub;  //加了这句话之后其实就是在sub的原型对象中加入一个constructor属性，使其构造者指向sub，这样他就不会再向上找原型链找到constructor属性，这时候就指向了Person
+                var subone=new sub();
+                console.log(subone);   //{_proto_:Person}
+                subone.form();   //123
+                console.log(subone.constructor); //function Person(){}
+                console.log(sub.prototype.constructor); //function Person(){}  
+            </pre>
+            <div class="explain">以上就是所谓的继承，只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
             <div class="title"></div>
             <pre>
