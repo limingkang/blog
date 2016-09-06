@@ -1,0 +1,153 @@
+@baseColor:red;
+@dialog:.dialog;
+@color:color;
+@hi:'hello ';
+@dear:word;
+
+body{  
+   color:@baseColor;  
+}  
+.dialog{
+    // 用于 rule属性，必须使用"@{变量名}" 的形式
+    @{color}: blue;
+}
+// 用于 选择器，必须使用"@{变量名}" 的形式
+@{dialog}{
+ width: 200px;
+}
+@{dialog}::after{
+ content: ': @{hi}@{dear}!';    // 用于字符串拼接，必须使用"@{变量名}" 的形式,注意变量上面写上引号是为了加空格，不写引号也行，只是没了空格
+}
+
+
+
+
+
+
+#header { color: black; }
+#header .navigation {  font-size: 12px;}
+#header .logo { width: 300px; }
+#header .logo:hover {  text-decoration: none;}
+ //less的语法嵌套 
+#header {  
+	color: black;  
+	.navigation {    
+		font-size: 12px;
+    }  
+    .logo {    
+       width: 300px;
+       &:hover { text-decoration: none }
+    }
+}
+
+
+
+@assetFilePath: "http://127.0.0.1/yueyun/asset/images";  
+#logo {  
+    background: url("@{assetFilePath}/default_4.gif") no-repeat;  
+    height: 39px;  
+    width: 260px;  
+    margin-top: 22px;  
+    margin-left: 12px;  
+}  
+
+
+
+/* 定义了一个函数而且还有默认参数*/  
+.border-radius (@radius: 5px) {  
+    -webkit-border-radius: @radius;  
+    -moz-border-radius: @radius;  
+    border-radius: @radius;  
+}  
+    
+/* Implementation */  
+#somediv {  
+    .border-radius(20px);  
+}  
+
+
+
+
+/* 过渡 */  
+.transition (@prop: all, @time: 1s, @ease: linear) {  
+    -webkit-transition: @prop @time @ease;  
+    -moz-transition: @prop @time @ease;  
+    -o-transition: @prop @time @ease;  
+    -ms-transition: @prop @time @ease;  
+    transition: @prop @time @ease;  
+}  
+    
+/* Implementation */  
+#somediv {  
+    .transition(all, 0.5s, ease-in);  
+}   
+
+
+
+
+
+
+// 没有直接的 if 语句，而是 when(xxx){}
+/* 
+    区域内局部滚动 
+    控制元素在移动设备上是否使用滚动回弹效果. 
+    看上去和原生app的效率都有得一拼，要实现这个效果很简单，只需要加一行css代码即可：-webkit-overflow-scrolling : touch; 
+    结构如下，必须三层 
+    div.areaScroll > ul > li 
+*/  
+.areaScroll(@direct: hoz){  
+    -webkit-overflow-scrolling : touch;  
+    overflow : hidden;  
+      
+    /* overflow-x|y : auto;  */  
+    & when (@direct = hoz) {  
+        overflow-x : auto;  
+        white-space:nowrap;  
+    }  
+    & when (@direct = v) {  
+        overflow-y : auto;  
+    }  
+    &>ul{  
+        &>li{  
+            float: none; /* 不能 float:left */  
+            display:inline-block;  
+        }  
+    }  
+}  
+
+
+
+
+
+
+
+
+// 那如果我们现在需要在其他 class 中引入那些通用的属性集，那么我们只需要在任何 class 中像下面这样调用就可以了：
+#menu a {
+    color: #111;
+    .bordered;
+}
+.post a {
+    color: red;
+    .bordered;
+}
+
+
+
+// 带加减法的时候
+.box{
+	width: @testwidth + 20px;   //  +20也可以，运算中只要有一个带单位就行了
+	color: #ccc-10;            //颜色值的时候不带单位
+}
+
+
+
+
+
+// 有时候有一些东西需要避免编译
+.test{
+	width: ~'calc(300px-30px)'
+}
+
+
+你可以把所有color都以变量的形式定义在color.less，然后在另一个Less文件中 @import 'color.less'，就可以直接使用该文件中的变量

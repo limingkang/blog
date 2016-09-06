@@ -1,0 +1,174 @@
+// 引入 gulp,注意他的任务是异步执行的
+var gulp = require('gulp'); 
+
+// var connect = require('gulp-connect');    // 起服务器构建页面的实时刷新
+var jshint = require('gulp-jshint'); //检查js文件是否报错或警告
+var less = require('gulp-less');     //将less翻译成css,对于sass可用gulp-sass模块同样的方法
+var concat = require('gulp-concat');  //合并文件
+var uglify = require('gulp-uglify');   //压缩js文件
+var rename = require('gulp-rename');    //重命名文件
+// var htmlmin = require('gulp-htmlmin');  //压缩html文件
+var imagemin = require('gulp-imagemin');  // 压缩图片
+// var livereload = require('gulp-livereload'); //服务器控制客户端同步刷新 
+var minifycss = require('gulp-minify-css');   //压缩css文件
+// gulp-autoprefixer使用Autoprefixer来补全浏览器兼容的css
+
+
+
+
+// 编译less文件
+// gulp.task('testLess',function(){
+//     gulp.src('./src/stylesheet/less/mystyle_one.less')   //该任务针对的文件
+//         .pipe(less())                                    //该任务调用的模块
+//         .pipe(gulp.dest('./src/stylesheet/css'));        //将会在该路径线面生成mystyle_one.css文件
+// });
+
+// // 编译Sass
+// gulp.task('sass', function() {
+//     gulp.src('./scss/*.scss')
+//         .pipe(sass())
+//         .pipe(gulp.dest('./css'));
+// });
+
+// 压缩图片
+// gulp.task('minimages', function(){
+//     gulp.src('./src/images/image/*.{png,jpg,gif,ico}')
+//         .pipe(imagemin({
+//             optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+//             progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+//             interlaced: true, //类型：Boolean 默认：false 隔行扫描gif进行渲染
+//             multipass: true //类型：Boolean 默认：false 多次优化svg直到完全优化
+//         }))
+//         .pipe(gulp.dest('./src/images/minimage/'));
+// });
+// 上面只是简单压缩图片，要想深度压缩图片，而且想每次只压缩修改了的图片得再下两个模块插件
+// pngquant = require('imagemin-pngquant'),
+// cache = require('gulp-cache');
+// gulp.task('minimages', function(){
+//     gulp.src('./src/images/image/*.{png,jpg,gif,ico}')
+//         .pipe(cache(imagemin({
+//             progressive: true,
+//             svgoPlugins: [{removeViewBox: false}],   //不要移除svg的viewbox属性
+//             use: [pngquant()]                        //使用pngquant深度压缩png图片的imagemin插件
+//         })))
+//         .pipe(gulp.dest('./src/images/minimage/'));
+// });
+
+gulp.task('testCssmin', function () {
+    gulp.src('src/stylesheet/css/test.css')
+        .pipe(minifycss({
+            advanced: false,//类型：Boolean 默认：true [是否开启高级优化（合并选择器等）]
+            compatibility: 'ie7',//保留ie7及以下兼容写法 类型：String 默认：''or'*' [启用兼容模式； 'ie7'：IE7兼容模式，'ie8'：IE8兼容模式，'*'：IE9+兼容模式]
+            keepBreaks: false,//类型：Boolean 默认：false [是否保留换行]
+            keepSpecialComments: '*'
+            //保留所有特殊前缀 当你用autoprefixer生成的浏览器前缀，如果不加这个参数，有可能将会删除你的部分前缀
+        }))
+        .pipe(rename('test.min.css'))
+        .pipe(gulp.dest('src/stylesheet/css'));
+});
+
+// 检查脚本
+// gulp.task('jshint', function() {
+//     gulp.src('./src/js/module/*.js')
+//         .pipe(jshint())
+//         .pipe(jshint.reporter('default'));
+// });
+
+// // 合并，压缩js文件
+// gulp.task('scripts', function() {
+//     gulp.src('./src/js/module/*.js')
+//         .pipe(concat('all.js'))
+//         .pipe(gulp.dest('./src/js'))   //也可以直接写命名为all.min.js然后打包，但是一般会有一个生产一个压缩的
+//         .pipe(rename('all.min.js'))
+//         .pipe(uglify({
+//             // mangle: {except: ['require' ,'exports' ,'module' ,'$']}//排除混淆关键字
+//             mangle: true,//类型：Boolean 默认：true 是否修改变量名
+//             compress: true,//类型：Boolean 默认：true 是否完全压缩
+//             preserveComments: 'all' //保留所有注释
+//         }))
+//         .pipe(gulp.dest('./src/js'));
+// });
+
+gulp.task('default',['testCssmin']);
+// gulp.task('default', function(){
+//     gulp.run('jshint', 'scripts');
+
+//     // 监听文件变化
+//     gulp.watch('./src/js/module/*.js', function(){
+//         gulp.run('jshint', 'scripts');
+//     });
+// });
+
+
+
+
+// var gulp = require('gulp'),
+//   connect = require('gulp-connect');
+ 
+// gulp.task('connect', function() {
+//   connect.server({
+//     root: 'app',
+//     livereload: true                    //实时刷新页面
+//   });
+// });
+ 
+// gulp.task('html', function () {
+//   gulp.src('./app/*.html')
+//     .pipe(connect.reload());   //html页面改动的时候重新加载文件
+// });
+ 
+// gulp.task('watch', function () {
+//   gulp.watch(['./app/*.html'], ['html']);
+// });
+ 
+// gulp.task('default', ['connect', 'watch']);
+
+
+
+
+
+// var browserify = require('gulp-browserify');    //将jsx转换为js插件,安装gulp-browserify
+// //将jsx转换为js
+// gulp.task('browserify',function(){
+//     gulp.src('./app/js/main.js')
+//     .pipe(browserify({
+//         transform: 'reactify',
+//     }))
+//     .pipe(gulp.dest('./dist/js'))
+// });
+
+// 注意还有一个browserify的模块，该模块和gulp-browserify是不同的，前者是用来解决前端js依赖的问题
+// browserify以 commonjs 模块开发规范来约束前端模块开发,最后上线时提供命令行生成合并文件，全局安装browserify，使用browserify app.js > goal.js，这个app.js就是入口文件里面可以以common.js规范require模块，该命令会将所有文件合起来变为goal.js
+// 其中browserify还有很多配置可以上网查
+// requirejs以 amd 模块开发规范来约束前端模块开发,最后上线的时候提供 r.js 命令行工具来生成合并压缩文件
+
+// //使用gulp的amd-optimize插件来构建require.js模块
+// var amdOptimize = require("amd-optimize");  
+// gulp.task("default", function () {     
+//   gulp.src("app/**/*.js")    
+//     .pipe(amdOptimize("main",{
+//         paths: {  
+//             "jquery": "../../libs/jquery/dist/jquery.min",  
+//             "jquery.serializeJSON": "../../libs/jquery.serializeJSON/jquery.serializejson.min",  
+//             "sug": "src/js/suggestion/suggestion",  
+//             "validate": "../util/src/js/util/validate",  
+//             "urlParam": "../util/src/js/util/url.param"  
+//         },  
+//         shim: {  
+//             "jquery.serializeJSON": ['jquery']  
+//         }  
+//     }))   //这个就是require.js里面的入口总文件main.js  ,不同的是这次的配置信息只能写在任务里面了,main里面就不写了
+//     .pipe(concat("c.js"))      //合并后的文件，如果合并后的文件和主入口名一样，构建后便只有一个文件  
+//     .pipe(gulp.dest("dist"));  
+   
+// });  
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+body {
+  color: red;
+}
+.dialog {
+  color: blue;
+}
+.dialog {
+  width: 200px;
+}
+.dialog::after {
+  content: ': hello word!';
+}
