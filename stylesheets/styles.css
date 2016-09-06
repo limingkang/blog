@@ -76,7 +76,7 @@ h4, h5, h6 {
 }
 
 a {
-  color:#C30000;
+  color:#333;
   font-weight:200;
   text-decoration:none;
 }
@@ -421,3 +421,35 @@ footer {
     color:#444;
   }
 }
+
+
+
+
+
+
+
+
+/*具体内容的简单样式*/
+.big_container {width: 1000px;margin: 0 auto;word-spacing: normal;word-break: break-all; word-wrap:break-word;}
+.big_container .title {font-size: 20px;height: 50px;line-height: 50px;margin-top: 10px;font-weight: bolder;}
+.big_container pre {margin-bottom: 0;}
+.big_container .explain {font-size: 14px;line-height: 20px;margin: 10px 0;text-align: justify;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       	<div class="big_container">
+       		<div class="title" style="margin-top:0;">jquery对异步对象封装时候的调用方法小结</div>
+       		<div class="code">
+       			<pre>
+       				var dfd = $.Deferred(); 
+       				var dfd2 = $.Deferred();
+
+       				function fn1(d){
+       				    setTimeout( function(){
+       				       d.resolve('13');
+       				    }, 300);
+       				}
+       				function fn2(d){
+       				    setTimeout( function(){
+       				      d.resolve('2');
+       				    }, 200);
+       				}
+
+       				fn1(dfd);
+       				fn2(dfd2);
+
+       				$.when(dfd,dfd2).done(function(data1,data2){
+       				   console.log(data1);
+       				   console.log(data2);
+       				   console.log(3);
+       				}).fail(function(data1,data2){
+       				   console.log(data1);
+       				   console.log(data2);
+       				   console.log(4);
+       				});
+       				console.log(10);
+       			</pre>
+       		</div>
+       		<div class="explain">先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了</div>
+       		
+       		
+
+
+       		
+       	</div>
+  </body>
+</html>
