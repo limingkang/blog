@@ -1,0 +1,128 @@
+<!-- limingkang -->
+<!-- 123456 -->
+<!DOCTYPE html>
+<html  dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>圆环进度条</title>
+<script type="text/javascript" src="../javascripts/jquery.min.js"></script>
+<style type="text/css">
+    .circle {
+      width: 200px;
+      height: 200px;  
+      position: absolute;
+      border-radius: 50%;
+      background: #0cc;
+    }
+    .pie_left, .pie_right {
+        width: 200px; 
+        height: 200px;
+        position: absolute;
+        top: 0;left: 0;
+    }
+    .left, .right {
+        display: block;
+        width:200px; 
+        height:200px;
+        background:#00aacc;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        /*transform: rotate(30deg);*/
+    }
+    .pie_right, .right {
+        clip:rect(0,auto,auto,100px);
+        -webkit-transition:all .2s ease-in-out;
+        -moz-transition:all .2s ease-in-out;
+        transition:all .2s ease-in-out;
+
+    }
+    .pie_left, .left {
+        clip:rect(0,100px,auto,0);
+    }
+    .animate {
+         -webkit-transition:all .2s ease-in-out;
+         -moz-transition:all .2s ease-in-out;
+         transition:all .2s ease-in-out;
+    }
+    .mask {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        left: 25px;
+        top: 25px;
+        background: #FFF;
+        position: absolute;
+        text-align: center;
+        line-height: 150px;
+        font-size: 16px;
+    }
+</style>
+</head>
+<body>
+    <div class="circle">
+        <div class="pie_left"><div class="left"></div></div>
+        <div class="pie_right"><div class="right"></div></div>
+        <div class="mask"><span>70</span>%</div>
+    </div>
+    <script type="text/javascript">
+    $(function() {
+            var num = $(this).find('span').text() * 3.6;
+            if (num<=180) {
+                var mynum=0;
+                var animate=setTimeout(function(){
+                    $(".right").css('transform',"rotate(" + mynum + "deg)");                   
+                    if(num-mynum<=0){
+                        clearTimeout(animate);
+                        return false;
+                    }
+                    mynum+=5;
+                    if(num-mynum<=5){mynum=num;}
+                    arguments.callee();
+                },30)
+            } else {
+                var d=$.Deferred();
+                var mynum=0;
+                var animate=setTimeout(function(){
+                    $(".right").css('transform',"rotate(" + mynum + "deg)");                   
+                    if(mynum==180){
+                        clearTimeout(animate);
+                        setTimeout(function(){
+                            d.resolve();
+                            return false;
+                        },180) 
+                        return false;                      
+                    }
+                    mynum+=5;
+                    arguments.callee();
+                },30)
+
+                d.done(function(){
+                    num=num-180;
+                    var leftnum=5;
+                    if(num>=5){
+                       $('.left').css('transform', "rotate(5deg)");  
+                    }else{
+                        $('.left').css('transform', "rotate(" + num + "deg)");
+                        return false; 
+                    }
+                    var leftanimate=setTimeout(function(){
+                        $('.left').css('transform', "rotate(" + leftnum + "deg)");                   
+                        if(num-leftnum<=0){
+                            clearTimeout(leftanimate);
+                            return false;
+                        }
+                        leftnum+=5;
+                        if(num-leftnum<=5){leftnum=num;}
+                        arguments.callee();
+                    },30)
+                })
+               
+            };
+    });
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>俄罗斯方块</title>
+<style type="text/css" >
+body{width:100%;height:100%;margin:0 auto;padding:0;background:url(../images/ba.jpg);}
+.contentbox{border:9px solid #60C; border-radius:10px;position:absolute;top:100px;left:20%;margin-left:-100px;z-index:-3;background-color:#000;}
+.contentbox .parentbox{width:200px;height:400px;z-index:-1;}
+.xingzhuangbox{width:80px;height:80px;position:absolute;left:60px;top:0px;z-index:-2;}
+.controlbtn{margin:0 auto;width:300px;height:100px;padding-left:100px;}
+.setgame{width:400px;height:70px;margin:0 auto;padding-top:30px;}
+#defen{color:#009;font-size:18px;font-weight:bold;}
+.count{margin:0 auto;width:400px;height:150px;text-align:center;padding-top:50px;}
+</style>
+</head>
+<body>
+<h1 align="center">小游戏：俄罗斯方块</h1>
+<h5 align="center">作者:李明康</h5>
+<div class="count">
+<h3>您当前得分：</h3><span style="color:#F00;font-size:100px;font-weight:bold;" id="defen">0</span>
+</div>
+<div class="conBox">
+<div class="setgame" align="center">
+<input id="startgame" value="开始游戏(K)" type="button" />
+<input id="pausegame" value="暂停(P)" type="button" />
+<input id="resetgame" value="重开(R)" type="button" />
+</div>
+<div class="controlbtn">
+<table>
+    <tr>
+        <td></td>
+        <td><input id="changeface" value="变形(W)" type="button" /></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><input id="moveleft" value="向左(A)" type="button" /></td>
+        <td></td>
+        <td><input id="moveright" value="向右(D)" type="button" /></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td><input id="movedown" value="向下(S)" type="button" /></td>
+        <td></td>
+    </tr>
+</table>
+</div>
+</div>
+<div class="contentbox">
+   <table border="0" bordercolor="#CC0000" cellpadding="1" cellspacing="1" class="xingzhuangbox" id="xzBox">
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>        
+    </table>
+    <table border="0" cellpadding="1" cellspacing="1" class="parentbox" id="parentBox">
+      <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr> 
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>  
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>   
+      </tbody>                   
+    </table>
+</div>
+<script language="javascript">
+function HY(id){
+    return document.getElementById(id);
+}
+var xzBox=new GetTd("xzBox");
+var BigTa=new BigTable("parentBox");
+var Defen=0;
+var moveLeft=HY("moveleft");
+var moveRight=HY("moveright");
+var moveDown=HY("movedown");
+var changeFace=HY("changeface");
+var startGame=HY("startgame");
+var resetGame=HY("resetgame");
+var pauseGame=HY("pausegame");
+var fenShu=HY("defen");
+var timeout;
+var speed=500;        //表示每次下降过度的时间
+var bujinspeed=20;   //表示一次下降20px
+var newNum=[12,12];
+var parentNum=new Array();
+
+//初始化函数绑定方法
+pauseGame.onclick=Pause;
+changeFace.onclick=ChangeFace;
+resetGame.onclick=ResetGame;
+moveRight.onclick=MoveRight;
+moveLeft.onclick=MoveLeft;
+startGame.onclick=StartGame;
+moveDown.onclick=MoveDown;
+
+//形状数组
+var xzArray={
+    smallArray:[
+       [0,0],[0,1],[0,2],[0,3],[1,0],[1,1],[1,2],[1,3],[2,0],[2,1],[2,2],[2,3],[3,0],[3,1],[3,2],[3,3]
+    ],          //基本4*4点阵格
+    // 用数字表示来定形状
+    // 0   1   2   3
+    // 4   5   6   7
+    // 8   9   10  11
+    // 12  13  14  15
+    tianzi:[[1,2,5,6]],       //生成一个田子，每一个元素对应上面一个点格
+    yizi:[[1,5,9,13],[4,5,6,7]],   //对应生成一条线的两个点阵方法
+    rightl:[[1,5,9,10],[4,5,6,2 ],[0,4,1,2],[1,2,6,10]],  //生成向右的L
+    leftl:[[2,6,10,9],[1,5,6,7],[1,2,3,7],[2,1,5,9]],     //生成向左的L
+    normalz:[[2,6,5,9],[1,2,6,7]],        //生成正向Z        
+    unnormalz:[[1,5,6,10],[4,5,1,2]],     //生成反向Z
+    tzi:[[0,1,2,5],[1,4,5,6],[2,5,6,10],[1,5,9,6]],  //生成T字
+    fanhui:function(array){//接收一个数组 并返回要调用的形状数组
+        switch(array[0]){//两位数组newNum,第一个数表示出来的是哪种形状，第二个数表示的是哪种数据点阵
+            case 0:
+            return this.tianzi[array[1]];
+            break;
+            case 1:
+            return this.yizi[array[1]];
+            break;
+            case 2:
+            return this.rightl[array[1]];
+            break;
+            case 3:
+            return this.leftl[array[1]];
+            break;
+            case 4:
+            return this.normalz[array[1]];
+            break;
+            case 5:
+            return this.unnormalz[array[1]];
+            break;
+            case 6:
+            return this.tzi[array[1]];
+            break;
+            default:
+        }
+    },
+    fanhuiA:function(array){//接收一个数组 并返回要调用的形状数组
+        switch(array[0]){//两位数组newNum
+            case 0:
+            return this.tianzi;
+            break;
+            case 1:
+            return this.yizi;
+            break;
+            case 2:
+            return this.rightl;
+            break;
+            case 3:
+            return this.leftl;
+            break;
+            case 4:
+            return this.normalz;
+            break;
+            case 5:
+            return this.unnormalz;
+            break;
+            case 6:
+            return this.tzi;
+            break;
+            default:
+        }
+    },
+    //通过下面四个方法来得到该形状的两行两列
+    righttd:function(array){//表示其形状的4位数组取得其列数的数组
+        var yuanshiA=new Array();
+        for(var i=0;i<array.length;i++){
+            var zjA=this.smallArray[array[i]]
+            yuanshiA.push(zjA[1]);
+        }
+        return Math.max.apply(null,yuanshiA);
+    },
+    lefttd:function(array){
+        var yuanshiA=new Array();
+        for(var i=0;i<array.length;i++){
+            var zjA=this.smallArray[array[i]]
+            yuanshiA.push(zjA[1]);
+        }        
+        return Math.min.apply(null,yuanshiA);
+    },
+    toptd:function(array){
+        var yuanshiA=new Array();
+        for(var i=0;i<array.length;i++){
+            var zjA=this.smallArray[array[i]]
+            yuanshiA.push(zjA[0]);
+        }
+        return Math.max.apply(null,yuanshiA);
+    },
+    bottomtd:function(array){
+        var yuanshiA=new Array();
+        for(var i=0;i<array.length;i++){
+            var zjA=this.smallArray[array[i]]
+            yuanshiA.push(zjA[0]);
+        }
+        return Math.min.apply(null,yuanshiA);
+    },
+    compareA:function(array1,array2){//比较两个数组，对应相减，返回最小值 
+        var minA=new Array();
+        for(var i=0;i<array1.length;i++){
+            var d=array1[i]-array2[i];
+            minA.push(d);
+        }
+        return Math.min.apply(null,minA);
+    },
+    //返回值为1到b的数组
+    ranArray:function(a,b){
+        var array=new Array();
+        for(var i=0;i<b+1;i++){
+            array.push(i);
+        }
+        return array;
+    },
+    ranAnum:function(array,a){
+        var b=a;
+        for(var i=0;i<array.length;i++){
+            if(b==array[array.length-1]){
+                b=array[0];
+                break;
+            }else if(b==array[i]){
+                b=array[i+1];
+                break;
+            }
+        }
+        return b;
+    }
+}
+
+//形状颜色对象。
+var HangColor={
+    zero:"blue",
+    one:"red",
+    two:"gray",
+    three:"green",
+    duiying:function(n){
+        switch(n){
+            case 0:
+            return this.zero;
+            break;
+            case 1:
+            return this.one;
+            break;
+            case 2:
+            return this.two;
+            break;
+            case 3:
+            return this.three;
+            break;
+            default:
+            break;
+        }
+    }
+}
+
+// 生成形状的方法
+function GetTd(tablename){
+    this.tdwidth=20;
+    this.tawidth=200;
+    this.tablename=HY(tablename);
+    this.trarray=this.tablename.getElementsByTagName("tr");
+    this.trl=this.trarray.length;
+    this.tdl=this.trarray[1].getElementsByTagName("td").length;
+    this.settd=function(arraya){//接收四位数的一维数组，设置形状,这里只是经过循环生成了四个格子并设置了颜色
+        for(var i=0;i<arraya.length;i++){
+            var parentNum=arraya[i];
+            var xzNum=xzArray.smallArray[parentNum];
+            var xzBoxTd=this.trarray[xzNum[0]].getElementsByTagName("td")[xzNum[1]];
+            xzBoxTd.style.backgroundColor=HangColor.duiying(xzNum[0]);
+        }
+    }
+    this.cleartd=function(arraya){//接收四位数组，清除数组对应形状,就是改颜色
+        for(var i=0;i<arraya.length;i++){
+            var parentNum=arraya[i];
+            var xzNum=xzArray.smallArray[parentNum];
+            var xzBoxTd=this.trarray[xzNum[0]].getElementsByTagName("td")[xzNum[1]];
+            xzBoxTd.style.backgroundColor="";
+        } 
+    }
+    this.getrandom=function(Min,Max){//生成Min-Max之间的随机数。
+        return Min+Math.round(Math.random()*(Max-Min));
+    }
+    this.bornXz=function(){//形状生成器，每次生成新的形状,总共有七种形状,返回哪种形状的哪个点阵如[4.1]
+        var num=this.getrandom(0,6);
+        var numArray=new Array();
+        numArray.push(num);
+        switch(num){
+            case 0:
+            this.settd(xzArray.tianzi[0]);
+            numArray.push(0);
+            break;
+            case 1:
+            var canshu=this.getrandom(0,1);
+            this.settd(xzArray.yizi[canshu]);
+            numArray.push(canshu);
+            break;
+            case 2:
+            var canshu=this.getrandom(0,3);
+            this.settd(xzArray.rightl[canshu]);
+            numArray.push(canshu);
+            break;
+            case 3:
+            var canshu=this.getrandom(0,3);
+            this.settd(xzArray.leftl[canshu]);
+            numArray.push(canshu);
+            break;
+            case 4:
+            var canshu=this.getrandom(0,1);
+            this.settd(xzArray.normalz[canshu]);
+            numArray.push(canshu);
+            break;
+            case 5:
+            var canshu=this.getrandom(0,1);
+            this.settd(xzArray.unnormalz[canshu]);
+            numArray.push(canshu);
+            break;
+            case 6:
+            var canshu=this.getrandom(0,3);
+            this.settd(xzArray.tzi[canshu]);
+            numArray.push(canshu);
+            break;
+            default:
+            break;
+        }
+        return numArray;
+    }
+    this.shuBl=function(num){//从下到上遍历形状盒子的每一个tr,返回第一个在num上有颜色的行。
+        var lefta=new Array();
+        for(var j=this.trl-1;j>=0;j--){
+            if(this.trarray[j].getElementsByTagName("td")[num].style.backgroundColor){
+                lefta.push(j);
+                break;
+            }
+        }
+        return lefta;
+    }
+    this.fhsxsz=function(left,right){//返回当前形状每一列对应最下面的第一个有颜色的td格的tr列的集合
+        var bigdyNum=[];
+        var a=right-left;
+        for (var i=0;i<=a;i++) {
+            bigdyNum.push(this.shuBl(left+i));
+        }
+        return bigdyNum;
+    }
+    this.disTan=function(array){//返回当前形状所对应的列的第一个有颜色的行到小Box上面的距离。
+        var dist=new Array();
+        for(var i=0;i<array.length;i++){
+            var a=this.tdwidth*array[i];
+            dist.push(a);
+        }
+        return dist;
+    }
+}
+//处理大表格内的所有功能
+function BigTable(id){
+    this.width=20;
+    this.name=HY(id);
+    this.tbody=this.name.getElementsByTagName("tbody");
+    this.tr=this.name.getElementsByTagName("tr");
+    this.lie=this.tr[0].getElementsByTagName("td").length;
+    this.hang=this.tr.length;
+    this.clear=function(){//遍历大表格，把一行有颜色的设为没有颜色,并删除填满的行
+        var parentNum=0;
+        var clearNum=0;
+        for(var i=0;i<this.hang;i++){
+            for(var j=0;j<this.lie;j++){
+                if(this.tr[i].getElementsByTagName("td")[j].style.backgroundColor){
+                      parentNum++;
+                }
+            }
+            if(parentNum==this.lie){  //说明整列都有颜色那就是填满了，就要消除掉这一行
+                for(var k=0;k<this.lie;k++){
+                    this.tr[i].getElementsByTagName("td")[k].style.backgroundColor="";
+                }
+                var cloneChi=this.tr[i].cloneNode(true);
+                this.tbody[0].removeChild(this.tr[i]);
+                this.tbody[0].insertBefore(cloneChi,this.tr[0]);
+                clearNum+=1;
+            }
+            parentNum=0;            
+        }
+        switch(clearNum){
+            case 0:
+            Defen+=0;
+            break;
+            case 1:
+            Defen+=1;
+            break;
+            case 2:
+            Defen+=3;
+            break;
+            case 3:
+            Defen+=6;
+            break;
+            case 4:
+            Defen+=10;
+            break;
+            default:
+            break;
+        }
+    }
+    this.bianlilie=function(num){//遍历指定列，返回第一个有背景的格子的坐标。
+        var lefta=new Array();
+        for(var i=0;i<this.hang;i++){
+            if(this.tr[i].getElementsByTagName("td")[num].style.backgroundColor){
+                lefta.push(i);
+                lefta.push(num);
+                break;
+            }
+        }
+        if(!lefta.length){lefta=[this.hang,num]}
+        return lefta;
+    }
+    this.xzdyl=function(left,right){//形状对应的列，返回各列第一个有颜色的坐标数组
+        var bigdyNum=[];
+        var a=right-left;
+        for (var i=0;i<=a;i++) {
+            bigdyNum.push(this.bianlilie(left+i));
+        }
+        return bigdyNum;//二维数组
+    }
+    this.minDistan=function(array){//返回当前形状对应的距离上面的Px
+        var disArray=new Array();
+        for(var i=0;i<array.length;i++){
+            disArray.push(this.width*array[i][0]);
+        }
+        return disArray;
+    }
+    this.setColor=function(top,left,array){//设置形状对应大表格的背景
+        var zbA=new Array();
+        var tr=top/this.width;
+        var td=left/this.width;
+        for(var i=0;i<array.length;i++){
+            var a=xzArray.smallArray[array[i]];
+            var h=tr+a[0];
+            var l=td+a[1];
+            this.tr[h].getElementsByTagName("td")[l].style.backgroundColor=HangColor.duiying(a[0]);
+        }
+    }
+    this.clearall=function(){//清除所有背景，Reset
+        for(var i=0;i<this.hang;i++){
+            for(var j=0;j<this.lie;j++){
+                this.tr[i].getElementsByTagName("td")[j].style.backgroundColor="";
+            }
+        }
+    }
+    this.firstColor=function(){//返回第一个有颜色的行，用来判断是否到顶。
+        var a=0;
+        for(var i=0;i<this.lie;i++){
+            if(this.tr[0].getElementsByTagName("td")[i].style.backgroundColor){
+                a=1;
+                break;
+            }
+        }
+        return a;
+    }
+}
+
+function automove(num){
+    var fanhui=xzArray.fanhui(newNum); //得到确定的当前形状的4位数组
+    var Maxri=xzArray.righttd(fanhui); //得到当前形状的最右边Td在第几列
+    var Minle=xzArray.lefttd(fanhui);  //得到当前形状的最左边Td在第几列
+    var nowLeft=parseInt(xzBox.tablename.style.left);
+    var nowTop=parseInt(xzBox.tablename.style.top);
+    var parMin=nowLeft/xzBox.tdwidth+Minle;
+    var parMax=nowLeft/xzBox.tdwidth+Maxri;
+    var BigA=BigTa.xzdyl(parMin,parMax);
+    var parDis=BigTa.minDistan(BigA);
+    var xzbox=xzBox.fhsxsz(Minle,Maxri);
+    var chiDis=xzBox.disTan(xzbox);
+    var minDis=xzArray.compareA(parDis,chiDis);
+    if(nowTop>=(minDis-xzBox.tdwidth)){
+        clearInterval(timeout);
+        BigTa.setColor(nowTop,nowLeft,fanhui);
+        xzBox.tablename.style.left="60px";
+        xzBox.tablename.style.top="0px";
+        BigTa.clear();
+        var hyz=BigTa.firstColor();
+        if(hyz){
+            alert("任务失败，请点击重开");
+            return;
+        }
+        fenShu.innerHTML=Defen;
+        if(Defen>=0&&Defen<100){
+            speed=500;
+        }else if(Defen>=100&&Defen<300){
+            speed=300;
+        }else if(Defen>=300&&Defen<600){
+                speed=200;
+        }
+        xzBox.cleartd(fanhui);
+        newNum=xzBox.bornXz();
+        timeout=setInterval("automove(bujinspeed)",speed);
+        return;
+    }
+    xzBox.tablename.style.top=nowTop+num+"px";
+}
+
+function Pause(){
+    if(newNum[1]==12){
+        alert("请按开始");
+        return;
+    }else{
+    if(pauseGame.value=="暂停(P)"){
+        clearInterval(timeout);
+        pauseGame.value="继续(P)";
+        }else{
+            timeout=setInterval("automove(bujinspeed)",speed);
+            pauseGame.value= "暂停(P)";
+        }
+    }
+}
+
+function ChangeFace(){
+    if(newNum[1]==12){
+        alert("请按开始");
+        return;
+    }else{
+        var boxLeft=parseInt(xzBox.tablename.style.left);
+        var fanHui=xzArray.fanhui(newNum);
+        var Maxtd=xzArray.righttd(fanHui)+1;
+        var Mintd=xzArray.lefttd(fanHui);
+        var fanHuiA=xzArray.fanhuiA(newNum);
+        var thisRanA=xzArray.ranArray(0,fanHuiA.length-1);
+        var thisRan=xzArray.ranAnum(thisRanA,newNum[1]);
+        xzBox.cleartd(fanHui);
+        newNum.splice(1,1,thisRan);
+        var fanHui1=xzArray.fanhui(newNum);
+        var Maxtd1=xzArray.righttd(fanHui1)+1;
+        var Mintd1=xzArray.lefttd(fanHui1);
+        if(boxLeft==(xzBox.tawidth-Maxtd*xzBox.tdwidth)){
+            if(Maxtd<Maxtd1){
+                xzBox.tablename.style.left=boxLeft-xzBox.tdwidth*(Maxtd1-Maxtd)+"px";
+                xzBox.settd(fanHuiA[thisRan]);
+            }else{
+                xzBox.settd(fanHuiA[thisRan]);
+            }
+        }else if(boxLeft==-(xzBox.tdwidth*Mintd)){
+            if(Mintd1<Mintd){
+                xzBox.tablename.style.left=boxLeft+xzBox.tdwidth*(Mintd-Mintd1)+"px";
+                xzBox.settd(fanHuiA[thisRan]);
+            }else{
+                xzBox.settd(fanHuiA[thisRan]);
+            }
+        }else{
+            xzBox.settd(fanHuiA[thisRan]);
+        }
+    }        
+}
+
+function ResetGame(){
+    if(newNum[1]==12){
+        alert("请开始");
+        return;
+    }else {
+        clearInterval(timeout);
+        Defen=0;
+        speed=500;
+        fenShu.innerHTML=Defen;
+        BigTa.clearall();
+        xzBox.tablename.style.left="60px";
+        xzBox.tablename.style.top="0px";
+        var fanHui=xzArray.fanhui(newNum);
+        xzBox.cleartd(fanHui);
+        newNum=xzBox.bornXz();
+        timeout=setInterval("automove(bujinspeed)",speed);
+    }
+}
+
+function MoveRight(){
+    var boxLeft=parseInt(xzBox.tablename.style.left);
+    if(newNum[1]==12){ 
+        alert("请按开始");
+        return;
+        } else {
+            var xzMax=xzArray.fanhui(newNum);
+            var Maxtd=xzArray.righttd(xzMax)+1;
+            if(boxLeft>=(xzBox.tawidth-Maxtd*xzBox.tdwidth)){
+                return;
+            }
+            xzBox.tablename.style.left=boxLeft+20+"px";
+        }
+}
+
+function MoveLeft(){
+    var boxLeft=parseInt(xzBox.tablename.style.left);
+    if(newNum[1]==12){
+        alert("请按开始");
+        return;
+    }else{
+        var xzMin=xzArray.fanhui(newNum);
+        var Mintd=xzArray.lefttd(xzMin);
+        if(boxLeft<=(-Mintd*xzBox.tdwidth)){
+            return;
+        }
+        xzBox.tablename.style.left=boxLeft-20+"px";
+    }
+}
+
+function StartGame(){
+    if(newNum[1]!=12){
+        alert("游戏已经开始");
+        return;
+    } else {
+        clearInterval(timeout);
+        newNum=[0,0];
+        xzBox.tablename.style.left="60px";
+        xzBox.tablename.style.top="0px";
+        var fanHui=xzArray.fanhui(newNum);
+        xzBox.cleartd(fanHui);
+        newNum=xzBox.bornXz();
+        timeout=setInterval("automove(bujinspeed)",speed);
+    }
+}
+
+function MoveDown(){
+    if(newNum[1]==12){
+        alert("请按开始");
+        return;
+    }else{
+        clearInterval(timeout);
+        var fanhui=xzArray.fanhui(newNum);//得到当前形状的4位数组
+        var Maxri=xzArray.righttd(fanhui);//得到当前形状的最右边Td的列数
+        var Minle=xzArray.lefttd(fanhui);//得到当前形状的最左边Td的列数
+        var nowLeft=parseInt(xzBox.tablename.style.left);
+        var nowTop=parseInt(xzBox.tablename.style.top);
+        var parMin=nowLeft/xzBox.tdwidth+Minle;
+        var parMax=nowLeft/xzBox.tdwidth+Maxri;
+        var BigA=BigTa.xzdyl(parMin,parMax);
+        var parDis=BigTa.minDistan(BigA);
+        var xzbox=xzBox.fhsxsz(Minle,Maxri);
+        var chiDis=xzBox.disTan(xzbox)
+        var minDis=xzArray.compareA(parDis,chiDis);
+        xzBox.tablename.style.top=minDis-xzBox.tdwidth+"px";
+        timeout=setInterval("automove(bujinspeed)",speed);
+    }
+}
+
+document.onkeydown=function(event){
+    var e = event || window.event || arguments.callee.caller.arguments[0];
+    if(e && e.keyCode==65){ // 按 A 
+        MoveLeft(); //向左
+    }
+    if(e && e.keyCode==68){ // 按 D 
+        MoveRight();   //向右
+    }            
+    if(e && e.keyCode==83){ // S
+        MoveDown(); //向下
+    }
+    if(e && e.keyCode==80){ // P
+        Pause(); //暂停
+    }
+    if(e && e.keyCode==75){ // K
+        StartGame(); //开始
+    }
+    if(e && e.keyCode==82){ // R 键重开
+        ResetGame(); 
+    }
+    if(e && e.keyCode==87){ // enter 键
+        ChangeFace(); //要做的事情
+    }
+}
+</script>
+</body>
+</html>

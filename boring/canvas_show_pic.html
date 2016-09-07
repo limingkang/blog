@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="../javascripts/jquery.min.js"></script>
+    <style type="text/css">
+        img { display: block;margin: 0 auto;
+              filter:blur(5px);-webkit-filter:blur(5px);-ms-filter:blur(5px);-moz-filter:blur(5px);-o-filter:blur(5px);
+              position: absolute;
+              left: 0;
+              top: 0;
+        }
+         /*img {filter:grayscale(1);-webkit-filter:grayscale(1);-ms-filter:grayscale(1);-moz-filter:grayscale(1);-o-filter:grayscale(1);}   有很多的属性，不仅仅是模糊*/
+        .contain {position: relative;width: 1200px;height: 800px;margin: 0 auto;}
+        #canvas {display: block;margin: 0 auto;position: absolute;left: 0;top: 0;}
+        .button {position: absolute;display: block;height: 30px;width: 100px;z-index: 100;color: white;text-align: center;line-height: 30px;text-decoration: none;border-radius: 5px;top: 750px;}
+        #reset-button {left: 900px;background-color: #058;}
+        #reset-button:hover{background-color: #047;}
+        #show-button {left: 1060px;background-color: #085;}
+        #show-button:hover{background-color: #074;}
+    </style>
+</head>
+<body>
+    <div class="contain">
+       <img src="../images/shili.jpg">
+       <canvas id="canvas" width="1200" height="800"></canvas>
+       <a href="javascript:reset()" class="button" id="reset-button">RESET</a>
+       <a href="javascript:show()" class="button" id="show-button">SHOW</a>
+    </div>
+
+    <script type="text/javascript">
+        var canvas=document.getElementById("canvas");
+        var content=canvas.getContext("2d");
+
+        var flag=false;
+        var clippingregion={x:0,y:0,r:0};
+        var radius=50;
+        var image=new Image();
+        image.src="../images/shili.jpg";
+        image.onload=function(e) {
+            initCanvas();
+        }
+
+        function initCanvas(){
+            // if(flag){
+                
+            //     var animation= setInterval(function(){
+            //                     clippingregion.r-=20;
+            //                     console.log(clippingregion.r);
+            //                     if(clippingregion.r<radius+20) {
+            //                         clippingregion.r=radius;
+            //                         clearInterval(animation);
+            //                     }
+            //                     draw(image,clippingregion);
+            //                 },30)  
+            // }else {
+                clippingregion={x:Math.random()*(canvas.width-2*radius),y:Math.random()*(canvas.width-2*radius),r:radius};
+                draw(image,clippingregion);
+            // }
+        }
+
+        function setclippingregion(clippingregion){
+            content.beginPath();
+            content.arc(clippingregion.x,clippingregion.y,clippingregion.r,0,Math.PI*2,false);
+            content.clip();              //把画布就剪成这么大
+        }
+
+        function draw(image,clippingregion){
+            content.clearRect(0,0,canvas.width,canvas.height);
+            content.save();      //保存画布现在大小状态
+             
+            setclippingregion(clippingregion);
+
+            content.drawImage(image,0,0);     //正好把图放进去，由于画布就那么大，所以就显示了那个圆的内
+            content.restore();
+        }
+
+        function show() {
+            flag=true;
+            var animation = setInterval(function(){
+                                clippingregion.r+=20;
+                                if(clippingregion.r>2*Math.max(canvas.width,canvas.height)){
+                                    clearInterval(animation);
+                                }
+                                draw(image,clippingregion);
+                            },30)          
+        }
+
+        function reset(){
+            initCanvas();
+        }
+    </script>
+</body>
+</html>

@@ -347,24 +347,139 @@
             </pre>
             <div class="explain">以上就是所谓的继承，只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
-            <div class="title"></div>
+            <div class="title">js实现二分法排序代码</div>
             <pre>
-              
-            </pre>
-            <div class="explain"></div>
+                var quicksort = function(arr){
+                    if(arr.length <= 1){
+                        return arr;
+                    }
+                    var pivotIndex = Math.floor(arr.length / 2);
+                    var pivot = arr.splice(pivotIndex,1)[0];
+                    var left = [];
+                    var right = [];
+                    for(var i = 0;i < arr.length;i++){
+                        if(arr[i] < pivot){
+                            left.push(arr[i]);
+                        }else{
+                            right.push(arr[i]);
+                        }
+                    }
+                    return quicksort(left).concat([pivot],quicksort(right));
+                };
 
-            <div class="title"></div>
+                var array = [8,7,0,7,5,2,5,3,1];
+                quicksort(array); //[0,1,2,3,5,5,7,7,8]
+            </pre>
+
+            <div class="title">js常用小技巧总结</div>
             <pre>
-              
-            </pre>
-            <div class="explain"></div>
+                 1.有时候我们需要对一个变量查检其是否存在或者检查值是否有一个有效值，如果存在就返回true值。
+                 为了做这样的验证，我们可以使用!!操作符来实现是非常的方便与简单。对于变量可以使用!!variable做检测，
+                 只要变量的值为:0、null、" "、undefined或者NaN都将返回的是false，反之返回的是true。比如下面的示例：
+                 function Account(cash) {
+                     this.cash = cash;
+                     this.hasMoney = !!cash;
+                 }
+                 var account = new Account(100.50);
+                 console.log(account.cash); // 100.50
+                 console.log(account.hasMoney); // true
 
-            <div class="title"></div>
+                 var emptyAccount = new Account(0);
+                 console.log(emptyAccount.cash); // 0
+                 console.log(emptyAccount.hasMoney); // false
+                 
+                 2.使用+将字符串转换成数字，不过其只适合用于字符串数据，否则将返回NaN
+                 function toNumber(strNumber) {
+                     return +strNumber;
+                 }
+                 console.log(toNumber("1234")); // 1234
+                 console.log(toNumber("ACB")); // NaN
+                 console.log(+new Date()) // 1461288164385
+
+                 3.对于：
+                 if (conected) {
+                     login();
+                 }可以简写为：conected && login();
+                 如果一些属性或函数存在于一个对象中，你也可以这样做检测，如下面的代码所示：user && user.login();
+                 对于||判断也是如此，如果第一个为true则后面不走，否则就走
+
+                 4.如果是一个小型数组，这样做很好，如果你要处理的是一个大的数组，这段代码在每次迭代都将会重新计算数组的大小，这将会导致一些延误。为了避免这种现象出现，可以将array.length做一个缓存：
+                 for(var i = 0; i < array.length; i++) {
+                     console.log(array[i]);
+                 }
+                 可以改为：
+                     var length = array.length;
+                     for(var i = 0; i < length; i++) {
+                         console.log(array[i]);
+                     }或者：
+                     for(var i = 0, length = array.length; i < length; i++) {
+                         console.log(array[i]);
+                     }
+
+                 5.合并数组：
+                    var array1 = [1,2,3];
+                    var array2 = [4,5,6];
+                    console.log(array1.concat(array2)); // [1,2,3,4,5,6];
+                    这个函数并不适合用来合并两个大型的数组，因为其将消耗大量的内存来存储新创建的数组
+                    应该如此：console.log(array1.push.apply(array1, array2));
+
+                 6.将NodeList转换成数组
+                 如果你运行document.querySelectorAll(“p”)函数时，它可能返回DOM元素的数组，也就是NodeList对象。但这个对象不具有数组的函数功能
+                 var elements = document.querySelectorAll("p"); // NodeList
+                 var arrayElements = [].slice.call(elements); // Now the NodeList is an array
+            </pre>
+
+            <div class="title">js判断数据类型</div>
             <pre>
-              
+                使用 typeof 运算符判断一个原始值变量的类型还有undefined是没有问题的，
+                但如果判断的是引用值类型就会有局限性，比如 null 和数组的结果都是 object
+                要想判断变量属于哪种内置类型，最靠谱的方式是调用 Object.prototype.toString 方法：
+                Object.prototype.toString.call([])
+                // => "[object Array]"
+                Object.prototype.toString.call(null)
+                // => "[object Null]"
+                Object.prototype.toString.call(undefined)
+                // => "[object Undefined]"
+                注意对象的toString方法和数组和字符串的toString方法是不一样的一个检测的一个用来转换为字符串
             </pre>
-            <div class="explain"></div>
 
+            <div class="title">数组去重的方法</div>
+            <pre>
+                function unique1() {
+                   var newArray = [];
+                   this.forEach(function (index) {
+                       if (newArray.indexOf(index) == -1) {
+                           newArray.push(index);
+                       }
+                   });
+                   return newArray;
+                }
+                通过unique1.apply(arr)或unique1.call(arr)调用
+
+                Array.prototype.unique3 = function () {
+                     // 构建一个新数组存放结果
+                     var newArray = [];
+                     // 创建一个空对象
+                     var object = {};
+                     // for循环时，每次取出一个元素与对象进行对比
+                     // 如果这个元素不重复，则将它存放到结果数中
+                     // 同时把这个元素的内容作为对象的一个属性，并赋值为1,
+                     // 存入到第2步建立的对象中
+                     for (var i = 0; i < this.length; i++){
+                         // 检测在object对象中是否包含遍历到的元素的值
+                         if(!object[typeof(this[i]) + this[i]]) {
+                             // 如果不包含，将存入对象的元素的值推入到结果数组中typeof(this[i]) + this[i]在拼一个键
+                             newArray.push(this[i]);
+                             // 如果不包含，存入object对象中该属性名的值设置为1
+                             object[typeof(this[i]) + this[i]] = 1;
+                         }
+                     }
+                     return newArray;
+                }
+                var arr = [1,2,3,4,'a','b',1,3,4,56,32,34,2,'b','c',5,'1','2'];
+                arr.unique3(); // [1, 2, 3, 4, "a", "b", 56, 32, 34, "c", 5, "1", "2"]
+                但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
+            </pre>
 
        	</div>
   </body>

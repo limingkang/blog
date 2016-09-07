@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas彩色小球组合动画</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <style>
+        *{margin: 0;padding: 0;}
+        html,body{height: 100%;}
+        body{background:#131313;}
+        .btn{position: absolute;bottom: 100px;left: 50%;transform: translateX(-50%);}
+        input{width: 120px;height: 30px;background: transparent;border: 1px solid #fff;color:#fff;font-size: 14px;line-height: 30px;cursor: pointer;transition: all 0.3s ease;border-radius:5px;}
+        input:hover{background: #fff;color:#131313;}
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="btn">
+        <input id="random" type="button" value="Random">
+        <input id="circle" type="button" value="Circle">
+        <input id="heart" type="button" value="Heart">
+        <input id="wave" type="button" value="Wave">
+    </div>
+    <script>
+        var WINDOW_WIDTH = document.body.offsetWidth;
+        var WINDOW_HEIGHT = document.body.offsetHeight;
+        var canvas;
+        var context;
+        var balls = [];
+        var num = 100;
+
+        window.onload = function(){
+            canvas = document.getElementById('canvas');
+            canvas.width = WINDOW_WIDTH;
+            canvas.height = WINDOW_HEIGHT;
+            context = canvas.getContext('2d');
+            addBalls();
+            setInterval(function(){
+                drawBalls();
+            },33)
+            console.log(balls)
+
+            document.getElementById('random').onclick = random;
+            document.getElementById('circle').onclick = circle;
+            document.getElementById('heart').onclick = heart;
+            document.getElementById('wave').onclick = wave;
+        }
+
+        function wave(){
+            for (var i = 0 ; i < num ; i++){
+                var Mrnd = Math.round(Math.random()*WINDOW_WIDTH);
+                balls[i].gotoX =  Mrnd;
+                balls[i].gotoY = WINDOW_HEIGHT/2 + Math.sin((2*Math.PI)/360 * Mrnd)*100;
+            }
+        }
+
+        function heart(){
+             //x = 16 sin^3 t, y = (13 cos t - 5 cos 2t - 2 cos 3t - cos 4t)  
+             //100 + r * (16 * Math.pow(Math.sin(t), 3));
+             //50 - r * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));  
+            for (var i = 0 ; i < num ; i++){
+                var deg = Math.random()*(2*Math.PI);
+                balls[i].gotoX = WINDOW_WIDTH/2 - (16 * Math.pow(Math.sin(deg) , 3)) * 15;
+                balls[i].gotoY = WINDOW_HEIGHT/2 - (13 * Math.cos(deg) - 5 * Math.cos( 2 * deg ) - 2 *Math.cos(3*deg) - Math.cos(4*deg)) * 15;
+            }
+        }
+
+        function circle(){
+            for (var i = 0 ; i < num ; i++){
+                var deg = Math.random()*(2*Math.PI);
+                balls[i].gotoX = WINDOW_WIDTH/2 + Math.sin(deg) * 200;
+                balls[i].gotoY = WINDOW_HEIGHT/2 + Math.cos(deg) * 200;
+            }
+        }
+
+        function random(){
+            for (var i = 0 ; i < num ; i++){
+                balls[i].gotoX = parseInt(Math.random()*WINDOW_WIDTH);
+                balls[i].gotoY = parseInt(Math.random()*WINDOW_HEIGHT);
+            }
+        }
+
+        function changeCrood(i){
+            if(balls[i].x<balls[i].gotoX){
+                balls[i].x += (balls[i].gotoX - balls[i].x)/3;
+                if(balls[i].x>=balls[i].gotoX){
+                    balls[i].x = balls[i].gotoX;
+                }
+            }else if(balls[i].x>balls[i].gotoX){
+                balls[i].x += (balls[i].gotoX - balls[i].x)/3;
+                if(balls[i].x<=balls[i].gotoX){
+                    balls[i].x = balls[i].gotoX;
+                }
+            }
+
+            if(balls[i].y<balls[i].gotoY){
+                balls[i].y += (balls[i].gotoY - balls[i].y)/3;
+                if(balls[i].y>=balls[i].gotoY){
+                    balls[i].y = balls[i].gotoY;
+                }
+            }else if(balls[i].y>balls[i].gotoY){
+                balls[i].y += (balls[i].gotoY - balls[i].y)/3;
+                if(balls[i].y<=balls[i].gotoY){
+                    balls[i].y = balls[i].gotoY;
+                }
+            }
+
+        }
+
+        function drawBalls(){
+            context.clearRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+            for(var i = 0; i < num ; i++){
+                changeCrood(i);
+                context.beginPath();
+                context.fillStyle = balls[i].color;
+                context.arc(balls[i].x , balls[i].y , balls[i].r , 0 , Math.PI*2 , true);
+                context.fill();
+                context.closePath();
+            }
+        }
+
+        function addBalls(){
+            for(var i = 0;i<num;i++){
+                var MrndX = parseInt(Math.random()*WINDOW_WIDTH);
+                var MrndY = parseInt(Math.random()*WINDOW_HEIGHT);
+                var aBall = {
+                    x:MrndX,
+                    y:MrndY,
+                    r:parseInt(Math.random()*15+5),
+                    color:'rgba('+Math.ceil(Math.random()*255)+','+Math.ceil(Math.random()*255)+','+Math.ceil(Math.random()*255)+',1)',
+                    gotoX:MrndX,
+                    gotoY:MrndY
+                }
+                balls.push(aBall);
+            }
+        }
+
+    </script>
+</body>
+</html>

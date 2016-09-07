@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>老虎机</title>
+    <style type="text/css">
+    *{padding: 0;margin: 0;}
+    .container{width: 32rem;height: 32rem;border:1px solid #000;margin: 5rem auto 0;}
+    table{height: 100%;width: 100%;}
+    tr{width: 100%;height: 8rem;}
+    td{width: 25%;height: 8rem;}
+    img{width: 100%;height: 100%;display: block;}
+    .img1{background: #dedede ;}
+    .img2{background: blue ;}
+    .img3{background: green ;}
+    .img4{background: yellow ;}
+    .img5{background: gray ;}
+    .img6{background: red ;}
+    .focus{font-size: 68px;background: #000;font-weight: 700;text-align: center;line-height: 16rem;color: #fff;cursor: pointer;}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td class="img1" prize="感谢参与！">
+                    <img src="#" />
+                </td>
+                <td class="img2" prize="恭喜获得ipad！">
+                    <img src="#" />
+                </td>
+                <td class="img3" prize="感谢获得耳机！">
+                    <img src="#" />
+                </td>
+                <td class="img4" prize="感谢获得鞋子！">
+                    <img src="#"  />
+                </td>
+            </tr>
+            <tr>
+                <td class="img5"  prize="感谢获得手机！">
+                    <img src="#" />
+                </td>
+                <td colspan="2" rowspan="2" class="focus" id="start">点我</td>
+                <td class="img6"  prize="感谢获得布娃娃！">
+                    <img src="#" />
+                </td>
+            </tr>
+            <tr>
+                <td class="img4"  prize="感谢获得鞋子！">
+                    <img src="#" />
+                </td>
+                <td class="img3" prize="感谢获得耳机！">
+                    <img src="#" />
+                </td>
+            </tr>
+            <tr>
+                <td class="img5"  prize="感谢获得手机！">
+                    <img src="#" />
+                </td>
+                <td class="img2" prize="恭喜获得鞋子！">
+                    <img src="#" />
+                </td>
+                <td class="img6"  prize="感谢获得布娃娃！">
+                    <img src="#" />
+                </td>
+                <td class="img1" prize="感谢参与！">
+                    <img src="#" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script type="text/javascript">
+    var startNum = 0;
+    var runing = false;
+    document.querySelector('#start').onclick = function() {
+        running();
+    };
+    function running() {       
+        if ( !runing ) {
+            runing = true;
+            var td = document.getElementsByTagName('td');
+            var length = td.length ;
+            randomLength = random( 2*length , 3*length );
+            var num = startNum;
+            var speed = 50;
+            var flag = true;
+            var timer = setInterval(function() {
+                //回复原来颜色
+                for(var i = 0; i < length ; i++ ) {
+                    td[i].style.background = '';
+                }
+                //跳动时候的颜色                          
+                td[num].style.background = '#000';
+                if( speed > randomLength * 20) {
+                    clearInterval(timer);
+                    flag = true;
+                    num === 1 ? num = 2 : '';
+                    startNum = num;
+                    runing = false;
+                    alert(td[num].getAttribute('prize'));
+                }
+                num=light(num);
+                //保证他至少运行那么几次
+                if(speed > 0 && flag) {
+                    speed -= 10;
+                } else {
+                    flag = false;
+                    speed += 20;
+                }
+            },speed);
+        } else {
+            return false;
+        }
+    }
+
+    function light(num){
+        switch(num){
+            case 3:
+                   num+=3;
+                   break;
+            case 6:
+                   num+=2;
+                   break;
+            case 8:
+                   num+=4;
+                   break;
+            case 10:case 11:case 12:
+                   num--;
+                   break;
+            case 9:
+                   num-=2;
+                   break;
+            case 7:
+                   num-=3;
+                   break;
+            case 4:
+                   num-=4;
+                   break;
+            default :
+                   num++;
+                   break;
+        }
+        return num;
+    }
+    function random(min , max) {
+        return Math.floor(min + Math.random() * ( max - min));
+    }
+    </script>
+    
+</body>
+</html>

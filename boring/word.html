@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="../HighCharts/js/jquery-1.9.1.min.js"></script>
+    <title></title>
+    <style type="text/css">
+        #canvas {
+            margin: 0 auto;
+            display: block;
+        }
+        button {height: 40px;width: 80px;border-radius: 5px;border:0;}
+        button:hover{cursor: pointer;}
+        .control {width: 800px;margin: 0 auto;}
+        #select_btn {border:4px solid black;}
+        .btn_one {background-color: green;}
+        .btn_two {background-color: gray;}
+        .btn_three {background-color: blue;}
+        #op_btn {background-color: white;float: right;border:1px solid #ccc;}
+        #op_btn:hover {background-color: #def;}
+    </style>
+</head>
+<body>
+     <canvas id="canvas">浏览器不支持canvas</canvas>
+     <div class="control">
+         <button class="btn_one btn">green</button>
+         <button class="btn_two btn">gray</button>
+         <button class="btn_three btn">blue</button>
+         <button id="op_btn">清除</button>
+     </div>
+</body>
+<script type="text/javascript">
+    // 画最终的背景
+    function drawgrid(){
+        context.save();
+        context.strokeStyle="rgb(230,11,9)";
+        // 画外边框
+        context.beginPath();
+        context.moveTo(3,3);
+        context.lineTo(canvasWidth-3,3);
+        context.lineTo(canvasWidth-3,canvasHight-3);
+        context.lineTo(3,canvasHight-3);
+        context.closePath();
+
+        context.lineWidth=6;
+        context.stroke();
+        // 画米字框
+        context.beginPath();
+        context.moveTo(0,0);
+        context.lineTo(canvasWidth,canvasHight);
+
+        context.moveTo(canvasWidth,0);
+        context.lineTo(0,canvasHight);
+
+        context.moveTo(canvasWidth/2,0);
+        context.lineTo(canvasWidth/2,canvasHight);
+
+        context.moveTo(0,canvasHight/2);
+        context.lineTo(canvasWidth,canvasHight/2);
+        context.closePath();
+
+        context.lineWidth=1;
+        context.stroke();
+
+        context.restore();
+    }
+    // 计算画布中鼠标位置
+    function windowToCanvas(x,y){
+        var bbox=canvas.getBoundingClientRect();
+        return {x:Math.round(x-bbox.left),y:Math.round(y-bbox.top)}
+    }
+
+    // 计算移动速度，来确定线的粗细
+    var maxwidth=30;            //最大宽度
+    var minwidth=1;             //最小线宽
+    var maxspeed=10;            //最大速度
+    var minspeed=0.1;           //最小速度
+
+    function speed(loc1,loc2,time1,time2){
+        var s=Math.sqrt( (loc1.x-loc2.x)*(loc1.x-loc2.x) + (loc1.y-loc2.y)*(loc1.y-loc2.y) );
+        var t=time2-time1;
+        var v=s/t;
+
+        var resultline;
+        if(v<=minspeed){
+            resultline=maxwidth;
+        }else if(v>=maxspeed){
+            resultline=minwidth;
+        }else{
+            resultline=maxwidth-(v-minspeed)/(maxspeed-minspeed)*(maxwidth-minwidth);
+        }
+        if(lastline==-1) {
+            return resultline;
+        }else {
+            return lastline*2/3 + resultline/3;
+        }
+    }
+
+    var strokecolor="black";
+    var canvasWidth=800;          //Math.min(800,$(window).width())
+    var canvasHight=canvasWidth;
+    var ismousedown=false;
+    var lastloc={x:0,y:0};
+    var lasttime=0;
+    var lastline=-1;
+
+    var canvas=document.getElementById("canvas");
+    var context = canvas.getContext("2d");
+    canvas.width=canvasWidth;
+    canvas.height=canvasHight;
+
+    drawgrid();
+
+   // 写字时的鼠标事件
+    canvas.onmousedown=function(event){
+        event.preventDefault();
+        ismousedown=true;
+        lastloc=windowToCanvas(event.clientX,event.clientY);
+        var lasttime=new Date().getTime();
+    }
+    canvas.onmouseup=function(event){
+        event.preventDefault();
+        ismousedown=false;
+    }
+    canvas.onmouseout=function(event){
+        event.preventDefault();
+        ismousedown=false;
+    }
+    canvas.onmousemove=function(event){
+        event.preventDefault();
+        if(ismousedown){
+            var curloc=windowToCanvas(event.clientX,event.clientY);
+            var curtime=new Date().getTime();
+
+            var lineWidth=speed(lastloc,curloc,lasttime,curtime);
+
+            context.beginPath();
+            context.moveTo(lastloc.x,lastloc.y);
+            context.lineTo(curloc.x,curloc.y);
+
+            context.strokeStyle=strokecolor;
+            context.lineWidth=lineWidth;
+            context.lineCap="round";
+            context.lineJoin="round";
+
+            context.stroke();
+
+            lastloc=curloc;
+            lasttime=curtime;
+            lastline=lineWidth;
+        }
+    }
+
+   // 清空画布
+   $("#op_btn").click(function(){
+       context.clearRect(0,0,canvasWidth,canvasWidth);
+       drawgrid();
+   });
+
+   //点击换色
+   $(".control .btn").click(function(){
+       $(".control .btn").attr("id","");
+       $(this).attr("id","select_btn");
+       strokecolor=$(this).css("background-color");
+   })
+  //在手机端时候，触摸事件touchstart,touchmove,touchend,用addEventListener定义事件
+</script>
+</html>

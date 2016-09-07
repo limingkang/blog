@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My love - I miss you</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <style>
+        *{margin: 0;padding: 0;}
+        html,body{height: 100%}
+        body{background: #131313;padding-top: 1px;}
+        .box{margin-left:auto;margin-right: auto; text-align: center;}
+        canvas{display: block;}
+        input{margin-top: 20px;border: 1px solid rgba(255,0,255,0.5);background: transparent;border-radius: 5px;color: rgba(255,0,255,0.5);padding: 10px 20px;font-size: 16px;font-family: "微软雅黑";}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <canvas id="canvas"></canvas>
+        <input id="txt" type="text" placeholder="试试输入你的名字">
+        <input id="btn" type="button" value="输入">
+    </div>
+
+    <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        var WINDOW_WIDTH = document.body.offsetWidth;
+        var WINDOW_HEIGHT = document.body.offsetHeight;
+        var W = Math.min(800,WINDOW_WIDTH-20);
+        var H = Math.min(600,WINDOW_HEIGHT-20);
+        var BOX = document.getElementsByClassName('box')[0];
+        var num = 50;
+        var circleBox = [];
+        var nameBox = [];
+        var pixels = new Array();
+        var txt = '我爱你';
+        var txtBox = [];
+        var MX = {};
+        window.onload = function(){
+            init();     
+            document.getElementById('btn').onclick=function(){
+                txt = document.getElementById('txt').value; 
+            }   
+        }
+        function init(){
+            BOX.style.width = W+'px';
+            BOX.style.height = H+'px';
+            BOX.style.marginTop = (WINDOW_HEIGHT-H)/2 +'px';
+            canvas.width = W;
+            canvas.height = H;
+            document.onclick= function(e){
+                var x = e.pageX-canvas.offsetLeft;
+                var y = e.pageY-canvas.offsetTop;
+            }
+
+            lunkuo();
+            addDist();
+            addC();
+            drawCircle();
+            addT();
+            drawT();
+            setInterval(function(){
+                update();
+            },42);
+        }
+        function lunkuo(){
+            context.beginPath();
+            context.strokeStyle = 'red';
+            var g = context.createRadialGradient(W/2,H/2,0,W/2,H/2,W/2);
+            g.addColorStop(0,'rgba(255,0,0,0.3)');
+            g.addColorStop(1,'rgba(255,0,0,0)');
+            context.fillStyle = g;
+            context.moveTo(W/2,H);
+            context.arc(W/2+H/4,H/8*3,Math.sqrt(5/16)/2*H,Math.PI/4,Math.PI*(1+1/7),true);
+            context.arc(W/2-H/4,H/8*3,Math.sqrt(5/16)/2*H,-Math.PI/7,Math.PI*(1-1/4),true);
+            context.closePath();
+            context.fill();
+        }
+        function addDist(){
+            var pixs = context.getImageData(0,0,W,H).data;
+            var prevY;
+            var prevXmin;
+            var prevXmax;
+            
+            for(var i = 0;i<pixs.length;i+=4){
+                var r = pixs[i],
+                    g = pixs[i+1],
+                    b = pixs[i+2];
+                    a =  pixs[i+3]
+                if(r==255&&g==0&&b==0){
+                    var x = i/4%W;
+                    var y = Math.round(i/3200);
+                    pixels.push({x:x,y:y});
+                    if(!prevY || prevY == y){
+                        if(!prevXmin){
+                            prevXmin = x;
+                            prevXmax = x;
+                        }else{
+                            prevXmin = Math.min(x,prevXmin);
+                            prevXmax = Math.max(x,prevXmax);
+                        }       
+                        prevY = y;              
+                    }else{
+                        MX["y"+prevY]=[prevXmin,prevXmax];
+                        prevY = y;
+                        prevXmax = 0;
+                        prevXmin = 0;
+                    }
+                }
+            }
+        }
+        function drawCircle(){
+            for(var i = 0;i<circleBox.length;i++){
+                context.beginPath();
+                var g = context.createRadialGradient(circleBox[i].x,circleBox[i].y,0,circleBox[i].x,circleBox[i].y,circleBox[i].r);
+                g.addColorStop(0,'rgba(255,0,255,0.6)');
+                g.addColorStop(1,'rgba(255,0,255,0.1)');
+                context.fillStyle = g;
+                context.arc(circleBox[i].x,circleBox[i].y,circleBox[i].r,0,Math.PI*2,true);
+                context.fill();
+                context.closePath();
+            }
+        }
+        function addC(){
+            for(var i = 0;i<num;i++){
+                var Mrnd = Math.round(Math.random()*pixels.length);
+                var L = Math.sqrt((pixels[Mrnd].x-W/2)*(pixels[Mrnd].x-W/2)+(pixels[Mrnd].y-H/2)*(pixels[Mrnd].y-H/2));
+                var r;
+                if(L>=300){
+                    r = 10;
+                }else if(L<=50){
+                    r = 30;
+                }else{
+                    r = 30 - (L-50)/(300-50)*(30-10);
+                }
+                
+                var circle = {
+                    x:pixels[Mrnd].x,
+                    y:pixels[Mrnd].y,
+                    r:r
+                }
+                circleBox[i] = circle;
+            }
+        }
+        function addT(){
+            for(var i = 0;i<num;i++){
+                var Mrnd = Math.round(Math.random()*pixels.length);
+                var L = Math.sqrt((pixels[Mrnd].x-W/2)*(pixels[Mrnd].x-W/2)+(pixels[Mrnd].y-H/2)*(pixels[Mrnd].y-H/2));
+                var s;
+                if(L>=300){
+                    s = 5;
+                }else if(L<=50){
+                    s = 20;
+                }else{
+                    s = 20 - (L-50)/(300-50)*(20-5);
+                }
+                
+                var atxt = {
+                    x:pixels[Mrnd].x,
+                    y:pixels[Mrnd].y,
+                    s:s
+                }
+                txtBox[i] = atxt;
+            }
+        }
+        function drawT(){
+            for(var i = 0;i<num;i++){
+                context.beginPath();
+                context.font =txtBox[i].s+ 'px Microsoft Yahei';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                context.fillStyle = "rgba(255,0,255,1)";
+                context.strokeStyle = '#000';
+                context.fillText(txt,txtBox[i].x,txtBox[i].y);
+                context.fill();
+                context.stroke();
+                context.closePath();
+            }
+        }
+
+        function update(){
+            for(var i= 0;i<num;i++){
+                var cv = -2;
+                var tv = -1;
+                circleBox[i].x += cv;
+                txtBox[i].x += tv;
+                if(circleBox[i].x<=MX['y'+circleBox[i].y][0]){
+                    circleBox[i].x = MX['y'+circleBox[i].y][1];
+                }
+                if(txtBox[i].x<=MX['y'+txtBox[i].y][0]){
+                    txtBox[i].x = MX['y'+txtBox[i].y][1];
+                }
+                var cL = Math.sqrt((circleBox[i].x-W/2)*(circleBox[i].x-W/2)+(circleBox[i].y-H/2)*(circleBox[i].y-H/2));
+                var tL = Math.sqrt((txtBox[i].x-W/2)*(txtBox[i].x-W/2)+(txtBox[i].y-H/2)*(txtBox[i].y-H/2));
+                var r;
+                if(cL>=300){
+                    circleBox[i].r = 10;
+                }else if(cL<=50){
+                    circleBox[i].r = 30;
+                }else{
+                    circleBox[i].r = 30 - (cL-50)/(300-50)*(30-10);
+                }
+                var s;
+                if(tL>=300){
+                    txtBox[i].s = 5;
+                }else if(tL<=50){
+                    txtBox[i].s = 20;
+                }else{
+                    txtBox[i].s = 20 - (tL-50)/(300-50)*(20-5);
+                }
+                context.clearRect(0,0,W,H);
+                lunkuo();
+                drawCircle();
+                drawT();
+            }
+        }
+
+
+
+    </script>
+</body>
+</html>

@@ -434,24 +434,100 @@
                      }
           </pre>
 
-          <div class="title"></div>
+          <div class="title">对于px,rem,em的理解</div>
           <pre>
-            
-          </pre>
-          <div class="explain"></div>
+              h1 {
+                font-size: 2em; /* 1em = 16px */
+                margin-bottom: 1em; /* 1em = 32px */
+              }
 
-          <div class="title"></div>
+              p {
+                font-size: 1em; /* 1em = 16px */
+                margin-bottom: 1em; /* 1em = 16px */
+              }对于em先受到当前字体大小的影响，没有设置的话一层一层的向上找
+              对于rem它只受到根元素即html的字体大小的影响，默认1rem=16px;
+              .header {
+                font-size: 1rem;
+                padding: 0.5em 0.75em;
+                background: #7F7CFF;
+              }
+              当有属性需要用它的字体大小(font-size)进行大小声明时，这时em就相当有用,没有的时候用rem比较好
+              当你进行媒体查询的时候，最好使用em因为只有他在不同浏览器的表现基本一致，注意这是它是根据根元素的字体大小决定的
+          </pre>
+
+          <div class="title">object-fit的用法</div>
           <pre>
-            
+              1.fill:此值为boject-fit的默认值，替换内容大小被设置为填充元素的内容框，也就是说，元素的内容扩大到完全填充容器的外形尺寸
+              即使这打破其内在的宽高比。
+              2.contain：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为一个包含元素的宽度和高度。也就是说，
+              如果你在替换元素上设置一个明确的高度和宽度，此值将导致内容大小，完全在固定的比例显示，但仍在元素尺寸内显示。
+              3.cover：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为覆盖整个元素的宽度和高度。也就是说，
+              替换元素内容大小保持长宽比，但改变宽度和高度，以便完全覆盖内容元素。
+              4.none：替换元素内容不调整大小以适应内部元素的容器，内容完全忽略设置在元素上的任何高度和权重，并且仍在元素尺寸内显示。
+              5.scale-down：当内容大小设置了non或contain，将导致具体对象变得更小。
           </pre>
-          <div class="explain"></div>
+          <div class="explain">这个属性最好的就是控制img图像，但是兼容性不好，ie全都不支持</div>
 
-          <div class="title"></div>
+          <div class="title">相关meta设置汇总</div>
           <pre>
-            
+              <textarea style="height:400px;width:120%;">
+                  <meta charset="UTF-8">
+                  <meta http-equiv="refresh" content="5;url=" />
+                  <link rel="copyright" href="copyright.html" 　/>
+                  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                  <meta name="viewport" content="width=device-width, initial-scale=1" />
+                  <meta name="description" content="150 words" />
+                  <meta name="keywords" content="your tags" />
+                  <!--
+                      all：文件将被检索，且页面上的链接可以被查询；
+                      none：文件将不被检索，且页面上的链接不可以被查询；
+                      index：文件将被检索；
+                      follow：页面上的链接可以被查询；
+                      noindex：文件将不被检索；
+                      nofollow：页面上的链接不可以被查询。
+                   -->
+                  <meta name="robots" content="index,follow" />
+                  <meta name="author" content="author name" />
+                  <meta name="google" content="index,follow" />
+                  <meta name="googlebot" content="index,follow" />
+                  <meta name="verify" content="index,follow" />
+                  <!-- 启用 WebApp 全屏模式 -->
+                  <meta name="apple-mobile-web-app-capable" content="yes" />
+                  <!-- 隐藏状态栏/设置状态栏颜色：只有在开启WebApp全屏模式时才生效。content的值为default | black | black-translucent 。 -->
+                  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                  <!-- 添加到主屏后的标题 -->
+                  <meta name="apple-mobile-web-app-title" content="标题">
+                  <!-- 忽略数字自动识别为电话号码 -->
+                  <meta content="telephone=no" name="format-detection" />
+                  <!-- 忽略识别邮箱 -->
+                  <meta content="email=no" name="format-detection" />
+                  <meta name="apple-itunes-app" content="app-id=myAppStoreID, affiliate-data=myAffiliateData, app-argument=myURL" />
+                  <!-- 添加智能 App 广告条 Smart App Banner：告诉浏览器这个网站对应的app，并在页面上显示下载banner:https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/PromotingAppswithAppBanners/PromotingAppswithAppBanners.html -->
+                  <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+                  <meta name="HandheldFriendly" content="true">
+                  <!-- 微软的老式浏览器 -->
+                  <meta name="MobileOptimized" content="320">
+                  <!-- uc强制竖屏 -->
+                  <meta name="screen-orientation" content="portrait">
+                  <!-- QQ强制竖屏 -->
+                  <meta name="x5-orientation" content="portrait">
+                  <!-- UC强制全屏 -->
+                  <meta name="full-screen" content="yes">
+                  <!-- QQ强制全屏 -->
+                  <meta name="x5-fullscreen" content="true">
+                  <!-- UC应用模式 -->
+                  <meta name="browsermode" content="application">
+                  <!-- QQ应用模式 -->
+                  <meta name="x5-page-mode" content="app">
+                  <!-- windows phone 点击无高光 -->
+                  <meta name="msapplication-tap-highlight" content="no">
+                  <!-- 百度移动端搜索为了迎合日益发展的移动设备，对其搜索结果进行自认为很赞的转码，说白了就是改改css样式，当
+                  然是通过分析后改的，于是乎找到了几个结果可以有效防止百度移动搜索转码，
+                  其中最简单的就是在全站头部加个meta： -->
+                  <meta http-equiv="Cache-Control" content="no-siteapp">
+              </textarea>
           </pre>
-          <div class="explain"></div>
-
+        
         </div>
   </body>
 </html>
