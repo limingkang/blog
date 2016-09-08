@@ -54,20 +54,416 @@
            </pre>
            <div class="explain">node.js对post数据的解析其实是异步的，它自己做了内存上的优化，将post传来的数据拆分成许多个数据块非阻塞的传过来，传结束之后会触发end事件</div>
 
-           <div class="title"></div>
+           <div class="title">node创建https服务器</div>
            <pre>
-              
+          //node创建https服务器，他需要多传一个参数，为对象形式，键必须为key和cert，这里读取的证书信息数通过openssl生成的key和cert
+          //目前有很多免费创建签名文件的开源项目如，OpenSSL和StartSSL，但是openssl目前已经推迟更新了，说是有安全漏洞
+          var https = require('https'),  
+              url = require('url'),  
+              fs = require('fs');    
+          var options = {  
+              key:  fs.readFileSync('./privatekey.pem'),  //带路径的文件名，注意两个文件不要写反了  
+              cert:fs.readFileSync('./certificate.pem')  
+          };    
+          https.createServer(options, function(req, res) {  
+              res.writeHead(200);  
+              res.end('hello world\n');  
+          }).listen(8080);  
+          打开网站之后可以看到https上画了斜线，表示网站未经过身份认证，服务器证书和ip不符合
+          生成的key和cert也可以使用openssl来合并成server.pfx证书，并将options参数改为pfx，如下：
+          var options = {  
+            pfx:fs.readFileSync("server.pfx");
+          };    
            </pre>
 
-           <div class="title"></div>
+           <div class="title">数据库的使用</div>
            <pre>
-              
+          对于mysql来说先下载安装之后再配置文件  启动：mysql -h localhost -u root -p 123456
+          对于mongodb来说直接下载放入就行，不需要安装编译，注意指定存放的数据位置建文件/data/db/启动的时候
+          进入bin目录mongod --dbpath e:/mongodb/data/db/一定要写全路径
+          也可以让其读配置文件，在配置文件中#号表示注释，启动方法为mongod -f e:/mongodb/conf/mongodb.conf
+          这些配置文件都是自己建位置写的,任何的启动命令都是cd到bin目录下进行的，只有它下面有各种.exe文件，所以才会有命令
            </pre>
 
-           <div class="title"></div>
+           <div class="title">express框架处理上传文件的方式</div>
            <pre>
-              
-           </pre>         
+          <textarea style="height:160px;">
+              <form method="post" enctype="multipart/form-data" action="/file-upload">
+                <input type="text" name="username">
+                <input type="password" name="password">
+                <input type="file" name="thumbnail">
+                <input type="submit">
+              </form>
+          </textarea>
+          app.post('/file-upload', function(req, res, next) {
+            console.log(req.body);
+            console.log(req.files);
+          });
+          //在上面的示例中，我们可以通过调用req.files.thumbnail对象来获得我们上传的文件的具体信息，对象的名称取决你上在form表单的定义
+          //如上所示，我们使用的名称是thumbnail，因此我们可以通过req.files.thumbnail来获得它的信息
+          size ---- 文件大小(bytes)
+          path ---- 文件上传后的路径
+          name ---- 文件的原始文件名称.
+          type ----文件类型
+          针对上面的示例来说， 文件大小：req.files.thumbnail.size
+          文件类型: req.files.thumbnail.type
+          原文件名: req.files.thumbnail.name
+
+          //fs.rename只是一个缓存数据，需要注意的是，默认的上传目录或你指定的上传目录都只是临时目录，因此你还需要将上传的文件移动相应的
+          //文件目录。下面的示例代码演示了如何将上传的文件移动到’/images’目录下:
+          // 移动文件需要使用fs模块
+          var fs = require('fs');
+          app.post('/file-upload', function(req, res) {
+               // 获得文件的临时路径
+               var tmp_path = req.files.thumbnail.path;
+               // 指定文件上传后的目录 - 示例为"images"目录。 
+               var target_path = './public/images/' + req.files.thumbnail.name;
+               // 移动文件
+               fs.rename(tmp_path, target_path, function(err) {
+                    if (err) throw err;
+                    // 删除临时文件夹文件, 
+                    fs.unlink(tmp_path, function() {
+                       if (err) throw err;
+                       res.send('File uploaded to: ' + target_path + ' - ' + req.files.thumbnail.size + ' bytes');
+                    });
+               });
+          };
+           </pre>
+
+           <div class="title">node的日志模块使用，或者用log4js模块</div>
+           <pre>
+          对于日志的记录来说，可以将日志分日期、分模块、分类型来记录，类型可以分为
+          error(错误类型)、info(流水类型)、debug(调试类型)、warn(提示类型)这四个。
+          以日期作为文件夹里面放.log文件，如curl_error.log那么这就表示是curl模块的错误类型日志
+          在单条日志信息里应包含日志记录的时间、日志类型、日志操作用户、错误码、错误信息，以及相关json数据信息。实例如下：
+          [2016-07-23 10:19:23] [ERROR] limingkang - [code -3] [msg parse configure file error]{"filename":"test.xml"}   
+           </pre>
+           <div class="explain">在require模块的时候可以省略文件后缀名，但是如果有同名文件夹就不好了，他会找其下的index.js文件加载</div>
+
+           <div class="title">koa基础知识了解1</div>
+           <pre>
+          Koa提供的一些关键特性能够让你尽可能避免回调函数的情况下简单快捷地编写Web应用。Koa使用了ES6中的一些新的语言特性来让Node应用
+          的控制流管理变简单，Koa本身非常的小。与当下其他流行的Web框架（例如Express）不同的是，Koa从一出生开始就采用了一种极致模块化
+          的方案， 意味着每个模块做且只做一件事情
+
+          Koa 目前需要 >=0.11.x版本的 node 环境。并需要在执行 node 的时候附带 --harmony 来引入 generators
+          运行：node --harmony my-koa-app.js
+
+          Koa 的核心设计思路是为中间件层提供高级语法糖封装，以增强其互用性和健壮性
+          Koa包含了像content-negotiation（内容协商）、cache freshness（缓存刷新）、proxy support（代理支持）和 
+          redirection（重定向）等常用任务方法,与提供庞大的函数支持不同，Koa只包含很小的一部分，因为Koa并不绑定任何中间件。
+
+          正如你从下面的例子中看到的那样，使用Koa来编写一个Web服务器并没有什么特别的地方，除了那个奇怪的跟在function关键字后的*符号。
+          好吧，如果你了解ES6的话，我想你应该知道这个符号意味着该函数现在是生成器函数了
+          // 生成器函数
+          function *foo(arg) {
+
+          }
+          var bar = foo(123); // bar为迭代器对象
+          使用这个返回对象bar，我们可以用来遍历函数中的中断点。可以通过调用迭代器对象bar的next()方法来完成遍历操作。
+          当next()被调用的时候，函数会从之前暂停的地方执行到下一个暂停点
+
+          Koa并非是一个 1-to-1 表征关系的 HTTP 服务器。 一个或多个Koa应用可以被挂载到一起组成一个包含单一 HTTP 服务器的大型应用群。
+          如下为一个绑定3000端口的简单 Koa 应用，其创建并返回了一个 HTTP 服务器，为 Server#listen() 传递指定参数
+          var koa = require('koa');
+          var app = koa();
+          app.listen(3000);
+          app.listen(...) 实际上是以下代码的语法糖:
+            var http = require('http');
+            var koa = require('koa');
+            var app = koa();
+            http.createServer(app.callback()).listen(3000);
+          这意味着您可以同时支持 HTTPS 和 HTTPS，或者在多个端口监听同一个应用:
+            var http = require('http');
+            var koa = require('koa');
+            var app = koa();
+            http.createServer(app.callback()).listen(3000);
+            http.createServer(app.callback()).listen(3001);   
+           </pre>
+           <div class="explain">koa的中文API文档地址<a href="http://www.nodeclass.com/api/cnkoa.html#request">http://www.nodeclass.com/api/cnkoa.html#request</a></div>
+
+           <div class="title">koa基础知识了解2</div>
+           <pre>
+          设置签名Cookie密钥，该密钥会被传递给 KeyGrip。
+          当然，您也可以自己生成 KeyGrip 实例：(当然用之前先得require('keygrip'))
+          app.keys = ['im a newer secret', 'i like turtle'];
+          app.keys = new KeyGrip(['im a newer secret', 'i like turtle'], 'sha256');
+          在进行cookie签名时，只有设置 signed 为 true 的时候，才会使用密钥进行加密：
+          this.cookies.set('name', 'tobi', { signed: true });
+
+          默认情况下Koa会将所有错误信息输出到 stderr，除非 NODE_ENV 是 "test"。为了自定义错误处理逻辑（比如 centralized logging），
+          您可以添加 "error" 事件监听器。
+          app.on('error', function(err){
+            log.error('server error', err);
+          });
+          如果错误发生在 请求/响应 环节，并且其不能够响应客户端时，Contenxt 实例也会被传递到 error 事件监听器的回调函数里。
+          app.on('error', function(err, ctx){
+            log.error('server error', err, ctx);
+          });
+          当发生错误但仍能够响应客户端时（比如没有数据写到socket中），Koa会返回一个500错误(Internal Server Error)。
+          无论哪种情况，Koa都会生成一个应用级别的错误信息，以便实现日志记录等目的。
+
+          Koa Context 将 node 的 request 和 response 对象封装在一个单独的对象里面，其为编写 web 应用和 API 提供了很多有用的方法。
+          context 在每个 request 请求中被创建，在中间件中作为接收器(receiver)来引用，或者通过 this 标识符来引用
+          ctx.req:Node 的 request 对象。
+          ctx.res:Node 的 response 对象。
+          Koa 不支持 直接调用底层 res 进行响应处理。请避免使用以下 node 属性：
+              res.statusCode
+              res.writeHead()
+              res.write()
+              res.end()
+          ctx.request:Koa 的 Request 对象。
+          ctx.response:Koa 的 Response 对象
+
+          ctx.cookies.get(name, [options])
+          获得 cookie 中名为 name 的值，options 为可选参数：
+              'signed': 如果为 true，表示请求时 cookie 需要进行签名。
+          注意：Koa 使用了 Express 的 cookies 模块，options 参数只是简单地直接进行传递。
+          ctx.cookies.set(name, value, [options])
+          设置 cookie 中名为 name 的值，options 为可选参数：
+              signed: 是否要做签名
+              expires: cookie 有效期时间
+              path: cookie 的路径，默认为 '/'
+              domain: cookie 的域
+              secure: false 表示 cookie 通过 HTTP 协议发送，true 表示 cookie 通过 HTTPS 发送。
+              httpOnly: true 表示 cookie 只能通过 HTTP 协议发送
+          注意：Koa 使用了 Express 的 cookies 模块，options 参数只是简单地直接进行传递。
+          ctx.throw(msg, [status])
+          抛出包含 .status 属性的错误，默认为 500。该方法可以让 Koa 准确的响应处理状态。 Koa支持以下组合：
+              this.throw(403)
+              this.throw('name required', 400)
+              this.throw(400, 'name required')
+              this.throw('something exploded')
+              this.throw('name required', 400) 等价于：
+          var err = new Error('name required');
+          err.status = 400;
+          throw err;
+          注意：这些用户级错误被标记为 err.expose，其意味着这些消息被准确描述为对客户端的响应，而并非使用在您不想泄露失败细节的场景中。
+          ctx.respond
+          为了避免使用 Koa 的内置响应处理功能，您可以直接赋值 this.repond = false;。如果您不想让 Koa 来帮助您处理 reponse，
+          而是直接操作原生 res 对象，那么请使用这种方法。
+          注意： 这种方式是不被 Koa 支持的。其可能会破坏 Koa 中间件和 Koa 本身的一些功能。其只作为一种 hack 的方式，并只对那些想要在
+           Koa 方法和中间件中使用传统 fn(req, res) 方法的人来说会带来便利。   
+           </pre>
+
+           <div class="title">搭建一个koa的服务器需要注意的方面</div>
+           <pre>
+          个人认为不管任何框架，Web项目搭建必需的几个方面，页面、中间件、路由、会话和存储、日志、静态文件指定，以及错误的处理。
+          当然，网站开发不止这些东西，还有许多主题，比如实时通讯，搜索引擎架构，权限控制，邮件优先队列，日志记录分析
+          但是目前类似express-generator的Koa部署工具Koa-generator（非官方）并不完善并且个人测试存在些许错误。其实Koa-generator也是
+          仿造上述express-generator生成的目录，既然这样还不如手动创建目录来的爽快（generator-k是另一款生成器，用上去感觉还行）
+          可以自己手动建造这样的目录：
+              |——app.js
+                |——node_modules
+                |——public
+                |    |——img
+                |    |——css
+                |    |——js
+                |
+                |——routes
+                |    |——index.js
+                |    |——user.Js
+                |
+                |——views
+                |    |——_layout.html
+                |    |——index.html
+                |
+                |——package.json
+                Koa项目运行：node --harmony app.js
+                必须加 --harmony ，这样才会支持 ES6 语法。
+
+          koa的日志：
+              日志是项目error调试和日常维护的基本手段，Koa有日志模块Koa-logger，npm install Koa-logger后使用app.use(logger());
+              命令程序就会在控制台自动打印日志，当然如果你对Koa-logger的风格不满意或者想要看到更多得信息也可以自己编辑代码实现有自己
+              风格的日志打印
+
+          koa的错误处理:
+              var Koa = require('koa');
+              var app = Koa();
+              app.on('error', function(err,ctx){
+                console.log(err);
+              });   
+              app.listen(3000);
+
+          koa的静态文件指定：
+            Koa静态文件指定中间件Koa-static，npm install Koa-static之后就可以使用Koa-static负责托管 Koa 应用内的静态资源。
+            映射了静态文件目录，引用的时候直接去该目录下寻找资源，会减少一些消耗
+            var staticServer = require('koa-static');
+            var path = require('path');
+            app.use(staticServer(path.join(__dirname,'public')));
+
+          ejs模板的使用：
+              var Koa = require('koa');
+              var app = Koa();
+              var render = require('koa-ejs');
+                render(app, {
+                    root: path.join(__dirname, 'views'),
+                    layout: '__layout',
+                    viewExt: 'html',
+                   cache: false,
+                    debug: true
+                });
+                app.use(function *(){
+                    yield this.render('index',{layout:false});
+                });  
+           </pre>
+
+           <div class="title">koa路由设置</div>
+           <pre>
+          原生的写法：
+              app.use(function *(){
+                  //我是首页
+                  if(this.path==='/'){
+                  }
+              });
+          可以使用路由中间件，koa中设置路由一般先安装koa-router,他支持五种方法
+            router.get()
+            router.post()
+            router.put()
+            router.del()
+            router.patch()
+          GET方法举例:
+            var app = require('koa')();
+            var Router = require('koa-router');
+            var myRouter = new Router();
+            myRouter.get('/', function *(next) {
+             yield this.render('index',{layout:false});
+            });
+            app.use(myRouter.routes());
+            app.listen(3000);
+          Koa-router 拥有丰富的 api 细节，用好这些 api ，可以让页面代码更为优雅与可维护:
+            http://localhost:3000/?a=1(条件)
+            var router = require('koa-router')();
+                router.get('/',function *(next){
+                    console.log(this.query);
+                    yield this.render('index',{layout:false});
+                     })
+                  .get('/home',function *(ctx,next){
+                    ctx.render('home');
+                  });
+              接收params参数 
+              http://localhost:3000/users/123（参数）
+              router.get('/user/:id', function *(next) {
+              console.log(this.params.id);                      //123
+             });
+          param() 用于封装参数处理中间件，当访问 /detail/:id 路由时，会先执行 param() 定义的 generator function 逻辑。
+          函数的第一个是路由参数的值，next 是中间件流程关键标识变量。yield next;
+             app.param('id',function *(id,next){
+                  this.id = Number(id);
+                  if ( typeof this.id != 'number') return this.status = 404;
+                 yield next;
+               }).get('/detail/:id', function *(next) {
+                 //我是详情页面
+                 var id = this.id; //123
+                  this.body = id;
+               });   
+           </pre>
+
+           <div class="title">koa中间件</div>
+           <pre>
+          Koa的中间件很像Express的中间件，也是对HTTP请求进行处理的函数，但是必须是一个Generator函数即 function *(){} 语法,不然会报错
+          可以这么说，Nodejs的Web程序中任何请求和响应都是中间件在操作
+            app
+              .use(logger())               //日志中间件
+              .use(serve(__dirname + '/public'))        //静态文件指定中间件
+              .use(router.routes())          //路由中间件
+              .use(router.allowedMethods());             //路由中间件
+          app.use 加载用于处理http请求的middleware（中间件）,当一个请求来的时候,会依次被这些middlewares处理.执行的顺序是你定义的顺序
+          中间件的执行顺序规则是类似“栈”的结构，所有需要执行的中间件都被一个一个放入“栈”中，当没有遇到next()的时候，
+          “栈”里边的这些中间件被逆序执行   
+           </pre>
+
+           <div class="title">异步编程的思考</div>
+           <pre>
+          异步编程对 JavaScript 语言太重要。JavaScript 只有一根线程，如果没有异步编程，根本没法用，非卡死不可
+          以前处理异步大概有四种方法：回调函数，事件监听，发布/订阅，Promise 对象
+            var readFile = require('fs-readfile-promise');
+                readFile(fileA)
+                .then(function(data){
+                console.log(data.toString());
+                })
+               .then(function(){
+                return readFile(fileB);
+               })
+                .then(function(data){
+                console.log(data.toString());
+               })
+               .catch(function(err) {
+                console.log(err);
+               });
+          上面代码中，我使用了 fs-readfile-promise 模块，它的作用就是返回一个 Promise 版本的 readFile 函数。
+          Promise 提供 then 方法加载回调函数
+          catch方法捕捉执行过程中抛出的错误,Promise 的写法只是回调函数的改进，使用then方法以后，异步任务的两段执行看得更清楚了，
+          但是随着es6的出现，将 JavaScript 异步编程带入了一个全新的阶段，Koa 的先天优势在于 generator
+          generator指的是：function* xxx(){}
+          比如，有一个 Generator 函数，用于依次读取两个文件。
+             var gen = function* (){
+              var f1 = yield readFile('/etc/fstab');
+              var f2 = yield readFile('/etc/shells');
+              console.log(f1.toString());
+              console.log(f2.toString());
+             };
+           co 函数库可以让你不用编写 Generator 函数的执行器。
+              var co = require('co');
+              co(gen);
+           上面代码中，Generator 函数只要传入 co 函数，就会自动执行。
+
+           　　co 函数返回一个 Promise 对象，因此可以用 then 方法添加回调函数。
+
+               co(gen).then(function (){
+              console.log('Generator 函数执行完成');
+               })
+           上面代码中，等到 Generator 函数执行结束，就会输出一行提示。
+           Generator 函数就是一个异步操作的容器。它的自动执行需要一种机制，当异步操作有了结果，能够自动交回执行权。
+       　　两种方法可以做到这一点。
+       　　（1）回调函数。将异步操作包装成 Thunk 函数，在回调函数里面交回执行权。
+       　　（2）Promise 对象。将异步操作包装成 Promise 对象，用 then 方法交回执行权。
+       　　co 函数库其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个库。使用 co 的前提条件是，
+           Generator 函数的 yield 命令后面，只能是 Thunk 函数或 Promise 对象。   
+           </pre>
+
+           <div class="title">koa组合中间件的使用</div>
+           <pre>
+          var compose = require('koa-compose');
+          var koa = require('koa');
+          var app = module.exports = koa();
+
+          // x-response-time
+          function *responseTime(next){
+          var start = new Date;
+          yield next;
+          var ms = new Date - start;
+          this.set('X-Response-Time', ms + 'ms');
+          }
+
+          // logger
+          function* logger(next){
+          var start = new Date;
+          yield next;
+          var ms = new Date - start;
+          if ('test' != process.env.NODE_ENV) {
+           console.log('%s %s - %s', this.method, this.url, ms); //输出的时候第二个参数和第三个参数之间有一横
+          }
+          }
+
+          // response
+          function* respond(next){
+          yield next;
+          if ('/' != this.url) return;
+          this.body = 'Hello World';
+          }
+
+          // composed middleware
+          var all = compose([
+          responseTime,
+          logger,
+          respond
+          ]);
+
+          app.use(all);
+
+          if (!module.parent) app.listen(3000);   
+           </pre>       
       </div>
   </body>
 </html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">require.js的使用</div>
+           <pre>
+          先引到reuire.js和main.js
+          <textarea>
+    <script type="text/javascript" src="./require.min.js" data-main="./main" defer async="true"></script>
+          </textarea>
+          main.js内容如下：
+            require.config({
+              baseUrl:"./scripts/lib",
+              paths:{
+                help:"../helper",
+                jquery:"jquery-1.8.3.min"       //也可直接不配置写在下面require里面也行，引用的模块后面不可写后缀名js，否则报错
+              },
+              shim: {          //不遵循AMD规范的可以使用这个参数配置使其符合
+
+            　　　　　　'underscore':{
+            　　　　　　　　exports: '_'
+            　　　　　　},
+            　　　　　　'backbone': {
+            　　　　　　　　deps: ['underscore', 'jquery'],
+            　　　　　　　　exports: 'Backbone'
+            　　　　　　}
+            　　　　}
+            });
+
+            require(['jquery','help/util'],function($,util){
+                util.foo();
+            });
+
+          util.js内容如下：
+             // 定义模块的方法,注意只能defined一个，第一个有用后面的再defined也没有用了
+             define({
+                color:"black",
+                size:"20"
+              });
+              define(function(){
+                // do something
+                return {
+                  color:"red",
+                  size:"20",
+                  console:function(){
+                    console.log("my way");
+                  }
+                }
+              });
+             // 循环依赖
+             //如果你定义了一个循环依赖（a依赖b，b同时依赖a），则在这种情形下当b的模块函数被调用的时候，它会得到一个undefined的a。
+             //b可以在模块已经定义好后用require()方法不规则获取（记得require作为依赖注入进来）
+              define(["require","a"],
+                  function(require,a){
+                    //”a”将是null,如果a/b间是循环依赖
+                      returnfunction(title){
+                          return require(“a”).doSomething();
+                      }
+                  }
+              );
+             // 包装CommonJS来定义模块
+             define(function(require,exports,module){
+              var a=require("test");     //因为先前已经配置过baseUrl所以现在这里可以引到
+              exports.foo=function(){
+                return a.bar();
+              }
+             });
+
+             build.js内容如下：
+                // 使用r.js来解决打包合并问题，一个叫r.js同级目录下放一个build.js这个文件里面放配置信息如：
+                  ({
+                    appDir: "scripts",    // app顶级目录，非必选项。如果指定值，baseUrl则会以此为相对路径
+                    baseUrl: "scripts",     // 模块根目录。默认情况下所有模块资源都相对此目录。
+                                // 若该值未指定，模块则相对build文件所在目录。
+                                // 若appDir值已指定，模块根目录baseUrl则相对appDir。
+                    dir: "scripts-build"   // 指定输出目录，若值未指定，则相对 build 文件所在目录
+                })
+                // 最后直接运行r.js就行了
+
+            目录机构如下：
+               |——filename
+                 |——main.js
+                 |——help
+                 |    |——util.js
+                 |    
+                 |
+                 |——lib
+                 |    |——test.js
+                 |    |——jquery-1.8.3.min.Js
+                 |
+                 |——require.min.js
+                 |    
+                 |
+                 |——build.js
+           </pre>
+       </div>
+  </body>
+</html>
