@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>省市区</title>
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"> -->
+    <!-- <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black"> -->
+    <script type="text/javascript" src="../javascripts/jquery.min.js"></script>
+    <script type="text/javascript" src="./HMZCity.json"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        select {width: 100px;}
+        
+    </style>
+</head>
+<body>
+     <select id="lmkselect1">
+        <option data="all" class="all">全部</option>
+     </select>
+     <select id="lmkselect2" disabled="true">
+        <option data="all" class="all">全部</option>
+     </select>
+     <select id="lmkselect3" disabled="true">
+        <option data="all" class="all">全部</option>
+     </select>
+
+     <script type="text/javascript">
+      $(function(){
+        //初始化省级下拉框
+        var str="";
+        for(var i=0;i<china.length;i++){
+          str+="<option data=" + i +">" + china[i].name + "</option>";
+        }
+        $("#lmkselect1").append(str);
+
+        //省级下拉框的change事件
+        $("#lmkselect1").change(function(){
+            $("#lmkselect2").attr("disabled",false);
+            $("#lmkselect3").attr("disabled",true);
+            var data=$("#lmkselect1").find("option:selected").attr("data");
+            $("#lmkselect2 option:not(.all),#lmkselect3 option:not(.all)").remove();
+            if(data=="all"){             
+              $("#lmkselect2,#lmkselect3").attr("disabled",true);
+            }else{
+              data=parseInt(data);
+              str="";
+              for(var i=0;i<china[data].city.length;i++){
+                str+="<option data=" + i + " provice=" + data + ">" + china[data].city[i].name + "</option>";
+              }
+              $("#lmkselect2").append(str);
+            }
+            
+        })
+        //市级下拉框的事件
+        $("#lmkselect2").change(function(){
+            $("#lmkselect3").attr("disabled",false);
+            var data=$("#lmkselect2").find("option:selected").attr("data");
+            var provice=parseInt($("#lmkselect2").find("option:selected").attr("provice"));
+            $("#lmkselect3 option:not(.all)").remove();
+            if(data=="all"){             
+              $("#lmkselect3").attr("disabled",true);
+            }else{
+              data=parseInt(data);
+              str="";
+              for(var i=0;i<china[provice].city[data].area.length;i++){
+                str+="<option>" + china[provice].city[data].area[i] + "</option>";
+              }
+              $("#lmkselect3").append(str);
+            }
+        })
+
+      })
+     </script>
+</body>
+</html>
+
+

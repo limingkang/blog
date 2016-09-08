@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>即将消失的行业</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/slide.css" />
+<link rel="stylesheet" href="css/animate.css"/>
+</head>
+<body>
+	<!-- 外层画布 -->
+	<div class="slider-nav" id="sliderNav">
+		<ul>
+			<li>
+				<img style="display: inline" class="animated rollIn" src="img/0.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated zoomIn" src="img/1.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated zoomInDown" src="img/2.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated shake" src="img/3.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated fadeInLeft" src="img/4.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated zoomInUp" src="img/5.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated zoomInLeft" src="img/6.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated rotateIn" src="img/7.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated rotateInUpLeft" src="img/8.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated rotateInUpRight" src="img/9.jpg" alt=""/>
+			</li>
+			<li>
+				<img class="animated flipInX" src="img/10.jpg" alt=""/>
+			</li>
+		</ul>
+		<span class="up-slide"></span>
+	</div>
+
+	<script src="../../javascripts/zepto.min.js"></script>
+	<script src="./slide.js"></script>
+
+	<script type="text/javascript">
+		$(function() {
+			$('#sliderNav').slider();
+		})
+	</script>
+</body>

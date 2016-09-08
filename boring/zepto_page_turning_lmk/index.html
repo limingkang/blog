@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>手机整页翻动</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="../../javascripts/zepto.min.js"></script>
+    <script type="text/javascript" src="./lmkscroll.js"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        html,body {height: 100%;width: 100%;overflow: hidden;}
+        li,ul,ol {list-style: none;}               
+    </style>
+</head>
+<body>
+   <div id="lmkscrollbox" class="lmkscrollbox">
+        <div class="lmkpage"></div>
+        <div class="lmkpage"></div>
+        <div class="lmkpage"></div>
+        <div class="lmkpage"></div>
+   </div>
+<script type="text/javascript">
+    $(".lmkscrollbox").lmkscroll({bgcolor:["black","green","red","yellow","gray"],endFun:everypageanimation});
+    function everypageanimation(curpage){
+        console.log(curpage);
+    }
+</script>
+</body>
+</html>
+
+

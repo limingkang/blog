@@ -1,0 +1,41 @@
+<!-- limingkang -->
+<!-- 123456 -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>手机轮播</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script type="text/javascript" src="../../javascripts/zepto.min.js"></script>
+    <script type="text/javascript" src="./lmkslide.js"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        li,ul,ol {list-style: none;}
+        .lmkslidebox{overflow:hidden; position:relative;}
+        .lmkslidebox .lmknav{position:absolute; right:0;left:0;bottom:5px;z-index:1;text-align: center;}        
+        .lmkslidebox .lmknav li{  margin-right:10px;  width:12px; height:12px;background:#fff;border-radius: 6px;display: inline-block;}
+        .lmkslidebox .lmknav .active_nav_pic {background-color: red;}
+        .lmkslidebox .lmkcontent {position: absolute;}
+        .lmkslidebox .lmkcontent li{float: left;}
+    </style>
+</head>
+<body>
+   <div id="lmkslidebox" class="lmkslidebox">
+        <ul class="lmknav"><li></li><li></li><li></li></ul>
+        <div class="lmkcontain">
+            <ul class="lmkcontent">
+                <li><a href="http://www.SuperSlide2.com" target="_blank"><img src="images/1.jpg" /></a></li>
+                <li><a href="http://www.SuperSlide2.com" target="_blank"><img src="images/2.jpg" /></a></li>
+                <li><a href="http://www.SuperSlide2.com" target="_blank"><img src="images/3.jpg" /></a></li>
+            </ul>
+        </div>
+   </div>
+<script type="text/javascript">
+      $(".lmkslidebox").lmkslide({"imgscale":0.475});
+</script>
+</body>
+</html>
+
+

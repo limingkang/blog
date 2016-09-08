@@ -527,7 +527,34 @@
                   <meta http-equiv="Cache-Control" content="no-siteapp">
               </textarea>
           </pre>
+
+          <div class="title">垂直水平居中</div>
+          <pre>
+             div {height: 200px;text-align: center;}
+             img {vertical-align: middle;}
+             p {vertical-align: middle;display:inline-block;}
+             i {display: inline-block;height: 100%;vertical-align: middle;}
+             <textarea>
+                  <div><img src="#"><i></i></div>
+                  <div><p>fdfdfds</p><i></i></div>
+             </textarea>
+          </pre>
+          <div class="explain">CSS Hack大致有3种表现形式，CSS类内部Hack、选择器Hack以及HTML头部引用(if IE)Hack，CSS Hack主要针对类内部Hack：比如 IE6能识别下划线"_"和星号" * "，IE7能识别星号" * "，但不能识别下划线"_"</div>
         
+          <div class="title">垂直水平居中2</div>
+          <pre>
+             .button {position: absolute; left: 0; right: 0; width: 100px;height: 120px;top: 0;bottom: 0;background-color: red;margin: auto; }
+             div {background-color: black;height: 500px;width: 500px;position: relative;}
+             <textarea style="height:140px;">
+                  <div>
+                    <p class="button">
+                       按钮
+                    </p>
+                  </div>
+             </textarea>
+          </pre>
+          <div class="explain">兼容性ie8即以上</div>
+
         </div>
   </body>
 </html>
