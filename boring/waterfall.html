@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>瀑布流布局</title>
+    <script type="text/javascript" src="../javascripts/jquery.min.js"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        .box {position: relative;float: left;}
+        .content {padding: 10px;border:1px solid #ccc;box-shadow: 0 0 5px;border-radius: 4px;}
+        .content img {width: 190px;}
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara1.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara2.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara4.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara3.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tayon5.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tayon6.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara1.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tara3.jpg">
+            </div>
+        </div>
+        <div class="box">
+            <div class="content">
+                <img src="../images/tayon6.jpg">
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(window).on("load",function(){
+            imgLocation();
+            var dataimg={"data":[{"src":"1.jpg"},{"src":"2.jpg"},{"src":"3.jpg"},{"src":"4.jpg"}]}
+            window.onscrool=function(){
+                if(scroolside()){
+                    $.each(dataimg.data,function(index,value){
+                        var box=$("<div>").addclass("box").appendTo($("#container"));
+                        var content=$("<div>").addclass("content").appendTo(box);
+                        $("<img>").attr("src","./iamges"+$(value).attr("src")).appendTo(content);
+                    });
+                    imgLocation();
+                }
+            }
+        });
+    });
+
+    function imgLocation(){
+        var box=$(".box");
+        var boxWidth=box.eq(0).width();
+        var num =Math.floor($(window).width()/boxWidth);
+        var boxArr=[];
+        box.each(function(index,value){
+            var boxHeight=box.eq(index).height();
+            if(index<num){
+                boxArr[index]=boxHeight;
+            }else{
+                var minboxHeight=Math.min.apply(null,boxArr)
+                var minboxIndex=$.inArray(minboxHeight,boxArr);
+                $(value).css({
+                    "position" : "absolute",
+                    "top" : minboxHeight,
+                    "left" : box.eq(minboxIndex).position().left     //position方法获得相对父元素的偏移位置，返回left,top两个值
+                });
+                boxArr[minboxIndex]+=box.eq(index).height();
+            }
+        })
+    }
+
+    function scroolside(){
+        var box=$(".box");
+        var lastboxHeight=box.last().get(0).offsetTop+Math.floor(box.last().height()/2);
+        var documentHeight=$(document).width();
+        var scroolHeight=$(window).scroolTop();
+        return(lastboxHeight<scroolHeight+documentHeight)?true:false;
+    }
+
+</script>
+</html>
