@@ -481,6 +481,57 @@
                 但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
             </pre>
 
+            <div class="title">h5使用formdata实现文件上传</div>
+            <pre>
+            表单中enctype="multipart/form-data"的意思是设置表单的MIME编码,默认编码格式是application/x-www-form-urlencoded
+            不能用于文件上传；只有使用了multipart/form-data，才能完整的传递文件数据，进行下面的操作.
+            form设置了enctype="multipart/form-data" 属性后，就是2进制传输数据了 
+
+            FormData可以把它理解成一个虚拟的表单对象，它只有一个方法append，这个可以在浏览器console一下就知道了。
+            我们可以通过append向FormData里面添加各种需要提交的数据
+            你可以先创建一个空的 FormData 对象,然后使用 append() 方法向该对象里添加字段，如下：var oMyForm = new FormData();
+            oMyForm.append("username", "Groucho");
+            oMyForm.append("accountnum", 123456); // 数字123456被立即转换成字符串"123456"           
+            // fileInputElement中已经包含了用户所选择的文件
+            oMyForm.append("userfile", fileInputElement.files[0]);var oReq = new XMLHttpRequest();
+            oReq.open("POST", "http://foo.com/submitform.php");
+            oReq.send(oMyForm);
+
+            如果已经有一个Form表单，只需要把这个 form 元素作为参数传入 FormData 构造函数即可：
+            var formElement = document.getElementById("myFormElementid");
+            formData = new FormData(formElement);
+            //你还可以在已有表单数据的基础上，继续添加新的键值对，如下：
+            formData.append("serialnumber", serialNumber++);
+            var oReq = new XMLHttpRequest();
+            oReq.open("POST", "submitform.php");
+            oReq.send(formData);
+
+            //基于jquery的时候
+            var fd = new FormData(document.getElementById("fileinfo"));
+            fd.append("CustomField", "This is some extra data");
+            $.ajax({
+              url: "stash.php",
+              type: "POST",
+              data: fd,
+              processData: false,  // 告诉jQuery不要去处理发送的数据
+              contentType: false   // 告诉jQuery不要去设置Content-Type请求头
+            });
+
+            //一个完整的例子
+            var form=document.getElementById("form1");
+            var formData=new FormData(form);
+            var oReq = new XMLHttpRequest();
+            oReq.onreadystatechange=function(){
+              if(oReq.readyState==4){
+                if(oReq.status==200){
+                   
+                }
+              }
+            }
+            oReq.open("POST", "server.php");
+            oReq.send(formData);
+            </pre>
+
        	</div>
   </body>
 </html>

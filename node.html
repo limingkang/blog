@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+      <div class="big_container">
+           <div class="title">fs模块读取文件的同步与异步</div>
+           <pre>
+          fs.readFile('itxxz.txt','utf-8',function(err,data){  
+              if(err){  
+                  console.log(data);  
+              }else{  
+                  console.log(data);    
+              }  
+          })  
+          对于fs模块中readFile是异步的读取方式，而且接了三个参数，以回调函数的形式来得到数据
+          var data = fs.readFileSync('itxxz.txt','utf-8');  
+          console.log(data); 
+          对于fs模块中readFileSync是同步的读取方式，而且接了两个参数，以返回值的形式来得到数据
+           </pre>
+
+           <div class="title">exports和module.exports的区别</div>
+           <pre>
+          所有的exports返回的属性和方法，最终都是通过module.exports返回的
+          module.exports直接执行时候，其他通过exports返回的属性和方法豆浆被忽略
+          module.exports不仅可以传递对象还可以传递数组字符串等而exports只可以传递对象所有module.exports包含exports,
+          也就是它可以替代exports而反过来不可以
+          module.exports="one";
+          module.exports="two";
+          如果是这样导出的话那只有后一段语句有效就是只能得到two但是如果指定了键就可以了
+          module.exports.name="dsfd";
+          module.exports.woshi="sdfds";
+          exports.show = function(){};
+          那就输出了一个对象.而且还可以得到show函数
+          如果第一个是module.exports="dfds"那就是直接导出了除非后面也有module.exports="dffsdfds"那就可以盖掉前一个，
+          否则即使出现module.exports.name="dfdsdfdsf",有键值也只能得到最前的那个字符串了    
+           </pre> 
+
+           <div class="title">node对post数据解析</div>
+           <pre>
+          var postdata="";
+          req.addListener("data",function(data){
+            postdata+=data;
+          })
+          req.addListener("end",function(){})    
+           </pre>
+           <div class="explain">node.js对post数据的解析其实是异步的，它自己做了内存上的优化，将post传来的数据拆分成许多个数据块非阻塞的传过来，传结束之后会触发end事件</div>
+
+           <div class="title"></div>
+           <pre>
+              
+           </pre>
+
+           <div class="title"></div>
+           <pre>
+              
+           </pre>
+
+           <div class="title"></div>
+           <pre>
+              
+           </pre>         
+      </div>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+      <div class="big_container">
+           <div class="title">webpack.config.js</div>
+           <pre>
+		// context 用于解析entry选项的基础目录(绝对路径), 如果output.pathinfo设置了，就包含了缩短过的目录；
+		//（相当于公共目录，下面所有的目录都在这个公共目录下面)
+		// entry 是页面中的入口文件，比如我这边的入口文件是main.js
+		// 如果传入一个字符串，这个字符串就会被解析为启动时加载的模块。
+		// 如果传入个数组，所有模块都是启动时加载，模块导出到最后一个里面。
+		// entry: ["./entry1", "./entry2"]
+		// 如果传入一个对象，就会创建多个输入包文件，对象键值就chunk的name，值可以是字符串或者是数组。
+		{
+		   entry: {
+		       page1: "./page1",
+		       page2: ["./entry1", "./entry2"]
+		   },
+		   output: {
+		       // 当使用多入口文件时候，要确保在output.filename使用[name]或者[id]
+	           filename: "[name].bundle.js",
+		       chunkFilename: "[id].bundle.js"
+		   }
+	        }
+
+	    // output 是对应输出项配置,主要包括path,filename和publishPath属性。path代表输出的路径，filename代表输出的文件名称，
+	    //publishPath代表静态资源发布后的前缀地址
+	    // publicPath指定了一个在浏览器中被引用的URL地址。 对于使用script和link加载器，当文件路径不同于他们的本地磁盘路径
+	    //由path指定时候publicPath被用来作为href或者url指向该文件。这种做法在你需要将静态文件放在不同的域名或者CDN上面的时候用
+	    //Webpack Dev Server 也是用这个方式来读取文件的。与path搭配使用上[hash]就可以做好缓存方案了。
+	    output: {
+	        path: "/home/public/assets",
+	        publicPath: "/assets/"
+	    }
+	    <textarea style="height:100px;">
+	    	<head>
+	    		<link href="/assets/spinner.gif"/>
+	        </head>
+	    </textarea>
+	    使用CDN 和 hash的例子
+	    output: {
+	        path: "/home/proj/cdn/assets/[hash]",
+	        publicPath: "http://cdn.example.com/assets/[hash]/"
+	    }
+
+	    // resolve: 定义了解析模块路径时的配置,常用的就是extensions;可以用来指定模块的后缀,这样引入模块时不需要写后缀,会自动补全
+	    resolve: {
+	        // require时省略的扩展名，如：require('module') 不需要module.js
+	        extension: ['', '.js'],
+	        //别名
+	        alias: {
+	            filter: path.join(__dirname, 'src/filters')
+	        }
+	    }
+
+	    // plugins: 定义了需要使用的插件，比如commonsPlugin在打包多个入口文件时会提取公用的部分，生成common.js;
+	    plugins: [
+	         //提公用js到common.js文件中
+	         new webpack.optimize.CommonsChunkPlugin('common.js'),
+	         //将样式统一发布到style.css中
+	         new ExtractTextPlugin("style.css", {
+	             allChunks: true,
+	             disable: false
+	         }),
+	         //使用ProvidePlugin加载使用频率高的模块
+	         new webpack.ProvidePlugin({
+	             $: "webpack-zepto"
+	         })
+	    ]
+	    // 如上，包含两种：
+	    // 1、第一种webpack自带的一些插件：webpack.ProvidePlugin、webpack.optimize.CommonsChunkPlugin，
+	    // 2、另外一种则通过npm包安装的：ExtractTextPlugin。
+
+	    // module.loaders：是文件的加载器，比如我们之前react需要在页面中引入jsx的js源码到页面上来，然后使用该语法，
+	    // 但是通过webpack打包后就不需要再引入JSXTransformer.js；看到上面的加载器；
+	    //比如jsx-loader加载器就是代表JSXTransformer.js的,还有style-loader和css-loader加载器；用之前先用npm加载一下
+	    // 对于webpack命令来说。我们可以指定将某个文件翻译到某个位置如：webpack ./src/main.js ./build/build.js
+	    // $ webpack --config XXX.js   //使用另一份配置文件（比如webpack.config2.js）来打包
+	    // $ webpack --watch   //监听变动并自动打包
+	    // $ webpack -p    //压缩混淆脚本，这个非常非常重要！
+	    // $ webpack -d    //生成map映射文件，告知哪些模块被最终打包到哪里了
+	    //尤其注意先得安装less，npm3.0以下的在安装less-loader的时候没有安装less
+	    // 尤其注意less的解析时候配置顺序，是style!css!less，必须这个顺序，否则报错
+
+
+	    var webpack = require('webpack');
+	    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
+	    module.exports = {
+	        context: __dirname + "/app",
+	        //插件项
+	        plugins: [commonsPlugin],         //如果加入这个参数页面引用的时候一定要先引用其生成的common.js否则报错
+	        //页面入口文件配置
+	        entry: './src/main.js',
+	        //入口文件输出配置
+	        output: {
+	           path: __dirname,
+	           filename: "./build/build.js",
+	        },
+	        module: {
+	            //加载器配置
+	            loaders: [
+	                { test: /\.css$/, loader: 'style-loader!css-loader' },
+	                { test: /\.js$/, loader: 'jsx-loader?harmony', exclude: /node_modules/},
+	                { test: /\.less$/, loader: 'style!css!less'},
+	                { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}    
+	                //url-loader 来说，它会将样式中引用到的图片转为模块来处理配置信息的参数“?limit=8192”表示将所有小于8kb的图片
+	                //都转为base64形式（其实应该说超过8kb的才使用 url-loader 来映射到文件，否则转为data url形式）。也可以
+	                //使用file-loader来加载资源文件
+	            ]
+	        },
+	        //其它解决方案配置
+	        resolve: {
+	             root: 'E:/github/flux-example/src', //绝对路径
+	             extensions: ['', '.js', '.json', '.scss'],
+	             alias: {
+	                 AppStore : 'js/stores/AppStores.js',
+	                 ActionType : 'js/actions/ActionType.js',
+	                 AppAction : 'js/actions/AppAction.js'
+	             }
+	        }
+	    };
+           </pre>
+
+           <div class="title">下面是一个成型项目的gulp结合webpack的配置文件</div>
+           <pre>
+        // 关于webpack成型的方法，考虑到生产环境和开发环境的不同，使用gulp和webpack相结合的时候用法,下面是大神的一个配置方法：
+        // webpack.config.js 关键地方都有大致注释
+        var _ = require('lodash');
+        var path = require('path');
+        var webpack = require('webpack');
+        var ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+        var autoprefixer = require('autoprefixer');
+        var flexibility = require('postcss-flexibility');
+        var sorting = require('postcss-sorting');
+        var color_rgba_fallback = require('postcss-color-rgba-fallback');
+        var opacity = require('postcss-opacity');
+        var pseudoelements = require('postcss-pseudoelements');
+        var will_change = require('postcss-will-change');
+        var cssnano = require('cssnano');
+
+        var project = require('./lib/project')();
+        var config = require('./config.' + project).webpack;
+
+
+        // loaders配置
+        var getLoaders = function(env) {
+            return [{
+                test: /\.jsx?$/,
+                exclude: /(node_modules|bower_components|vendor)/,
+                loader: 'babel?presets[]=es2015&cacheDirectory=true!preprocess?PROJECT=' + project
+            }, {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader!postcss-loader")
+            }, {
+                test: /\.less$/,
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader!postcss-loader!less-loader")
+            }, {
+                test: /\/jquery\.js$/,
+                loader: 'expose?$!expose?jQuery!expose?jquery'
+            }, {
+                test: /\.xtpl$/,
+                loader: 'xtpl'
+            }, {
+                test: /\.modernizrrc$/,
+                loader: "modernizr"
+            }];
+        };
+
+        // 别名配置
+        var getAlias = function(env) {
+            return {
+                // 特殊
+                'jquery': path.resolve(__dirname, '../src/vendor/jquery2/jquery.js'),
+
+                // 正常第三方库
+                'jquery.js': path.resolve(__dirname, '../src/vendor/jquery2/jquery.js'),
+            };
+        };
+
+        // 插件配置
+        var getPlugins = function(env) {
+            var defaultPlugins = [
+                // 这个不仅是别名，还可以在遇到别名的时候自动引入模块
+                new webpack.ProvidePlugin({
+                    '$': 'jquery.js',
+                    'jquery': 'jquery.js',
+                    'jQuery': 'jquery.js',
+                }),
+                // 抽离公共模块
+                new webpack.optimize.CommonsChunkPlugin('common', 'common.js'),
+                new ExtractTextPlugin(
+                    path.join('../../stylesheets', project, '/[name].css'), {
+                        allChunks: true
+                    }
+                )
+            ];
+
+            if (env == 'production') {
+                // 线上模式的配置，去除依赖中重复的插件/压缩js/排除报错的插件
+                plugins = _.union(defaultPlugins, [
+                    new webpack.optimize.DedupePlugin(),
+                    new webpack.optimize.UglifyJsPlugin({
+                        sourceMap: false,
+                        mangle: {
+                            except: ['$', 'jQuery']
+                        }
+                    }),
+                    new webpack.NoErrorsPlugin()
+                ]);
+            } else {
+                plugins = _.union(defaultPlugins, []);
+            }
+
+            return plugins;
+        };
+
+        // postcss配置
+        var getPostcss = function(env) {
+            var postcss = [
+                autoprefixer({ browers: ['last 2 versions', 'ie >= 9', '> 5% in CN'] }),
+                flexibility,
+                will_change,
+                color_rgba_fallback,
+                opacity,
+                pseudoelements,
+                sorting
+            ];
+
+            if (env == 'production') {
+                // 线上模式的配置，css压缩
+                return function() {
+                    return _.union([
+                        cssnano({
+                            // 关闭cssnano的autoprefixer选项，不然会和前面的autoprefixer冲突
+                            autoprefixer: false, 
+                            reduceIdents: false,
+                            zindex: false,
+                            discardUnused: false,
+                            mergeIdents: false
+                        })
+                    ], postcss);
+                };
+            } else {
+                return function() {
+                    return _.union([], postcss);
+                }
+            }
+        };
+
+        // 作为函数导出配置，代码更简洁
+        module.exports = function(env) {
+            return {
+                context: config.context,
+                entry: config.src,
+                output: {
+                    path: path.join(config.jsDest, project),
+                    filename: '[name].js',
+                    chunkFilename: '[name].[chunkhash:8].js',
+                    publicPath: '/assets/' + project + '/'
+                },
+                devtool: "eval",
+                watch: false,
+                profile: true,
+                cache: true,
+                module: {
+                    loaders: getLoaders(env)
+                },
+                resolve: {
+                    alias: getAlias(env)
+                },
+                plugins: getPlugins(env),
+                postcss: getPostcss(env)
+            };
+        }
+
+        //创建gulp的webpack任务
+        var _ = require('lodash');
+        var del = require('del');
+        var webpack = require('webpack');
+        var gulp = require('gulp');
+        var plumber = require('gulp-plumber');
+        var newer = require('gulp-newer');
+        var logger = require('gulp-logger');
+
+        var project = require('../lib/project')();
+        var config = require('../config.' + project).webpack;
+        var compileLogger = require('../lib/compileLogger');
+        var handleErrors = require('../lib/handleErrors');
+
+
+        // 生成js/css
+        gulp.task('webpack', ['clean:webpack'], function(callback) {
+            webpack(require('../webpack.config.js')(), function(err, stats) {
+                compileLogger(err, stats);
+                callback();
+            });
+        });
+
+        // 生成js/css-监听模式
+        gulp.task('watch:webpack', ['clean:webpack'], function() {
+            webpack(_.merge(require('../webpack.config.js')(), {
+                watch: true
+            })).watch(200, function(err, stats) {
+                compileLogger(err, stats);
+            });
+        });
+
+        // 生成js/css-build模式
+        gulp.task('build:webpack', ['clean:webpack'], function(callback) {
+            webpack(_.merge(require('../webpack.config.js')('production'), {
+                devtool: null
+            }), function(err, stats) {
+                compileLogger(err, stats);
+                callback();
+            });
+        });
+
+        // 清理js/css
+        gulp.task('clean:webpack', function() {
+            return del([
+                config.jsDest,
+                config.cssDest
+            ], { force: true });
+        });
+           </pre>          
+      </div>
+  </body>
+</html>
