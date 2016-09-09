@@ -69,7 +69,7 @@ h2 {
 h3 {
 	font-size: 18px;
 }
-
+h3 a {font-weight: bolder;}
 h4, h5, h6 {
 	font-family: Arvo, Monaco, serif;
 	font-weight: 700;
