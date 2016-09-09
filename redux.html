@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">redux的简单介绍</div>
+           <pre>
+        redux的三大基本原则：
+           单一数据源：整个应用的 state 被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 store 中
+           state是只读的：惟一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象
+                          这样确保了视图和网络请求都不能直接修改 state，相反它们只能表达想要修改的意图。因为所有的修改都被集中化处理，
+                          且严格按照一个接一个的顺序执行，因此不用担心 race condition 的出现。 Action 就是普通对象而已，
+                          因此它们可以被日志打印、序列化、储存、后期调试或测试时回放出来
+           使用纯函数来执行修改：为了描述 action 如何改变 state tree ，你需要编写 reducers
+                        Reducer 只是一些纯函数，它接收先前的 state 和 action，并返回新的 state。刚开始你可以只有一个 reducer，
+                        随着应用变大，你可以把它拆成多个小的 reducers，分别独立地操作 state tree 的不同部分，因为 reducer 只是
+                        函数，你可以控制它们被调用的顺序，传入附加数据，甚至编写可复用的 reducer 来处理一些通用任务，如分页器。
+
+
+
+
+
+        redux的数据流动：
+        1.调用 store.dispatch(action)
+            Action 就是一个描述“发生了什么”的普通对象。比如：
+                 { type: 'LIKE_ARTICLE', articleId: 42 };
+                 { type: 'FETCH_USER_SUCCESS', response: { id: 3, name: 'Mary' } };
+                 { type: 'ADD_TODO', text: 'Read the Redux docs.'};
+            可以把 action 理解成新闻的摘要。如 “玛丽喜欢42号文章。” 或者 “任务列表里添加了'学习 Redux 文档'”。
+            你可以在任何地方调用 store.dispatch(action)，包括组件中、XHR 回调中、甚至定时器中
+        2.Redux store 调用传入的 reducer 函数
+            Store 会把两个参数传入 reducer： 当前的 state 树和 action。例如，在这个 todo 应用中，根 reducer 可能接收这样的数据：
+             // 当前应用的 state（todos 列表和选中的过滤器）
+             let previousState = {
+               visibleTodoFilter: 'SHOW_ALL',
+               todos: [
+                 {
+                   text: 'Read the docs.',
+                   complete: false
+                 }
+               ]
+             }
+             // 将要执行的 action（添加一个 todo）
+             let action = {
+               type: 'ADD_TODO',
+               text: 'Understand the flow.'
+             }
+             // render 返回处理后的应用状态
+             let nextState = todoApp(previousState, action);
+            注意 reducer 是纯函数。它仅仅用于计算下一个 state。它应该是完全可预测的：多次传入相同的输入必须产生相同的输出。
+            它不应做有副作用的操作，如 API 调用或路由跳转。这些应该在 dispatch action 前发生。
+        3.根 reducer 应该把多个子 reducer 输出合并成一个单一的 state 树
+            根 reducer 的结构完全由你决定。Redux 原生提供combineReducers()辅助函数，来把根 reducer 拆分成多个函数，
+            用于分别处理 state 树的一个分支。
+
+            下面演示 combineReducers() 如何使用。假如你有两个 reducer：一个是 todo 列表，另一个是当前选择的过滤器设置：
+
+             function todos(state = [], action) {
+               // 省略处理逻辑...
+               return nextState;
+             }
+
+             function visibleTodoFilter(state = 'SHOW_ALL', action) {
+               // 省略处理逻辑...
+               return nextState;
+             }
+
+             let todoApp = combineReducers({
+               todos,
+               visibleTodoFilter
+             })
+            当你触发 action 后，combineReducers 返回的 todoApp 会负责调用两个 reducer：
+
+             let nextTodos = todos(state.todos, action);
+             let nextVisibleTodoFilter = visibleTodoFilter(state.visibleTodoFilter, action);
+            然后会把两个结果集合并成一个 state 树：
+
+             return {
+               todos: nextTodos,
+               visibleTodoFilter: nextVisibleTodoFilter
+             };
+            虽然 combineReducers() 是一个很方便的辅助工具，你也可以选择不用；你可以自行实现自己的根 reducer！
+        4.Redux store 保存了根 reducer 返回的完整 state 树
+            这个新的树就是应用的下一个 state！所有订阅 store.subscribe(listener) 的监听器都将被调用；
+            监听器里可以调用 store.getState() 获得当前 state。
+            现在应用新的state更新UI。如果你用了React Redux这类的绑定库,这时就应该调用 component.setState(newState)来更新
+
+
+
+
+        Object.assign()是es6复制对象的方法
+        var o1 = { a: 1 };
+        var o2 = { b: 2 };
+        var o3 = { c: 3 };
+        var obj = Object.assign(o1, o2, o3);
+        console.log(obj); // { a: 1, b: 2, c: 3 }
+        console.log(o1);  // { a: 1, b: 2, c: 3 }
+        第一个对象是要最终输出的目标对象所以一般在前面写个空对象，相同属性会合并更新
+
+
+
+
+        var {
+          StyleSheet,
+          Text,
+          View
+        } = React;
+        等价于：
+        var StyleSheet = React.StyleSheet;
+        var Text = React.Text;
+        var View = React.View
+
+        a=[1,2]
+        ...表示延展操作符，如[3,...a,4]就是[3,1,2,4],就是将值全部展开
+           </pre>
+           <div class="explain">redux中文文档地址<a href="http://cn.redux.js.org/">http://cn.redux.js.org/</a></div>
+       </div>
+  </body>
+</html>
