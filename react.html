@@ -1,0 +1,565 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+      <div class="big_container">
+           <div class="title">react基础知识</div>
+           <pre>
+          1.正常情况之下你可以引入browser.min.js去翻译jsx的语法和es6的语法，但是这不好，可以在服务器端进行一次翻译，就要使用
+          react-tools这个模块，全局下载安装之后，使用jsx --watch src/ src_build/记住中间有空格，一个表示要翻译的文件夹下，另一个表示
+          翻译之后放在哪个文件夹下面，页面引入翻译后的文件，注意编译前的最好也叫js文件，页面中不在需要引入browser.min.js文件了
+          react.js和react.dom.js还是要的用到哪个引入哪个,要注意编译前是jsx语法，编译之后就是react可以识别的文件了，记得前后编译差异
+          在编译的时候有一个module-cache文件夹里面的json文件是你的编译记录，每编译一次会产生一个
+          React 的 JSX 里约定分别使用首字母大、小写来区分本地组件的类和 HTML 标签。 
+
+          2.对于react的map方法，它只有值这一个参数。但是对于他的子组件来说的话最好加上一个独一的key值，可以避免警告出现，
+          这是因为react需要一个特定标示来区分不同的虚拟dom,不加也能运行
+
+          3.react的组件之间的通信，可以从父组件开始传参数，子组件通过this.props.data什么的一层一层的传下去，所以组件之间不适合嵌套太深
+
+          4.组件化之前，先得分析得有哪些组件树，也就是合理的分块，之后得找到哪些组件的state的改变会改变整个dom，最后找出这些组件的
+          共同的父组件，并给父组件初始的state的值，在给一个有this.setState({})的函数,并将那个函数以参数的形式，传给子组件，供其调用
+
+          5.如果往原生 HTML 元素里传入 HTML 规范里不存在的属性，React 不会显示它们。如果需要使用自定义属性，要加 data- 前缀。
+            <textarea>
+                <div data-custom-attribute="foo" />
+            </textarea>
+
+          6.React 支持所有 data-* 和 aria-* 属性，也支持下面列出的属性。
+          注意：所有的属性都是驼峰命名的，class 属性和 for 属性分别改为 className 和 htmlFor，来符合 DOM API 规范。 
+
+          7.除了与 DOM 的差异之外，React 也提供了一些 DOM 里面不存在的属性。
+          key：可选的唯一的标识器。当组件在渲染过程中被各种打乱的时候，由于差异检测逻辑，可能会被销毁后重新创建。
+          给组件绑定一个 key，可以持续确保组件还存在 DOM 中。还有ref属性
+          dangerouslySetInnerHTML：提供插入纯 HTML 字符串的功能，主要为了能和生成 DOM 字符串的库整合。 
+
+          8.通常，一个组件的子代（this.props.children）是一个组件的数组
+          然而，当只有一个子代的时候，this.props.children 将会变成一个单独的组件，而不是数组形式。这样就减少了数组的占用
+
+          9.当节点初次被放入的时候 componentWillReceiveProps 并不会被触发。这是故意这么设计的
+          原因是因为 componentWillReceiveProps 经常会处理一些和 old props 比较的逻辑，而且会在变化之前执行；
+          不在组件即将渲染的时候触发，这也是这个方法设计的初衷
+           </pre>
+
+           <div class="title">组件的生命周期</div>
+           <pre>
+            Mounting：已插入真实 DOM
+            Updating：正在被重新渲染
+            Unmounting：已移出真实 DOM
+          每个状态都有两种处理函数，will 函数在进入状态之前调用，did 函数在进入状态之后调用，三种状态共计五种处理函数：
+              componentWillMount()
+              componentDidMount()
+              //当新的属性值props或状态接受到时，在渲染之前立即被调用，这里不能使用setState()
+              componentWillUpdate(object nextProps, object nextState) 
+              componentDidUpdate(object prevProps, object prevState)
+              componentWillUnmount()
+          此外，React 还提供两种特殊状态的处理函数：
+              componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用
+              //当新的属性值props或状态接收到时，在渲染之前被调用，如果返回false会忽视render()   
+              shouldComponentUpdate(object nextProps, object nextState)
+           </pre>
+
+           <div class="title">可以选择不用jsx语法</div>
+           <pre>
+          你完全可以选择是否使用 JSX，并不是 React 必须的。你可以通过 React.createElement 来创建一个树。
+          第一个参数是标签，第二个参数是一个属性对象，第三个是子节点。
+          var child = React.createElement('li', null, 'Text Content');
+          var root = React.createElement('ul', { className: 'my-list' }, child);
+          React.render(root, document.body);
+
+          方便起见，你可以创建基于自定义组件的速记工厂方法。
+          var Factory = React.createFactory(ComponentClass);
+          var root = Factory({ custom: 'prop' });
+          React.render(root, document.body);
+
+          React 已经为 HTML 标签提供内置工厂方法。
+          var root = React.DOM.ul({ className: 'my-list' },
+                       React.DOM.li(null, 'Text Content')
+                     );
+           </pre>
+
+           <div class="title">要使用 JavaScript 表达式作为属性值，只需把这个表达式用一对大括号 ({}) 包起来，不要用引号 ("")</div>
+           <pre>
+          // 输入 (JSX):
+          <textarea>
+              var person = <Person name={window.isLoggedIn ? window.name : ''} />;    
+          </textarea>
+          // 输出 (JS):
+          var person = React.createElement(
+            Person,
+            {name: window.isLoggedIn ? window.name : ''}
+          );
+          同样地，JavaScript 表达式可用于描述子结点：
+          // 输入 (JSX):
+          <textarea>
+               var content = <Container>{window.isLoggedIn ? <Nav /> : <Login />}</Container>;
+          </textarea>
+          // 输出 (JS):
+          var content = React.createElement(
+            Container,
+            null,
+            window.isLoggedIn ? React.createElement(Nav) : React.createElement(Login)
+          );
+
+          JSX 里添加注释很容易；它们只是 JS 表达式而已。你只需要在一个标签的子节点内(非最外层)小心地用 {} 包围要注释的部分。
+          <textarea style="height:280px;">
+               var content = (
+                 <Nav>
+                   {/* 一般注释, 用 {} 包围 */}
+                   <Person
+                     /* 多
+                        行
+                        注释 */
+                     name={window.isLoggedIn ? window.name : ''} // 行尾注释
+                   />
+                 </Nav>
+               );
+          </textarea>   
+           </pre>
+
+           <div class="title">react声明验证数据类型</div>
+           <pre>
+          React.createClass({
+            propTypes: {
+              // 可以声明 prop 为指定的 JS 基本类型。默认
+              // 情况下，这些 prop 都是可传可不传的。
+              optionalArray: React.PropTypes.array,
+              optionalBool: React.PropTypes.bool,
+              optionalFunc: React.PropTypes.func,
+              optionalNumber: React.PropTypes.number,
+              optionalObject: React.PropTypes.object,
+              optionalString: React.PropTypes.string,
+
+              // 所有可以被渲染的对象：数字，
+              // 字符串，DOM 元素或包含这些类型的数组。
+              optionalNode: React.PropTypes.node,
+
+              // React 元素
+              optionalElement: React.PropTypes.element,
+
+              // 用 JS 的 instanceof 操作符声明 prop 为类的实例。
+              optionalMessage: React.PropTypes.instanceOf(Message),
+
+              // 用 enum 来限制 prop 只接受指定的值。
+              optionalEnum: React.PropTypes.oneOf(['News', 'Photos']),
+
+              // 指定的多个对象类型中的一个
+              optionalUnion: React.PropTypes.oneOfType([
+                React.PropTypes.string,
+                React.PropTypes.number,
+                React.PropTypes.instanceOf(Message)
+              ]),
+
+              // 指定类型组成的数组
+              optionalArrayOf: React.PropTypes.arrayOf(React.PropTypes.number),
+
+              // 指定类型的属性构成的对象
+              optionalObjectOf: React.PropTypes.objectOf(React.PropTypes.number),
+
+              // 特定形状参数的对象
+              optionalObjectWithShape: React.PropTypes.shape({
+                color: React.PropTypes.string,
+                fontSize: React.PropTypes.number
+              }),
+
+              // 以后任意类型加上 `isRequired` 来使 prop 不可空。
+              requiredFunc: React.PropTypes.func.isRequired,
+
+              // 不可空的任意类型
+              requiredAny: React.PropTypes.any.isRequired,
+
+              // 自定义验证器。如果验证失败需要返回一个 Error 对象。不要直接
+              // 使用 `console.warn` 或抛异常，因为这样 `oneOfType` 会失效。
+              customProp: function(props, propName, componentName) {
+                if (!/matchme/.test(props[propName])) {
+                  return new Error('Validation failed!');
+                }
+              }
+            },
+            /* ... */
+          });
+           </pre>
+
+           <div class="title">React 支持以声明式的方式来定义 props 的默认值</div>
+           <pre>
+          var ComponentWithDefaultProps = React.createClass({
+            getDefaultProps: function() {
+              return {
+                value: 'default value'
+              };
+            }
+          });
+          当父级没有传入 props 时，getDefaultProps() 可以保证 this.props.value 有默认值，注意 getDefaultProps 的结果会被 缓存
+          得益于此，你可以直接使用 props，而不必写手动编写一些重复或无意义的代码。   
+           </pre>
+
+           <div class="title">React.PropTypes.element 可以限定只能有一个子级传入</div>
+           <pre>
+          var MyComponent = React.createClass({
+            propTypes: {
+              children: React.PropTypes.element.isRequired
+            },
+
+            render: function() {
+              return (
+                <div>
+                  {this.props.children} // 有且仅有一个元素，否则会抛异常。
+                </div>
+              );
+            }
+
+          });   
+           </pre>
+
+           <div class="title">React 使用 mixins 来实现功能复用</div>
+           <pre>
+          组件是 React 里复用代码最佳方式，但是有时一些复杂的组件间也需要共用一些功能。有时会被称为 跨切面关注点。React 使用 mixins 
+          来解决这类问题。一个通用的场景是：一个组件需要定期更新。用 setInterval() 做很容易，但当不需要它的时候取消定时器来节省内存
+          是非常重要的。React 提供 生命周期方法 来告知组件创建或销毁的时间。下面来做一个简单的 mixin，使用 setInterval() 并保证在组
+          件销毁时清理定时器。
+
+          var SetIntervalMixin = {
+            componentWillMount: function() {
+              this.intervals = [];
+            },
+            setInterval: function() {
+              this.intervals.push(setInterval.apply(null, arguments));
+            },
+            componentWillUnmount: function() {
+              this.intervals.map(clearInterval);
+            }
+          };
+
+          var TickTock = React.createClass({
+            mixins: [SetIntervalMixin], // 引用 mixin
+            getInitialState: function() {
+              return {seconds: 0};
+            },
+            componentDidMount: function() {
+              this.setInterval(this.tick, 1000); // 调用 mixin 的方法
+            },
+            tick: function() {
+              this.setState({seconds: this.state.seconds + 1});
+            },
+            render: function() {
+              return (
+                <p>
+                  React has been running for {this.state.seconds} seconds.
+                </p>
+              );
+            }
+          });
+
+          React.render(
+            <TickTock />,
+            document.getElementById('example')
+          );   
+           </pre>
+           <div class="explain">关于 mixin 值得一提的优点是，如果一个组件使用了多个 mixin，并且有多个 mixin 定义了同样的生命周期方法（如：多个 mixin 都需要在组件销毁时做资源清理操作），
+所有这些生命周期方法都保证会被执行到。方法执行顺序是：首先按 mixin 引入顺序执行 mixin 里方法，最后执行组件内定义的方法。</div>
+
+          <div class="title">react受限组件</div>
+          <pre>
+        对于react的form组件来说，一旦指定默认值value之后，那么这个框将不可输入了这就是所谓的受限组件
+        除非指定defalutValue，checked这个属性也是，用defaultChecked,对于select的选中则是用defaultValue，只用value就不可改了，
+        <textarea style="height:200px;">
+        <input type="text" value="nochange" />
+        <input type="radio" name="opt" defaultChecked />
+        <input type="radio" name="opt" />
+        <select defaultValue="C">         
+          <option value="A">Apple</option>
+          <option value="B">Banana</option>
+          <option value="C">Cranberry</option>
+        </select>
+        </textarea>
+          </pre>
+
+          <div class="title">react兼容低版本浏览器</div>
+          <pre>
+        对于react来说，为了兼容低版本浏览器可以下载插件如：es5-shim.js，它提供了react的一些api如：
+        Array.isArray
+        Array.prototype.every
+        Array.prototype.forEach
+        Array.prototype.indexOf
+        Array.prototype.map
+        Date.now
+        Function.prototype.bind
+        Object.keys
+        String.prototype.split
+        String.prototype.trim 
+        当我们在IE8里面使用HTML5的标签时，项目中需要包含html5shiv 或类似的脚本
+        但是有一些bug无法修复了如：
+             在IE8的onscroll事件没有冒泡，IE8也没有API定义如何处理事件捕获，这意味着React没办法监听这些事件。目前，
+             IE8上这一事件的处理程序是没有    
+          </pre>
+
+          <div class="title">React-addons模块是为了构建 React 应用而放置的一些有用工具的地方</div>
+          <pre>
+        TransitionGroup和CSSTransitionGroup，用于处理动画和过渡，这些通常实现起来都不简单，例如在一个组件移除之前执行一段动画。
+        LinkedStateMixin，用于简化用户表单输入数据和组件 state 之间的双向数据绑定。
+        classSet，用于更加干净简洁地操作 DOM 中的 class 字符串。
+        cloneWithProps，用于实现 React 组件浅复制，同时改变它们的 props 。
+        update，一个辅助方法，使得在 JavaScript 中处理不可变数据更加容易。
+        PureRenderMixin，在某些场景下的性能检测器。
+        以下插件只存在于 React 开发版（未压缩）：
+            TestUtils， 简单的辅助工具，用于编写测试用例（仅存在于未压缩版）.
+            Perf，用于性能测评，并帮助你检查出可优化的功能点。
+            要使用这些插件，需要用 react-with-addons.js （和它的最小化副本）替换常规的React.js。
+
+        当通过npm使用react包的时候，只要简单地用 require('react/addons') 替换 require('react') 来得到带有所有插件的React    
+          </pre>
+
+          <div class="title">对于flux的理解</div>
+          <pre>
+        Flux是一种模式而非框架，一种单向的数据流模式
+        Flux应用主要包括三部分：dispatcher(分发)、store(保存)和views
+        大体的逻辑是这样（action->dispatcher ->store->view）
+          前端要做的起始很简单，从服务端获取数据展示数据，修改数据提交服务端保存。
+          action：主要做的就是跟服务端的交互，用ajax做获取数据、提交数据的操作。
+          dispatcher：action 和 store的桥连接，起分发做用。
+          store：保留action传递过来的数据。
+          view：添加store的onChange事件，一旦store发生数据变化，就做相应的处理。
+
+
+        有一个重点是（也是坑），dispatcher不能同时处理两个分发，否则会报异常。只能用setTimeout的方法，做一个时间戳。
+        缺点：
+            在flux中一般我们会对不同对对象做独立的store、action，也会有多个action、store。
+            拿个例子来说，处理一个班级的同学的信息，Store一般会分为：StudentListStore，StudentItemStore，
+            同样Action 会分为：StudentListAction，StudentItemAction。一旦程序复杂起来，就会有非常多的Store、Action。    
+          </pre>
+
+          <div class="title">为每个controlled component指定 value 属性，来防止用户修改输入除非你希望如此</div>
+          <pre>
+        你也许会遇到这种问题：虽然已经指定了 value ，但是 input 依然可以未经允许就改变。这种情况，可能是因为一不小将 value 设置成了 
+        undefined 或 null。下面这条代码片段展示了这个现象，一秒钟之后，文本变得可编辑了:
+          React.render(<input value="hi" />, mountNode);
+          setTimeout(function() {
+            React.render(<input value={null} />, mountNode);
+          }, 1000); 
+        上面的Input意思是：
+          <textarea>
+              <input value="hi" />
+              <input value={null} />
+          </textarea>   
+          </pre>
+
+          <div class="title">状态值内也可以用props的值，但是这样不好，这是一个反模式</div>
+          <pre>
+        <textarea style="height:400px;">
+          var Counter = React.createClass({
+            getInitialState: function() {
+              // naming it initialX clearly indicates that the only purpose
+              // of the passed down prop is to initialize something internally
+              return {count: this.props.initialCount};
+            },
+
+            handleClick: function() {
+              this.setState({count: this.state.count + 1});
+            },
+
+            render: function() {
+              return <div onClick={this.handleClick}>{this.state.count}</div>;
+            }
+          });
+
+          React.render(<Counter initialCount={7}/>, mountNode);
+        </textarea>    
+          </pre>
+
+          <div class="title">给react绑定事件</div>
+          <pre>
+        var Box = React.createClass({
+          getInitialState: function() {
+            return {windowWidth: window.innerWidth};
+          },
+
+          handleResize: function(e) {
+            this.setState({windowWidth: window.innerWidth});
+          },
+
+          componentDidMount: function() {
+            window.addEventListener('resize', this.handleResize);
+          },
+
+          componentWillUnmount: function() {
+            window.removeEventListener('resize', this.handleResize);
+          },
+
+          render: function() {
+          <textarea>
+            return <div>Current window width: {this.state.windowWidth}</div>;
+          </textarea>
+          }
+        });
+
+        React.render(<Box />, mountNode);
+        componentDidMount 会在 component 渲染完成且已经有了 DOM 结构的时候被调用。通常情况下，你可以在这绑定普通的 DOM 事件。    
+          </pre>
+          <div class="explain">注意，事件的回调被绑定在了 react 组件上，而不是原始的元素上。React 通过一个 autobinding 过程自动将方法绑定到当前的组件实例上</div>
+
+          <div class="title">通过ajax来加载初始数据</div>
+          <pre>
+        <textarea style="height:900px;">
+          在 componentDidMount 时加载数据。当加载成功，将数据存储在 state 中，触发 render 来更新你的 UI。
+          当执行异步请求的响应时，在更新 state 前， 一定要先通过 this.isMounted() 来检测组件的状态是否还是 mounted
+            var UserGist = React.createClass({
+              getInitialState: function() {
+                return {
+                  username: '',
+                  lastGistUrl: ''
+                };
+              },
+
+              componentDidMount: function() {
+                $.get(this.props.source, function(result) {
+                  var lastGist = result[0];
+                  if (this.isMounted()) {
+                    this.setState({
+                      username: lastGist.owner.login,
+                      lastGistUrl: lastGist.html_url
+                    });
+                  }
+                }.bind(this));
+              },
+
+              render: function() {
+                return (
+                  <div>
+                    {this.state.username}'s last gist is'
+                    <a href={this.state.lastGistUrl}>here</a>.
+                  </div>
+                );
+              }
+            });
+
+            React.render(
+              <UserGist source="https://api.github.com/users/octocat/gists" />,
+              mountNode
+            );
+        </textarea>    
+          </pre>
+
+          <div class="title">JSX 的 false 处理</div>
+          <pre>
+        <textarea style="height:300px;">
+          被渲染成 id="false":
+          React.render(<div id={false} />, mountNode);
+
+          input value 的值将会是 "false" 字符串
+          React.render(<input value={false} />, mountNode);
+          
+          没有子节点
+          React.render(<div>{false}</div>, mountNode);
+
+          上面这个没有被渲染成 "false" 字符串是因为要考虑到这种常见的情况：
+          <div>{x > 1 && 'You have more than one item'}</div>
+        </textarea>    
+          </pre>
+
+          <div class="title">对于 子-父 通信</div>
+          <pre>
+        对于 子-父 通信： 例如： GroceryList 组件有一些通过数组生成的子节点。当这些节点被点击的时候，
+        你想要展示这个节点的名字：
+        <textarea style="height:500px;">
+          var GroceryList = React.createClass({
+            handleClick: function(i) {
+              console.log('You clicked: ' + this.props.items[i]);
+            },
+
+            render: function() {
+              return (
+                <div>
+                  {this.props.items.map(function(item, i) {
+                    return (
+                      <div onClick={this.handleClick.bind(this, i)} key={i}>{item}</div>
+                    );
+                  }, this)}
+                </div>
+              );
+            }
+          });
+
+          React.render(
+            <GroceryList items={['Apple', 'Banana', 'Cranberry']} />, mountNode
+          );
+        </textarea>    
+          </pre>
+
+          <div class="title">dangerouslySetInnerHTML的使用</div>
+          <pre>
+        <textarea style="height:250px;">
+          function createMarkup() { return {__html: 'First &middot; Second'}; };
+          <div dangerouslySetInnerHTML={createMarkup()} />
+          这么做的意义在于，当你不是有意地使用 <div dangerouslySetInnerHTML={getUsername()} /> 时
+          候，它并不会被渲染，因为 getUsername() 返回的格式是 字符串 而不是一个 {__html: ''} 对象
+          {__html:...} 背后的目的是表明它会被当成 "type/taint" 类型处理。 这种包裹对象，可以通过
+          方法调用返回净化后的数据，随后这种标记过的数据可以被传递给 dangerouslySetInnerHTML。
+          基于这种原因，我们不推荐写这种形式的代码：
+               <div dangerouslySetInnerHTML={{__html: getMarkup()}} />.
+          这个功能主要被用来与 DOM 字符串操作类库一起使用，所以提供的 HTML 必须要格式清晰
+           （例如：传递 XML 校验 ）
+        </textarea>
+          </pre>
+
+          <div class="title">对于react中第一页后端渲染，之后的采用前端渲染的理解</div>
+          <pre>
+        想让搜索引擎抓取到你的站点，服务端渲染这一步不可或缺，服务端渲染还可以提升站点的性能，因为在加载JavaScript脚本的同时，浏览器就
+        可以进行页面渲染。
+        React的虚拟DOM是其可被用于服务端渲染的关键。首先每个ReactComponent在虚拟DOM中完成渲染,然后React通过虚拟DOM来更新浏览器DOM中
+        产生变化的那一部分，
+        虚拟DOM作为内存中的DOM表现，为React在Node.js这类非浏览器环境下的吮吸给你提供了可能，React可以从虚拟DoM中生成一个字符串。
+        而不是跟新真正的DOM，这使得我们可以在客户端和服务端使用同一个React Component。
+        React 提供了两个可用于服务端渲染组件的函数：React.renderToString 和React.render-ToStaticMarkup。 在设计用于服务端渲染
+        的ReactComponent时需要有预见性，考虑以下方面：
+            选取最优的渲染函数；
+            如何支持组件的异步状态；
+            如何将应用的初始化状态传递到客户端；
+            哪些生命周期函数可以用于服务端的渲染；
+            如何为应用提供同构路由支持；
+            单例、实例以及上下文的用法。
+        在服务端渲染React Component时，无法使用标准的React.render方法，因为服务端不存在DOM。React提供了两个渲染的函数，它们支持标准
+        的React Component生命周期的一个子集。因而能够实现服务端渲染
+        React.renderToString是两个服务端渲染函数中的一个，也是开发主要使用的一个函数，和React.render不同，该函数去掉了用于表示
+        渲染位
+        置的参数。取而代之，该函数只返回一个字符串，这是一个快速的同步（阻塞式）函数，非常快。    
+        <textarea style="height:500px;">
+           var MyComponent = React.createClass({
+           render:fucniton(){
+           return <div> Hello World!</div>;
+           }
+           });
+           var world= React.renderToString (<MyComponent/>);
+            
+           //这个示例返回一个单行并且格式化的输出
+           <divdata-reactid=".fgvrzhg2yo"data-ract-checksum="-1663559667">
+           Hello World!
+           </div>
+            
+           你会注意到，React为这个<div>元素添加了两个data前缀的属性。在浏览器环境下，React使用data-reactid区分DOM节点。这也是每当组件的state及props发生变化时，React都可以精准的跟新制定DOM节点的原因。
+            
+           data-react-checksum仅仅存在于服务端。顾名思义，它是已创建DOM和校验和。这准许React在客户端服用与服务端结构上相同点的DOM结构。该属性只会添加到跟元素上。
+
+           React.renderToStaticMarkup是第二个服务端渲染函数，除了不会包含React的data属性外，它和React.renderToString没有区别。
+           varMyComponent=React.createClass({
+           render：function（）{
+           return<div>Hello World!</div>;
+           }
+           });
+           varworld= React.renderToStaticMarkup(<MyCompoent/>);    
+           //单行输出
+           <div>HelloWorld!</div>
+        </textarea>
+          </pre>
+          <div class="explain">每个渲染函数都有自己的用途，所以你必须明确自己的需求，再去决定使用哪个渲染函数。当且仅当你不打算在客户端渲染这个React Component时，才应该选择使用React.renderToStaticMarkup函数</div>      
+      </div>
+  </body>
+</html>
