@@ -265,7 +265,7 @@ header ul {
 
 header li {
 	list-style-type: none;
-  width:132px;
+  width:232px;
   height:15px;
 	margin-bottom: 12px;
 	line-height: 1em;
@@ -436,8 +436,9 @@ footer {
 .big_container .explain {font-size: 14px;line-height: 20px;margin: 10px 0;text-align: justify;}
 textarea {border:0;width: 82%;background-color: rgb(200,200,200);font-size: 16px;padding: 10px 0;line-height: 22px;}
 a:hover {cursor: pointer;}
-
-
+.txtMarquee-top {position: fixed;top: 10px;left: 30px;}
+.txtMarquee-top h3 {font-weight: bolder;}
+.txtMarquee-top li {height: 30px;line-height: 30px;}
 
 
 
