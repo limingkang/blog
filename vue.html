@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title" style="margin-top:0;">vue.js与其他框架的比较</div>
+           <pre>
+        Vue 与 Angular的比较：
+           1.vue的api比angular简单，易于学习，它允许你自定义组织应用程序的方式，不必任何时候都遵循angular规则，它仅仅是一个视图层，
+           所以你可以将它嵌入一个现有页面而不一定要做成一个庞大的单页应用。在配合其他库方面它给了你更大的的空间，但相应，
+           你也需要做更多的架构决策。例如，Vue.js 核心默认不包含路由和 Ajax 功能，并且通常假定你在应用中使用了一个模块构建系统
+           2.Angular 使用双向绑定，Vue 也支持双向绑定，不过默认为单向绑定，数据从父组件单向传给子组件。在大型应用中使用单向绑定让
+           数据流易于理解
+           3.Vue.js 有更好的性能，并且非常非常容易优化，因为它不使用脏检查。Angular，当 watcher 越来越多时会变得越来越慢，因为作用域
+           内的每一次变化，所有 watcher 都要重新计算。并且，如果一些 watcher 触发另一个更新，脏检查循环（digest cycle）可能要运行多次
+           Angular 用户常常要使用深奥的技术，以解决脏检查循环的问题。有时没有简单的办法来优化有大量 watcher 的作用域。Vue.js 则根本
+           没有这个问题，因为它使用基于依赖追踪的观察系统并且异步列队更新，所有的数据变化都是独立地触发，除非它们之间有明确的依赖关系
+           唯一需要做的优化是在 v-for 上使用 track-by
+
+        vue和react的比较：
+           1.React 的渲染建立在 Virtual DOM 上——一种在内存中描述 DOM 树状态的数据结构。当状态发生变化时，React 重新渲染 Virtual DOM
+           比较计算之后给真实 DOM 打补丁。Virtual DOM 提供了一个函数式的方法描述视图，这真的很棒。因为它不使用数据观察机制，每次
+           更新都会重新渲染整个应用，因此从定义上保证了视图与数据的同步。它也开辟了 JavaScript 同构应用的可能性
+           2.Vue.js 不使用 Virtual DOM 而是使用真实 DOM 作为模板，数据绑定到真实节点。Vue.js 的应用环境必须提供 DOM。但是，相对于常
+           见的误解——Virtual DOM 让 React 比其它的都快， Vue.js 实际上性能比 React 好，而且几乎不用手工优化。而 React，为了最优化的
+           渲染需要处处实现 shouldComponentUpdate 和使用不可变数据结构
+           3.在 API 方面，React（或 JSX）的一个问题是，渲染函数常常包含大量的逻辑，最终看着更像是程序片断（实际上就是）而不是界面的
+           视觉呈现。对于部分开发者来说，他们可能觉得这是个优点，但对那些像我一样兼顾设计和开发的人来说，模板能让我们更好地在视觉上
+           思考设计和 CSS。JSX 和 JavaScript 逻辑的混合干扰了我将代码映射到设计的思维过程。相反，Vue.js 通过在模板中加入一个轻量级
+           的 DSL (指令系统)，换来一个依旧直观的模板，且能将逻辑封装进指令和过滤器中
+           4.React 的另一个问题是：由于 DOM 更新完全交给 Virtual DOM 管理，当想要自己控制 DOM 时就有点棘手了（虽然理论上可以做到，但
+           这样做就本质上违背了 React 的设计思想）。如果应用需要特别的自定义 DOM 操作，特别是复杂时间控制的动画，这个限制就很讨厌。
+           在这方面，Vue.js 更灵活
+           5.对于大型应用，React 社区已经创造了大量的状态管理方案，例如 Flux/Redux。Vue 本身不解决这个问题（React 内核也是）,但是可以
+           轻松地修改状态管理模式，实现一个类似的架构。Vue 有自己的状态管理方案 Vuex，而且 Vue 也可以与 Redux 一起用
+           6.React 的开发趋势是将所有东西都放在 JavaScript 中，包括 CSS。已经有许多 CSS-in-JS 方案，但是所有的方案多多少少都有问题
+           而且更重要的是，这么做脱离了标准的 CSS 开发经验，并且很难和 CSS 社区的已有工作配合。Vue 的 单文件组件 在把 CSS 封装到组件
+           模块的同时仍然允许你使用你喜欢的预处理器
+
+        vue和ember的比较：
+           1.Ember 是一个全能框架。它提供大量的约定，一旦你熟悉了它们，开发会很高效。不过，这也意味着学习曲线较高，而且不灵活。在框架
+           和库（加上一系列松散耦合的工具）之间权衡选择。后者更自由，但是也要求你做更多的架构决定。也就是说，最好比较 Vue.js 内核和
+           Ember 的模板与数据模型层
+           2.Vue在普通JavaScript对象上建立响应，提供自动化的计算属性。在Ember中要将所有东西放在Ember对象内，并且手工为计算属性声明依赖
+           3.Vue 的模板语法可以用全功能的 JavaScript 表达式，而 Handlebars 的语法和帮助函数语法相比之下非常受限
+           4.在性能上，Vue甩开Ember几条街，即使是Ember 2.0最新的Glimmer引擎。Vue 自动批量更新，在性能比较关键时 Ember 要手工管理循环
+           </pre>
+           <div class="explain">vue.js中文文档地址<a href="http://cn.vuejs.org/guide/installation.html">http://cn.vuejs.org/guide/installation.html</a></div>
+           <div class="explain">vue.js中文社区地址<a href="http://forum.vuejs.org/category/10/%E4%B8%AD%E6%96%87">http://forum.vuejs.org/category/10/%E4%B8%AD%E6%96%87</a></div>
+       
+           <div class="title">实例的生命周期</div>
+           <pre>
+        Vue 实例在创建时有一系列初始化步骤——例如，它需要建立数据观察，编译模板，创建必要的数据绑定。在此过程中，它也将调用一些生命
+        周期钩子，给自定义逻辑提供运行机会。例如 created 钩子在实例创建后调用：
+	        var vm = new Vue({
+	          data: {
+	            a: 1
+	          },
+	          created: function () {
+	            // `this` 指向 vm 实例
+	            console.log('a is: ' + this.a)
+	          }
+	        })
+	        // -> "a is: 1"
+        也有一些其它的钩子，在实例生命周期的不同阶段调用，如 compiled、 ready 、destroyed。钩子的 this 指向调用它的 Vue 实例。
+        Vue.js没有是没有控制器的概念的，组件的自定义逻辑可以分割在这些钩子中
+           </pre>
+           <div class="explain">具体详细生命周期可查官方文档</div>
+
+           <div class="title">条件渲染v-if和v-show的区别</div>
+           <pre>
+        在切换 v-if 块时，Vue.js 有一个局部编译/卸载过程，因为 v-if 之中的模板也可能包括数据绑定或子组件。v-if 是真实的条件渲染，因为
+        它会确保条件块在切换当中合适地销毁与重建条件块内的事件监听器和子组件。
+        v-if 也是惰性的：如果在初始渲染时条件为假，则什么也不做——在条件第一次变为真时才开始局部编译（编译会被缓存起来）。
+        相比之下，v-show 简单得多——元素始终被编译并保留，只是简单地基于 CSS 切换。
+        一般来说，v-if 有更高的切换消耗而 v-show 有更高的初始渲染消耗。因此，如果需要频繁切换 v-show 较好，如果在运行时条件不大可能
+        改变v-if 较好。
+           </pre>
+
+           <div class="title">数组变动检测</div>
+           <pre>
+        1.Vue.js 包装了被观察数组的变异方法，故它们能触发视图更新。被包装的方法有：
+        	push()、pop()、shift()、unshift()、splice()、sort()、reverse()
+        	你可以打开浏览器的控制台，用这些方法修改上例的 items 数组。例如：example1.items.push({ message: 'Baz' })   	
+        
+        2.变异方法，如名字所示，修改了原始数组。相比之下，也有非变异方法，如 filter(), concat() 和 slice()，不会修改原始数组而是返回
+        一个新数组。在使用非变异方法时，可以直接用新数组替换旧数组：
+			example1.items = example1.items.filter(function (item) {
+			  return item.message.match(/Foo/)
+			})
+	可能你觉得这将导致 Vue.js 弃用已有 DOM 并重新渲染整个列表——幸运的是并非如此。 Vue.js 实现了一些启发算法，以最大化复用 DOM 元素
+	因而用另一个数组替换数组是一个非常高效的操作
+
+	3.有时需要用全新对象（例如通过 API 调用创建的对象）替换数组。因为 v-for 默认通过数据对象的特征来决定对已有作用域和 DOM 元素的
+	复用程度，这可能导致重新渲染整个列表。但是，如果每个对象都有一个唯一 ID 的属性，便可以使用 track-by 特性给 Vue.js 一个提示，
+	Vue.js 因而能尽可能地复用已有实例。例如，假定数据为：
+		{
+		  items: [
+		    { _uid: '88f869d', ... },
+		    { _uid: '7496c10', ... }
+		  ]
+		}
+	然后可以这样给出提示：
+	<textarea>
+		<div v-for="item in items" track-by="_uid"><!-- content --></div>
+	</textarea>
+    	然后在替换数组 items 时，如果 Vue.js 遇到一个包含 _uid: '88f869d' 的新对象，这个对象的_uid和上面的一样，只是其他值不一样,
+    	它知道它可以复用这个已有对象的作用域与DOM 元素。
+           
+        4.因为 JavaScript 的限制，Vue.js 不能检测到下面数组变化：
+		直接用索引设置元素，如 vm.items[0] = {}；
+		修改数据的长度，如 vm.items.length = 0。
+	为了解决问题 (1)，Vue.js 扩展了观察数组，为它添加了一个 $set() 方法：
+		// 与 `example1.items[0] = ...` 相同，但是能触发视图更新
+		example1.items.$set(0, { childMsg: 'Changed!'})
+		至于问题 (2)，只需用一个空数组替换 items。
+	除了 $set()， Vue.js 也为观察数组添加了 $remove() 方法，用于从目标数组中查找并删除元素，在内部它调用 splice().不必这样：
+		var index = this.items.indexOf(item)
+		if (index !== -1) {
+		  this.items.splice(index, 1)
+		}
+	只用这样：
+		this.items.$remove(item)
+	使用 Object.freeze()在遍历一个数组时，如果数组元素是对象并且对象用 Object.freeze() 冻结，你需要明确指定 track-by。在这
+	种情况下如果 Vue.js 不能自动追踪对象，将给出一条警告
+           </pre>
+
+           <div class="title">事件处理</div>
+           <pre>
+        1.事件处理器限制为一个语句，有时也需要在内联语句处理器中访问原生 DOM 事件。可以用特殊变量 $event 把它传入方法：
+        <textarea>
+        	<button v-on:click="say('hello!', $event)">Submit</button>
+        </textarea> 
+        methods: {
+          say: function (msg, event) {
+            // 现在我们可以访问原生事件对象
+            event.preventDefault()
+          }
+        }
+        2.在事件处理器中经常需要调用 event.preventDefault() 或 event.stopPropagation()。尽管我们在方法内可以轻松做到，不过让方法
+        是纯粹的数据逻辑而不处理 DOM 事件细节会更好。为了解决这个问题，Vue.js 为 v-on 提供两个 事件修饰符：.prevent 与 .stop 
+        <textarea style="height:720px;">
+        	<!-- 阻止单击事件冒泡 -->
+        	<a v-on:click.stop="doThis"></a>
+
+        	<!-- 提交事件不再重载页面 -->
+        	<form v-on:submit.prevent="onSubmit"></form>
+
+        	<!-- 修饰符可以串联 -->
+        	<a v-on:click.stop.prevent="doThat">
+
+        	<!-- 只有修饰符 -->
+        	<form v-on:submit.prevent></form>
+
+        	1.0.16 添加了两个额外的修饰符：
+        	<!-- 添加事件侦听器时使用 capture 模式 -->
+        	<div v-on:click.capture="doThis">...</div>
+
+        	<!-- 只当事件在该元素本身（而不是子元素）触发时触发回调 -->
+        	<div v-on:click.self="doThat">...</div>
+
+        	全部的按键别名：enter,tab,delete,esc,space,up,down,left,right
+        	<!-- 只有在 keyCode 是 13 时调用 vm.submit() -->
+        	<input v-on:keyup.13="submit">
+
+        	<!-- 同上 -->
+        	<input v-on:keyup.enter="submit">
+
+        	<!-- 缩写语法 -->
+        	<input @keyup.enter="submit">
+
+        	1.0.17+： 可以自定义按键别名：可以使用 @keyup.f1
+        	Vue.directive('on').keyCodes.f1 = 112
+        </textarea> 	
+           </pre>
+
+           <div class="title">表单控件绑定</div>
+           <pre>
+        对于单选按钮，勾选框及选择框选项，v-model 绑定的 value 通常是静态字符串（对于勾选框是逻辑值）：
+        <textarea style="height:250px;">
+        <!-- 当选中时，`picked` 为字符串 "a" -->
+        <input type="radio" v-model="picked" value="a">
+
+        <!-- `toggle` 为 true 或 false -->
+        <input type="checkbox" v-model="toggle">
+
+        <!-- 当选中时，`selected` 为字符串 "abc" -->
+        <select v-model="selected">
+          <option value="abc">ABC</option>
+        </select>	
+        </textarea>
+        但是有时我们想绑定 value 到 Vue 实例的一个动态属性上，这时可以用 v-bind 实现，并且这个属性的值可以不是字符串
+        <textarea style="height:316px;">
+        	<input
+        	  type="checkbox"
+        	  v-model="toggle"
+        	  v-bind:true-value="a"
+        	  v-bind:false-value="b">
+        	// 当选中时
+        	vm.toggle === vm.a
+        	// 当没有选中时
+        	vm.toggle === vm.b
+
+        	<input type="radio" v-model="pick" v-bind:value="a">
+        	// 当选中时
+        	vm.pick === vm.a
+        </textarea>
+
+        在默认情况下，v-model 在input 事件中同步输入框值与数据，可以添加一个特性 lazy，从而改到在 change 事件中同步：
+        <textarea style="height:66px;">
+        	<!-- 在 "change" 而不是 "input" 事件中更新 -->
+			<input v-model="msg" lazy>
+        </textarea>
+        如果想自动将用户的输入转为 Number 类型（如果原值的转换结果为 NaN 则返回原值），可以添加一个特性 number：
+        <textarea>
+        <input v-model="age" number>
+        </textarea>
+        debounce 设置一个最小的延时，在每次敲击之后延时同步输入框的值与数据。如果每次更新都要进行高耗操作（例如在输入提示中 Ajax 请求）
+        注意 debounce 参数不会延迟 input 事件：它延迟“写入”底层数据。因此在使用 debounce 时应当用 vm.$watch() 响应数据的变化。
+        若想延迟 DOM 事件，应当使用 debounce 过滤器。
+        <textarea>
+        	<input v-model="msg" debounce="500">
+        </textarea>
+           </pre>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+       </div>
+  </body>
+</html>
