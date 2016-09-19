@@ -232,6 +232,262 @@
         </textarea>
            </pre>
 
+           <div class="title">过渡动画</div>
+           <pre>
+        通过 Vue.js 的过渡系统，可以在元素从 DOM 中插入或移除时自动应用过渡效果。Vue.js 会在适当的时机为你触发 CSS 过渡或动画，你也
+        可以提供相应的 JavaScript 钩子函数在过渡过程中执行自定义的 DOM 操作。为了应用过渡效果，需要在目标元素上使用 transition 特性：
+        <textarea>
+        	<div v-if="show" transition="my-transition"></div>
+        </textarea>
+        transition 特性可以与下面资源一起用：
+           v-if
+           v-show
+           v-for （只在插入和删除时触发，使用 vue-animated-list 插件）
+           动态组件 （介绍见组件）
+           在组件的根节点上，并且被 Vue 实例 DOM 方法（如 vm.$appendTo(el)）触发。
+        当插入或删除带有过渡的元素时，Vue 将：
+           1.尝试以 ID "my-transition" 查找 JavaScript 过渡钩子对象——通过 Vue.transition(id, hooks) 或 transitions 选项注册。
+           如果找到了，将在过渡的不同阶段调用相应的钩子。
+           2.自动嗅探目标元素是否有 CSS 过渡或动画，并在合适时添加/删除 CSS 类名。
+           3.如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作（插入/删除）在下一帧中立即执行。
+           </pre>
+
+           <div class="title">渐进过渡</div>
+           <pre>
+        transition 与 v-for 一起用时可以创建渐近过渡。给过渡元素添加一个特性 stagger, enter-stagger 或 leave-stagger：
+        以下就是为每个项目增加一个100毫秒的延时
+        <textarea>
+        	<div v-for="item in list" transition="stagger" stagger="100"></div>
+        </textarea>
+
+        或者，提供一个钩子 stagger, enter-stagger 或 leave-stagger，以更好的控制：
+        Vue.transition('stagger', {
+          stagger: function (index) {
+            // 每个过渡项目增加 50ms 延时
+            // 但是最大延时限制为 300ms
+            return Math.min(300, index * 50)
+          }
+        })
+           </pre>
+
+           <div class="title">模板解析</div>
+           <pre>
+        Vue 的模板是 DOM 模板，使用浏览器原生的解析器而不是自己实现一个。相比字符串模板，DOM 模板有一些好处，但是也有问题，它必须是
+        有效的 HTML 片段。一些 HTML 元素对什么元素可以放在它里面有限制。常见的限制：
+	        a 不能包含其它的交互元素（如按钮，链接）
+	        ul 和 ol 只能直接包含 li
+	        select 只能包含 option 和 optgroup
+	        table 只能直接包含 thead, tbody, tfoot, tr, caption, col, colgroup
+	        tr 只能直接包含 th 和 td
+        在实际中，这些限制会导致意外的结果。尽管在简单的情况下它可能可以工作，但是你不能依赖自定义组件在浏览器验证之前的展开结果 
+        另一个结果是，自定义标签 不能用在 ul, select, table 等对内部元素有限制的标签内。放在这些元素内部的自定义标签将被提到元素的外面
+        因而渲染不正确。例如：template标签 不能用在 table 内，这时应使用 tbody标签，table 可以有多个 tbody，从而可以循环了
+        <textarea style="height:160px;">
+        	<table>
+        	  <tbody v-for="item in items">
+        	    <tr>Even row</tr>
+        	    <tr>Odd row</tr>
+        	  </tbody>
+        	</table>
+        </textarea>	
+           </pre>
+
+           <div class="title">prop绑定类型</div>
+           <pre>
+        prop 默认是单向绑定：当父组件的属性变化时，将传导给子组件，但是反过来不会。这是为了防止子组件无意修改了父组件的状态——这会让
+        应用的数据流难以理解。不过，也可以使用 .sync 或 .once 绑定修饰符显式地强制双向或单次绑定
+        <textarea style="height:200px;">
+        	<!-- 默认为单向绑定 -->
+        	<child :msg="parentMsg"></child>
+
+        	<!-- 双向绑定 -->
+        	<child :msg.sync="parentMsg"></child>
+
+        	<!-- 单次绑定 -->
+        	<child :msg.once="parentMsg"></child>
+        </textarea>   	
+           </pre>
+           <div class="explain">双向绑定会把子组件的 msg 属性同步回父组件的 parentMsg 属性。单次绑定在建立之后不会同步之后的变化,注意如果 prop 是一个对象或数组，是按引用传递。在子组件内修改它会影响父组件的状态，不管是使用哪种绑定类型</div>
+
+           <div class="title">prop验证</div>
+           <pre>
+        组件可以为 props 指定验证要求。当组件给其他人使用时这很有用，因为这些验证要求构成了组件的 API，确保其他人正确地使用组件。
+        此时 props 的值是一个对象，包含验证要求：
+            Vue.component('example', {
+              props: {
+                // 基础类型检测 （`null` 意思是任何类型都可以）
+                propA: Number,
+                // 多种类型 (1.0.21+)
+                propM: [String, Number],
+                // 必需且是字符串
+                propB: {
+                  type: String,
+                  required: true
+                },
+                // 数字，有默认值
+                propC: {
+                  type: Number,
+                  default: 100
+                },
+                // 对象/数组的默认值应当由一个函数返回
+                propD: {
+                  type: Object,
+                  default: function () {
+                    return { msg: 'hello' }
+                  }
+                },
+                // 指定这个 prop 为双向绑定
+                // 如果绑定类型不对将抛出一条警告
+                propE: {
+                  twoWay: true
+                },
+                // 自定义验证函数
+                propF: {
+                  validator: function (value) {
+                    return value > 10
+                  }
+                },
+                // 转换函数（1.0.12 新增）
+                // 在设置值之前转换值
+                propG: {
+                  coerce: function (val) {
+                    return val + '' // 将值转换为字符串
+                  }
+                },
+                propH: {
+                  coerce: function (val) {
+                    return JSON.parse(val) // 将 JSON 字符串转换为对象
+                  }
+                }
+              }
+            })
+           </pre>
+           <div class="explain">当 prop 验证失败了，Vue 将拒绝在子组件上设置此值，如果使用的是开发版本会抛出一条警告</div>
+
+           <div class="title">自定义事件</div>
+           <pre>
+        Vue 实例实现了一个自定义事件接口，用于在组件树中通信。这个事件系统独立于原生 DOM 事件，用法也不同。
+        不同于 DOM 事件，Vue 事件在冒泡过程中第一次触发回调之后自动停止冒泡，除非回调明确返回 true
+        每个 Vue 实例都是一个事件触发器：
+	        使用 $on() 监听事件；
+	        使用 $emit() 在它上面触发事件；
+	        使用 $dispatch() 派发事件，事件沿着父链冒泡；
+	        使用 $broadcast() 广播事件，事件向下传导给所有的后代。
+
+	    简单例子：
+	    <textarea style="height:270px;">
+	    	<!-- 子组件模板 -->
+	    	<template id="child-template">
+	    	  <input v-model="msg">
+	    	  <button v-on:click="notify">Dispatch Event</button>
+	    	</template>
+
+	    	<!-- 父组件模板 -->
+	    	<div id="events-example">
+	    	  <p>Messages: {{ messages | json }}</p>
+	    	  <child></child>第二个方法这里改为<child v-on:child-msg="handle"></child>
+	    	</div>
+	    </textarea>
+	    // 注册子组件
+	    // 将当前消息派发出去
+	    Vue.component('child', {
+	      template: '#child-template',
+	      data: function () {
+	        return { msg: 'hello' }
+	      },
+	      methods: {
+	        notify: function () {
+	          if (this.msg.trim()) {
+	            this.$dispatch('child-msg', this.msg)
+	            this.msg = ''
+	          }
+	        }
+	      }
+	    })
+	    // 初始化父组件
+	    // 将收到消息时将事件推入一个数组
+	    var parent = new Vue({
+	      el: '#events-example',
+	      data: {
+	        messages: []
+	      },
+	      // 在创建实例时 `events` 选项简单地调用 `$on`
+	      events: {
+	        'child-msg': function (msg) {
+	          // 事件回调内的 `this` 自动绑定到注册它的实例上
+	          this.messages.push(msg)
+	        }
+	      }
+	    })
+	    或者下面这个更加合理：
+	    // 注册子组件
+	    // 将当前消息派发出去
+	    Vue.component('child', {
+	      template: '#child-template',
+	      data: function () {
+	        return { msg: 'hello' }
+	      },
+	      methods: {
+	        notify: function () {
+	          if (this.msg.trim()) {
+	            this.$dispatch('child-msg', this.msg)
+	            this.msg = ''
+	          }
+	        }
+	      }
+	    })
+	    // 初始化父组件
+	    // 将收到消息时将事件推入一个数组
+	    var parent = new Vue({
+	      el: '#events-example',
+	      data: {
+	        messages: []
+	      },
+	      // 在创建实例时 `events` 选项简单地调用 `$on`
+	      methods: {
+	        'handle': function (msg) {
+	          // 事件回调内的 `this` 自动绑定到注册它的实例上
+	          this.messages.push(msg)
+	        }
+	      }
+	    })
+           </pre>
+           <div class="explain">注意events和methods的区别，当你用events选项的时候实际上是在监听里面的事件，一旦有人分发了这个事件就会触发该函数</div>
+
+           <div class="title">编写可复用的组件</div>
+           <pre>
+        不能传递数据给组件，因为组件的作用域是孤立的。为了传递数据给组件，应当使用 props，在编写组件时，记住是否要复用组件有好处。一次
+        性组件跟其它组件紧密耦合没关系，但是可复用组件应当定义一个清晰的公开接口
+        Vue.js 组件 API 来自三部分——prop，事件和 slot：   
+        	prop 允许外部环境传递数据给组件；
+        	事件 允许组件触发外部环境的 action；
+        	slot 允许外部环境插入内容到组件的视图结构内。
+        <textarea style="height:220px;">
+        	<my-component
+        	  :foo="baz"
+        	  :bar="qux"
+        	  @event-a="doThis"
+        	  @event-b="doThat">
+        	  <!-- content -->
+        	  <img slot="icon" src="...">
+        	  <p slot="main-text">Hello!</p>
+        	</my-component>
+        </textarea>	
+           </pre>
+           <div class="explain"></div>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+
+           <div class="title"></div>
+           <pre>
+           	
+           </pre>
+           <div class="explain"></div>
+
            <div class="title"></div>
            <pre>
            	
