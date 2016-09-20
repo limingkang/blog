@@ -532,6 +532,56 @@
             oReq.send(formData);
             </pre>
 
+            <div class="title">Object.defineproperty实现数据和视图的联动</div>
+            <pre>
+            var o = {}; // 创建一个新对象
+            // Example of an object property added with defineProperty with a data property descriptor
+            Object.defineProperty(o, "a", {value : 37,
+                                           writable : true,
+                                           enumerable : true,
+                                           configurable : true});
+            // 对象o拥有了属性a，值为37
+
+            // Example of an object property added with defineProperty with an accessor property descriptor
+            var bValue;
+            Object.defineProperty(o, "b", {get : function(){ return bValue; },
+                                           set : function(newValue){ bValue = newValue; },
+                                           enumerable : true,
+                                           configurable : true});
+            o.b = 38;  
+            给对象o定义新的属性b，并且定义属性b的get和set方法，当o.b的时候会调用b属性的get方法，给b属性赋值的时候，会调用set方法，
+            这就是修改数据的时候，视图会自动更新的关键前端获取数据后，需要根据数据操作dom，视图变化后，需要修改不少代码，
+            有没有方法将数据和dom操作隔离，看一个例子 
+            <textarea style="height:110px;">
+                <div>
+                    <p>你好，<span id='nickName'></span></p>
+                    <div id="introduce"></div>
+                </div>　
+            </textarea>
+            //视图控制器
+            var userInfo = {};
+            Object.defineProperty(userInfo, "nickName", {
+                get: function(){
+                    return document.getElementById('nickName').innerHTML;
+                },
+                set: function(nick){
+                    document.getElementById('nickName').innerHTML = nick;
+                }
+            });
+            Object.defineProperty(userInfo, "introduce", {
+                get: function(){
+                    return document.getElementById('introduce').innerHTML;
+                },
+                set: function(introduce){
+                    document.getElementById('introduce').innerHTML = introduce;
+                }
+            })
+            userInfo.nickName = "赋值";
+            userInfo.introduce = "赋值"
+            设置userInfo的nickName属性时会调用set方法，更新dom节点的html
+            </pre>
+            <div class="explain">大多数框架都是用这个来实现绑定例如vue.js。把一个普通对象传给 Vue 实例作为它的 data 选项，Vue.js 将遍历它的属性，用 Object.defineProperty 将它们转为 getter/setter。这是 ES5 特性，不能打补丁实现，这便是为什么 Vue.js 不支持 IE8 及更低版本</div>
+
        	</div>
   </body>
 </html>
