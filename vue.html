@@ -603,6 +603,33 @@
         定计算属性 {{example}}，只有响应依赖发生变化时才更新 DOM。   	
            </pre>
 
+           <div class="title">vue-router常用的东西的记录</div>
+           <pre>
+        router.beforeEach(function (transition) {
+          if (transition.to.path === '/forbidden') {
+            transition.abort()
+          } else {
+            transition.next()
+          }
+        })
+        使用 Promise 和 ES6
+        router.beforeEach(function ({ to, next }) {
+          if (to.path === '/auth-required') {
+            // 返回一个断定会 true 或者 false 的 Promise
+            return AuthService.isLoggedIn()
+          } else {
+            next()
+          }
+        })
+        每个切换钩子函数都会接受一个 transition 对象作为参数:
+            transition.to:一个代表将要切换到的路径的路由对象
+            transition.next:调用此函数处理切换过程的下一步
+            transition.from:一个代表当前路径的路由对象
+            transition.abort([reason]):调用此函数来终止或者拒绝此次切换。
+            transition.redirect(path):取消当前切换并重定向到另一个路由
+           </pre>
+           <div class="explain">其实对于不同的写法，transition.to是等于es6下的to的，该对象下有path,params等键</div>
+
        </div>
   </body>
 </html>
