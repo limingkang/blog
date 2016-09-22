@@ -12,6 +12,30 @@
   </head>
   <body>
        <div class="big_container">
+           <div class="title" style="margin-top:0;">是否需要redux</div>
+           <pre>
+        简单说，如果你的UI层非常简单，没有很多互动，Redux 就是不必要的，用了反而增加复杂性:
+            用户的使用方式非常简单
+            用户之间没有协作
+            不需要与服务器大量交互，也没有使用 WebSocket
+            视图层（View）只从单一来源获取数据 
+
+        Redux 的适用场景：多交互、多数据源:
+            用户的使用方式复杂
+            不同身份的用户有不同的使用方式（比如普通用户和管理员）
+            多个用户之间可以协作
+            与服务器大量交互，或者使用了WebSocket
+            View要从多个来源获取数据 
+
+        从组件角度看，如果你的应用有以下场景，可以考虑使用 Redux:
+            某个组件的状态，需要共享
+            某个状态需要在任何地方都可以拿到
+            一个组件需要改变全局状态
+            一个组件需要改变另一个组件的状态
+        发生上面情况时，如果不使用 Redux 或者其他状态管理工具，不按照一定规律处理状态的读写，代码很快就会变成一团乱麻。你需要一种机制
+        可以在同一个地方查询状态、改变状态、传播状态的变化
+           </pre>
+
            <div class="title">redux的简单介绍</div>
            <pre>
         redux的三大基本原则：
@@ -24,12 +48,10 @@
                         Reducer 只是一些纯函数，它接收先前的 state 和 action，并返回新的 state。刚开始你可以只有一个 reducer，
                         随着应用变大，你可以把它拆成多个小的 reducers，分别独立地操作 state tree 的不同部分，因为 reducer 只是
                         函数，你可以控制它们被调用的顺序，传入附加数据，甚至编写可复用的 reducer 来处理一些通用任务，如分页器。
+           </pre>
 
-
-
-
-
-        redux的数据流动：
+           <div class="title">redux的数据流动</div>
+           <pre>
         1.调用 store.dispatch(action)
             Action 就是一个描述“发生了什么”的普通对象。比如：
                  { type: 'LIKE_ARTICLE', articleId: 42 };
@@ -93,34 +115,6 @@
             这个新的树就是应用的下一个 state！所有订阅 store.subscribe(listener) 的监听器都将被调用；
             监听器里可以调用 store.getState() 获得当前 state。
             现在应用新的state更新UI。如果你用了React Redux这类的绑定库,这时就应该调用 component.setState(newState)来更新
-
-
-
-
-        Object.assign()是es6复制对象的方法
-        var o1 = { a: 1 };
-        var o2 = { b: 2 };
-        var o3 = { c: 3 };
-        var obj = Object.assign(o1, o2, o3);
-        console.log(obj); // { a: 1, b: 2, c: 3 }
-        console.log(o1);  // { a: 1, b: 2, c: 3 }
-        第一个对象是要最终输出的目标对象所以一般在前面写个空对象，相同属性会合并更新
-
-
-
-
-        var {
-          StyleSheet,
-          Text,
-          View
-        } = React;
-        等价于：
-        var StyleSheet = React.StyleSheet;
-        var Text = React.Text;
-        var View = React.View
-
-        a=[1,2]
-        ...表示延展操作符，如[3,...a,4]就是[3,1,2,4],就是将值全部展开
            </pre>
            <div class="explain">redux中文文档地址<a href="http://cn.redux.js.org/">http://cn.redux.js.org/</a></div>
        </div>
