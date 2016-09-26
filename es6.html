@@ -12,7 +12,9 @@
   </head>
   <body>
        <div class="big_container">
-           <div class="title" style="margin-top:0;">let命令&emsp;<a href="http://es6.ruanyifeng.com/#docs/let">es6完整学习地址</a></div>
+           <div class="title" style="margin:0;">只做前小半部分的记录&emsp;<a href="http://es6.ruanyifeng.com/#docs/let">es6完整学习地址</a></div>
+           
+           <div class="title" style="margin-top:0;">let命令</div>
            <pre>
         1.基本用法
            ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
@@ -375,17 +377,17 @@
         上面代码中，全局变量a由var命令声明，所以它是全局对象的属性；全局变量b由let命令声明，所以它不是全局对象的属性,返回undefined   	
            </pre>
 
-           <div class="title">Object.assign()是es6复制对象的方法</div>
+           <div class="title">Object.assign()是es6复制对象的方法是浅复制</div>
            <pre>
         var o1 = { a: 1 };
         var o2 = { b: 2 };
         var o3 = { c: 3 };
         var obj = Object.assign(o1, o2, o3);
         console.log(obj); // { a: 1, b: 2, c: 3 }
-        console.log(o1);  // { a: 1, b: 2, c: 3 }
+        console.log(o1);  // { a: 1, b: 2, c: 3 }   
         第一个对象是要最终输出的目标对象所以一般在前面写个空对象，相同属性会合并更新
            </pre>  
-    
+        
        </div>
   </body>
 </html>

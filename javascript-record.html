@@ -301,7 +301,8 @@
             <div class="title">对js继承的理解</div>
             <pre>
                 function定义的对象有一个prototype属性，使用new生成的对象没有这个属性，
-                prototype属性又指向了一个prototype对象，这是两个不同的东西，在prototype对象中有一个constructor属性，这个constructor属性同样指向了一个constructor对象，而这个对象指向了function函数本身
+                prototype属性又指向了一个prototype对象，这是两个不同的东西，在prototype对象中有一个constructor属性，这个constructor
+                属性同样指向了一个constructor对象，而这个对象指向了function函数本身
                 function Person(name){
                     this.name=name;
                     this.showMe=function(){
@@ -323,7 +324,9 @@
                 Person.prototype.form=function(){
                   console.log(123)
                 }
-                var one =new Person('js');   //一旦实例化之后就是创建相应的内存区块了，会在堆内存中存储三个属性{name:js,showMe:function(),_proto_},注意_proto_属性指向的就是Person的prototype对象，所以在给其prototype对象加属性之后可以访问到了
+                var one =new Person('js');   //一旦实例化之后就是创建相应的内存区块了，会在堆内存中存储三个属性
+                {name:js,showMe:function(),_proto_},注意_proto_属性指向的就是Person的prototype对象，所以在给其prototype对象加
+                属性之后可以访问到了
                 one.showMe();     //js      
                 one.form();   //123 
 
@@ -338,7 +341,8 @@
                 }
                 function sub(){}
                 sub.prototype=new Person();
-                //sub.prototype.constructor=sub;  //加了这句话之后其实就是在sub的原型对象中加入一个constructor属性，使其构造者指向sub，这样他就不会再向上找原型链找到constructor属性，这时候就指向了Person
+                //sub.prototype.constructor=sub;  //加了这句话之后其实就是在sub的原型对象中加入一个constructor属性，使其构造者
+                指向sub，这样他就不会再向上找原型链找到constructor属性，这时候就指向了Person
                 var subone=new sub();
                 console.log(subone);   //{_proto_:Person}
                 subone.form();   //123
