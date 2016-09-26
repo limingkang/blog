@@ -582,6 +582,50 @@
             </pre>
             <div class="explain">大多数框架都是用这个来实现绑定例如vue.js。把一个普通对象传给 Vue 实例作为它的 data 选项，Vue.js 将遍历它的属性，用 Object.defineProperty 将它们转为 getter/setter。这是 ES5 特性，不能打补丁实现，这便是为什么 Vue.js 不支持 IE8 及更低版本</div>
 
+            <div class="title">递归调用的优化</div>
+            <pre>
+            它的原理非常简单。尾递归之所以需要优化，原因是调用栈太多，造成溢出，那么只要减少调用栈，就不会溢出。怎么做可以减少调用栈呢？
+            就是采用“循环”换掉“递归”。
+
+            下面是一个正常的递归函数。
+            function sum(x, y) {
+              if (y > 0) {
+                return sum(x + 1, y - 1);
+              } else {
+                return x;
+              }
+            }
+            sum(1, 100000)
+            // Uncaught RangeError: Maximum call stack size exceeded(…)
+            上面代码中，sum是一个递归函数，参数x是需要累加的值，参数y控制递归次数。一旦指定sum递归100000次，就会报错，提示超出调用栈的
+            最大次数。
+            蹦床函数（trampoline）可以将递归执行转为循环执行。
+
+            function trampoline(f) {
+              while (f && f instanceof Function) {
+                f = f();
+              }
+              return f;
+            }
+            上面就是蹦床函数的一个实现，它接受一个函数f作为参数。只要f执行后返回一个函数，就继续执行。注意，这里是返回一个函数，然后执
+            行该函数，而不是函数里面调用函数，这样就避免了递归执行，从而就消除了调用栈过大的问题。
+
+            然后，要做的就是将原来的递归函数，改写为每一步返回另一个函数。
+
+            function sum(x, y) {
+              if (y > 0) {
+                return sum.bind(null, x + 1, y - 1);
+              } else {
+                return x;
+              }
+            }
+            上面代码中，sum函数的每次执行，都会返回自身的另一个版本。
+
+            现在，使用蹦床函数执行sum，就不会发生调用栈溢出。
+
+            trampoline(sum(1, 100000))   
+            </pre>
+
        	</div>
   </body>
 </html>
