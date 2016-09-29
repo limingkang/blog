@@ -630,6 +630,27 @@
             trampoline(sum(1, 100000))   
             </pre>
 
+            <div class="title">js相等==运算符的比较规则小结</div>
+            <pre>
+            如果x不是正常值（比如抛出一个错误），中断执行。
+            如果y不是正常值，中断执行。
+            如果Type(x)与Type(y)相同，执行严格相等运算x === y。
+            如果x是null，y是undefined，返回true。
+            如果x是undefined，y是null，返回true。
+            如果Type(x)是数值，Type(y)是字符串，返回x == ToNumber(y)的结果。
+            如果Type(x)是字符串，Type(y)是数值，返回ToNumber(x) == y的结果。
+            如果Type(x)是布尔值，返回ToNumber(x) == y的结果。
+            如果Type(y)是布尔值，返回x == ToNumber(y)的结果。
+            如果Type(x)是字符串或数值或Symbol值，Type(y)是对象，返回x == ToPrimitive(y)的结果。
+            如果Type(x)是对象，Type(y)是字符串或数值或Symbol值，返回ToPrimitive(x) == y的结果。
+            上面都不满足返回false。
+
+            {}==null  //false
+            0==null   //false    
+            </pre>
+            <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
+
        	</div>
+       
   </body>
 </html>
