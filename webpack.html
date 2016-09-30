@@ -14,8 +14,7 @@
       <div class="big_container">
            <div class="title">webpack.config.js</div>
            <pre>
-		// context 用于解析entry选项的基础目录(绝对路径), 如果output.pathinfo设置了，就包含了缩短过的目录；
-		//（相当于公共目录，下面所有的目录都在这个公共目录下面)
+		
 		// entry 是页面中的入口文件，比如我这边的入口文件是main.js
 		// 如果传入一个字符串，这个字符串就会被解析为启动时加载的模块。
 		// 如果传入个数组，所有模块都是启动时加载，模块导出到最后一个里面。
@@ -42,11 +41,10 @@
         //（require.ensure() API的第三个参数是给这个模块命名，否则 chunkFilename: "[name].min.js" 中的 [name] 是一个自动分配的、
         //可读性很差的id
         
-	    // output 是对应输出项配置,主要包括path,filename和publishPath属性。path代表输出的路径，filename代表输出的文件名称，
-	    //publishPath代表静态资源发布后的前缀地址
 	    // publicPath指定了一个在浏览器中被引用的URL地址。 对于使用script和link加载器，当文件路径不同于他们的本地磁盘路径
 	    //由path指定时候publicPath被用来作为href或者url指向该文件。这种做法在你需要将静态文件放在不同的域名或者CDN上面的时候用
-	    //Webpack Dev Server 也是用这个方式来读取文件的。与path搭配使用上[hash]就可以做好缓存方案了。
+	    //Webpack Dev Server 也是用这个方式来读取文件的用这个命令的时候并未生成文件只是在内存中,那时候的访问地址是publicpath才行
+        //用webpack命令才是生成，与path搭配使用上[hash]就可以做好缓存方案了。
 	    output: {
 	        path: "/home/public/assets",
 	        publicPath: "/assets/"
@@ -62,15 +60,6 @@
 	        publicPath: "http://cdn.example.com/assets/[hash]/"
 	    }
 
-	    // resolve: 定义了解析模块路径时的配置,常用的就是extensions;可以用来指定模块的后缀,这样引入模块时不需要写后缀,会自动补全
-	    resolve: {
-	        // require时省略的扩展名，如：require('module') 不需要module.js
-	        extension: ['', '.js'],
-	        //别名
-	        alias: {
-	            filter: path.join(__dirname, 'src/filters')
-	        }
-	    }
 
 	    // plugins: 定义了需要使用的插件，比如commonsPlugin在打包多个入口文件时会提取公用的部分，生成common.js;
 	    plugins: [
@@ -105,6 +94,8 @@
 	    var webpack = require('webpack');
 	    var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
 	    module.exports = {
+            // context 用于解析entry选项的基础目录(绝对路径), 如果output.pathinfo设置了，就包含了缩短过的目录；
+            //（相当于公共目录，下面所有的目录都在这个公共目录下面)
 	        context: __dirname + "/app",
 	        //插件项
 	        plugins: [commonsPlugin],         //如果加入这个参数页面引用的时候一定要先引用其生成的common.js否则报错
@@ -127,11 +118,12 @@
 	                //使用file-loader来加载资源文件
 	            ]
 	        },
-	        //其它解决方案配置
+	        //resolve:定义了解析模块路径时的配置,常用的就是extensions;用来指定模块的后缀,这样引入模块时不需要写后缀,会自动补全
 	        resolve: {
 	             root: 'E:/github/flux-example/src', //绝对路径
-	             extensions: ['', '.js', '.json', '.scss'],
-	             alias: {
+	             extensions: ['', '.js', '.json', '.scss'], //require时省略的扩展名,如:require('module')不需要module.js
+	        //别名
+                 alias: {
 	                 AppStore : 'js/stores/AppStores.js',
 	                 ActionType : 'js/actions/ActionType.js',
 	                 AppAction : 'js/actions/AppAction.js'
