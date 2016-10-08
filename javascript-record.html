@@ -650,6 +650,107 @@
             </pre>
             <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
 
+            <div class="title">正则表达式小结</div>
+            <pre>
+            '12345678'.replace(/\d{3,6}/g,'X')       //output: "X78"
+            正常情况下就是贪婪模式，就是直接按最多次匹配，匹配一次之后就扔掉匹配的123456，只剩下78了所以只有一次匹配
+            '12345678'.replace(/\d{3,6}?/g,'X')       //output: "XX78"
+            '123456789'.match(/\d{3,5}?/g)       //output: ["123","456","789"]
+            在量词后面加上?就表示非贪婪模式，对应匹配到最小个数的值,这里就匹配三个数字就行了
+            'a1b2c3d4'.replace(/([a-z]\d){3}/g,"X")   //output: "Xd4"
+            量词最大作用是要给括号分组，这里没有括号的话就表示3个数字了
+
+
+            'byroncasper'.replace(/byron|casper/g,"X")   //output:"XX"
+            'byronsperbyrcasper'.replace(/byr(on|ca)sper/g,"X")   //output:"XX"
+            注意分组中或'|'的使用，直接表示左右两个单词，注意上面有无括号的区别
+
+
+            分组中的反向引用：
+            '2015-12-25'.replace(/(\d{4})-(\d{2})-(\d{2})/g,'$2/$3/$1')   //output:12/25/2015
+            没有括号的时候就表示$1这样的直接的字符串，有括号的时候就是会被捕获就是值，但是我们也可以在分组后面加?:就可以不被
+            捕获如(?:abc)这样后面就捕获不到了
+
+
+            正则表达式中的前瞻也就是正向匹配
+            'a2cc'.replace(/\w(?=\d)/g,'X')     //output:'X2cc'
+            意思是满足是字母而且后面是一个数字的情况，注意括号里面的不参与匹配，只有在前一个符合情况下才看匹配的那个后面是否符合，
+            那么?!就表示不符合括号内的这叫负向匹配
+
+            var reg1=/\w/;
+            var reg2=/\w/g;   //注意lastIndex是正则的属性
+            reg1.test('ab');  //无论执行多少次都是true,因为lastIndex值始终为0
+            console.log(reg1.lastIndex);      // 0
+            console.log(reg2.lastIndex);      // 0
+            console.log(reg2.test('ab'));     // true
+            console.log(reg2.lastIndex);      // 1
+            console.log(reg2.test('ab'));     // true
+            console.log(reg2.lastIndex);      // 2
+            console.log(reg2.test('ab'));     // false
+            console.log(reg2.lastIndex);      // 0
+            console.log(reg2.test('ab'));     // true
+            console.log(reg2.lastIndex);      // 1
+            console.log(reg2.test('ab'));     // true
+            console.log(reg2.lastIndex);      // 2
+            console.log(reg2.test('ab'));     // false
+            console.log(reg2.lastIndex);      // 0
+            while(reg2.test('ab')){
+               console.log(reg2.lastIndex);   // 1 2
+            }
+            lastIndex返回每次匹配的最后一个字符的下一位，以便下一次匹配（非全局模式下始终为0），最后没了的时候又重置为0.
+            所以为了使结果一样有时候这样写每一次都实例化一个正则，但是这耗内存(/\W/g).test('ab')
+            但是test只是为了检测用，所以用这个方法的时候我们一般不用全局匹配
+
+
+            var reg3=/\d(\w)(\w)\d/;
+            var reg4=/\d(\w)(\w)\d/g;
+            var ts='$1ab2bb3cy4dd5ee';
+            var ret=reg3.exec(ts);
+            console.log(ret);             //["1ab2", "a", "b", index: 1, input: "$1ab2bb3cy4dd5ee"]
+            console.log(ret.index);       // 1
+            console.log(ret[0]);          // "1ab2"
+            console.log(ret.toString());  //"1ab2,a,b"    这是一个字符串
+            其中ret是一个对象数组，第一个表示匹配到的值，后面是对应的分组匹配到的值，有几个分组，就有几个这个值，index值对应匹配到的
+            字符串的开始位置，input对应你要查询的原字符串
+            while(reg4.exec(ts)){
+               console.log(reg4.lastIndex + ret.index + ret.toString());   
+            }
+            //"5 1 1ab2,a,b"     "11 7 3cy4,c,y"     输出值同非全局模式下面的一样只是多了循环而已
+
+
+            'a1b2c3d1'.search('1')     //output:1
+            search方法用于查找返回匹配到的字符串的开始位置没找到就返回-1,这个方法忽略/g标志
+            实际上对于字符串的像split,replace等方法最终都是隐式转换为正则表达式的
+            'a,b,c,d'.split(',')会被转换为'a,b,c,d'.split(/,/g)输出['a','b','c','d']
+            'a1b2c3d4'.split(/\d/g)以数字为分隔符输出数组['a','b','c','d']
+
+
+            var reg3=/\d(\w)\d/;
+            var reg4=/\d(\w)\d/g;
+            var ts='$1a2b3c4d5e';
+            var ret=ts.match(reg3);       
+            console.log(ret);             //["1a2", "3c4",index: 1, input: "$1a2b3c4d5e"]   
+            console.log(ret.index);       //  1
+            console.log(ret[0]);          // "1a2"
+            console.log(ret.toString());  //"1a2,3c4"    这是一个字符串
+            match方法非全局模式下返回值和exec一样，没有匹配到的时候返回null 
+            var ret2=ts.match(reg4);       
+            console.log(ret2);             //["1a2", "3c4"]   
+            console.log(ret2.index);       //  undefined
+            console.log(ret2[0]);          // "1a2"
+            全局模式下只是返回匹配值的对象数组，没有就返回null，这个功能比exec弱一些，但是速度快一些
+
+
+            'a1b2c3d45e'.replace(/(\d)(\w)(\d)/g,function(match,group1,group2,group3,index,origin){
+                console.log(match);
+                return group1+group3;
+            })
+            match代表匹配到的项，所以依次输出"1b2"  "3d4",最终返回的字符串是"a12c34e5"
+            group1,group2,group3代表匹配下的分组，没有分组的时候就没有几个分组值的参数
+            index代表匹配到的开始位置，origin代表原始字符串
+            </pre>
+            <div class="explain">注意上面的返回值都新开了内存区块，原字符串并没有改变</div>
+
        	</div>
        
   </body>
