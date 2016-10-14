@@ -336,13 +336,13 @@ footer {
 }
 
 @media print, screen and (max-width: 960px) {
-
+  .txtMarquee-top {display: none;}
   div.wrapper {
     width:auto;
     margin:0;
   }
-
-  header, section, footer {
+  section {padding-right: 100px;}
+  header, footer {
     float:none;
     position:static;
     width:auto;
@@ -358,22 +358,7 @@ footer {
     padding-right:320px;
   }
 
-  section {
-    padding:20px 84px 20px 50px;
-    margin:0 0 20px;
-  }
-
-  header a small {
-    display:inline;
-  }
-
-  header ul {
-    position:absolute;
-    right:130px;
-    top:84px;
-  }
 }
-
 @media print, screen and (max-width: 720px) {
   body {
     word-wrap:break-word;
