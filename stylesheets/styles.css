@@ -39,7 +39,7 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color:#232323;
-  margin:36px 0 10px;
+  margin:26px 0 10px;
 }
 
 p, ul, ol, table, dl {
@@ -319,7 +319,7 @@ a.buttons:hover {
 /* Section - for main page content */
 
 section {
-  width:650px;
+  width:550px;
   float:right;
   padding-bottom:50px;
 }
@@ -439,10 +439,34 @@ a:hover {cursor: pointer;}
 .txtMarquee-top {position: fixed;top: 10px;left: 30px;}
 .txtMarquee-top h3 {font-weight: bolder;}
 .txtMarquee-top li {height: 30px;line-height: 30px;}
+h3 {-webkit-animation: mymove .5s ease-in-out forwards;animation: mymove .5s ease-in-out forwards;opacity: 0;filter:alpha(opacity=0)}
+h3:nth-child(1) {webkit-animation-delay: 0.5s;animation-delay: 0.5s;}
+h3:nth-child(2) {webkit-animation-delay: 0.75s;animation-delay: 0.75s;}
+h3:nth-child(3) {webkit-animation-delay: 1s;animation-delay: 1s;}
+h3:nth-child(4) {webkit-animation-delay: 1.25s;animation-delay: 1.25s;}
+h3:nth-child(5) {webkit-animation-delay: 1.5s;animation-delay: 1.5s;}
+h3:nth-child(6) {webkit-animation-delay: 1.75s;animation-delay: 1.75s;}
+h3:nth-child(7) {webkit-animation-delay: 2s;animation-delay: 2s;}
+h3:nth-child(8) {webkit-animation-delay: 2.25s;animation-delay: 2.25s;}
+h3:nth-child(9) {webkit-animation-delay: 2.5s;animation-delay: 2.5s;}
+h3:nth-child(10) {webkit-animation-delay: 2.75s;animation-delay: 2.75s;}
+h3:nth-child(11) {webkit-animation-delay: 3s;animation-delay: 3s;}
+h3:nth-child(12) {webkit-animation-delay: 3.25s;animation-delay: 3.25s;}
+h3:nth-child(13) {webkit-animation-delay: 3.5s;animation-delay: 3.5s;}
+h3:nth-child(14) {webkit-animation-delay: 3.75s;animation-delay: 3.75s;}
+h3:nth-child(15) {webkit-animation-delay: 4s;animation-delay: 4s;}
+h3:nth-child(16) {webkit-animation-delay: 4.25s;animation-delay: 4.25s;}
+h3:nth-child(17) {webkit-animation-delay: 4.5s;animation-delay: 4.5s;}
 
+@keyframes mymove {
+  from {opacity: 0;filter:alpha(opacity=0)}
+  to {opacity: 1;filter:alpha(opacity=100)}
+}
 
-
-
+@-webkit-keyframes mymove {  /*Safari and Chrome*/
+  from {opacity: 0;filter:alpha(opacity=0)}
+  to {opacity: 1;filter:alpha(opacity=100)}
+}
 
 
 
