@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb,vue,es6,electron">
+  </head>
+  <body>
+      <div class="big_container">
+           <div class="title">electron简单介绍</div>
+           <pre>
+        1.即使在移动端和云端大行其道而，桌面端日渐落末的现在，我的心中仍然为桌面应用留有一个特殊的位置。和 Web 应用比起来桌面应用的优点还
+        是很多的：只要把它们放在开始菜单栏或者 dock 上，你就能随时打开它们；还可以通过 alt-tab 或者 cmd-tab 切换应用；和操作系统之间的
+        交互更良好（快捷键，通知栏等），而且electron写出的应用太大，因为要在内部配置node等环境
+
+        2.Electron 提供了一个实时构建桌面应用的纯JavaScript环境。Electron可以获取到你定义在package.json中main文件内容,然后执行它。
+        不过这个文件（通常我们称之为main.js）,可以创建一个应用窗口,这个应用窗口包含一个渲染好的web界面，还可以和系统原生的 GUI 交互。
+	具体来说，就是当你启动了一个Electron应用，就有一个主进程（main process）被创建了。这条进程将负责创建出应用的GUI（也就是应用
+	的窗口），并处理用户与这个GUI之间的交互。但直接启动main.js是无法显示应用窗口的，在 main.js 中通过调用BrowserWindow模块才能将
+	使用应用窗口。然后每个浏览器窗口将执行它们各自的渲染器进程（ renderer process ）。渲染器进程将会处理一个真正的 web 页面
+	（HTML + CSS + JavaScript），将页面渲染到窗口中。鉴于Electron使用的是基于Chrominum的浏览器内核，你就不太需要考虑兼容的问题
+           </pre>
+           <div class="explain"><a href="https://github.com/electron/electron/tree/master/docs-translations/zh-CN">API配置地址</a></div>
+
+           <div class="title">使用electron创建一个简单应用</div>
+           <pre>
+        1.官方给的入门小例子：
+           $ git clone https://github.com/electron/electron-quick-start
+           $ cd electron-quick-start
+           $ npm install && npm start
+
+        2.通常，一个Electron应用的结构类似下面：
+			your-app/
+			├── package.json
+			├── main.js
+			└── index.html
+		index.html就是正常的html页面就行
+		package.json 的格式与Node的模块格式是一致的，其中 main 字段指定的脚本就是你应用的启动脚本，该脚本将运行在主进程中。
+		你的package.json 也许看上去像下面这个例子：
+			{
+			  "name"    : "your-app",
+			  "version" : "0.1.0",
+			  "main"    : "main.js"
+			}
+		注意 如果在package.json 中的 main 字段没有指定，那么Electron将尝试装载一个名为 index.js 的脚本。
+		main.js 应当创建窗口并且处理系统事件，一个典型的例子如下：
+		    const electron = require('electron');
+		    // 控制应用生命周期的模块
+		    const {app} = electron;
+		    // 创建本地浏览器窗口的模块
+		    const {BrowserWindow} = electron;
+
+		    // 指向窗口对象的一个全局引用，如果没有这个引用，那么当该javascript对象被垃圾回收的
+		    // 时候该窗口将会自动关闭
+		    let win;
+
+		    function createWindow() {
+		      // 创建一个新的浏览器窗口
+		      win = new BrowserWindow({width: 800, height: 600});
+
+		      // 并且装载应用的index.html页面
+		      win.loadURL(`file://${__dirname}/index.html`);
+
+		      // 打开开发工具页面
+		      win.webContents.openDevTools();
+
+		      // 当窗口关闭时调用的方法
+		      win.on('closed', () => {
+		        // 解除窗口对象的引用，通常而言如果应用支持多个窗口的话，你会在一个数组里
+		        // 存放窗口对象，在窗口关闭的时候应当删除相应的元素。
+		        win = null;
+		      });
+		    }
+
+		    // 当Electron完成初始化并且已经创建了浏览器窗口，则该方法将会被调用。
+		    // 有些API只能在该事件发生后才能被使用。
+		    app.on('ready', createWindow);
+
+		    // 当所有的窗口被关闭后退出应用
+		    app.on('window-all-closed', () => {
+		      // 对于OS X系统，应用和相应的菜单栏会一直激活直到用户通过Cmd + Q显式退出
+		      if (process.platform !== 'darwin') {
+		        app.quit();
+		      }
+		    });
+
+		    app.on('activate', () => {
+		      // 对于OS X系统，当dock图标被点击后会重新创建一个app窗口，并且不会有其他
+		      // 窗口打开
+		      if (win === null) {
+		        createWindow();
+		      }
+		    });
+		    // 在这个文件后面你可以直接包含你应用特定的由主进程运行的代码。
+		    // 也可以把这些代码放在另一个文件中然后在这里导入。
+
+		3.启动方法：
+		    electron-prebuilt 是一个 npm 的模块，它包含了一个预编译的Electron版本。
+		    如果你已经通过 npm 将该模块全局安装了，那么你只需要在你应用的源代码目录西下运行下面的命令：
+		   		electron .
+		    如果你只是在本地安装了该模块，那么运行：
+		   		./node_modules/.bin/electron .
+
+		   	或者手动下载Electron二进制包
+		   	如果手动下载了Electron二进制包,你可以通过执行其中包含的二进制文件来直接执行你的应用,或者直接打开electron.exe
+		   	文件之后将你的应用拖拽进去即可
+		   	Windows:  $ .\electron\electron.exe your-app\
+		   	Linux: 	  $ ./electron/electron your-app/
+		   	OS X：    $ ./Electron.app/Contents/MacOS/Electron your-app/
+           </pre>
+           <div class="explain">
+               具体在应用的时候最好再建立一个inject.js文件，在主进程中通过win.webContents.executeJavaScript()方法来插入js文件，在该js文
+               件中写入主进程和渲染进程之间的通讯事件，通过主进程的ipcMain和渲染进程的ipcRenderer方法通讯，具体可查看API
+           </div>
+      </div>
+  </body>
+</html>

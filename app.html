@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb,hbuilder">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">各种app开发方式的比较</div>
+           <pre>
+        1.第一种方式：native app
+        IOS：基于XCode开发工具，使用Swift或者OC开发语言，来进行原生态的IOS应用的开发。
+        Android：基于Eclipse或者Android Studio开发工具，使用Java开发语言，来进行原生态的Android应用的开发。
+        优点：
+	        原生态的功能和性能体验，可以完全控制所有的功能。
+	        完善的API文档和demo。
+        缺点：
+	        学习曲线较陡峭。
+	        开发成本较大。
+	        部署审核时间较长。
+	2.第二种方式：hybrid app，基于开源的framework，使用HTML+CSS+JS编程语言,通过编写web应用,并且转化成native app的方式进行开发
+	优点：
+		Write once，run anywhere！
+		学习曲线比较平滑，web思维，开发简单。
+		开源，有大量的社区支持以及丰富的案例。
+		可以在线部署，免去部署审核时间。
+		开发成本较小。
+	缺点：
+		Web不能解决一切问题。
+		不适合高质量交互及动画类应用，性能相比native app有一定的差距。
+	3.第三种方式：基于跨平台的开发工具，来进行原生态应用的开发
+	Titanium：用Javascript通过提供跨平台的Javascript运行时和mobile api来进行native app开发。要针对不同的平台进行不同的编码
+	React Native：使用Javascript语言，通过JavascriptCore与Native API进行通信来进行native app的开发，由Facebook开源
+	优点：
+		Lean once，write anywhere！
+		拥有native app的性能。
+		拥有web开发的效率。
+	缺点：
+		入门门槛比较高。
+		需要自己为不同的平台定制UI组件。
+           </pre>
+           <div class="explain">
+               react native不是所谓的hybrid,它是通过javascriptCore来进行开发的，JavaScriptCore是webkit的一个重要组成部分，主要是
+               对JS进行解析和提供执行环境。代码是开源的。iOS7后苹果在iPhone平台推出，极大的方便了我们对js的操作。我们可以脱离webview直
+               接运行我们的js。iOS7以前我们对JS的操作只有webview里面一个函数 stringByEvaluatingJavaScriptFromString，JS对OC的回调都是
+               基于URL的拦截进行的操作。大家用得比较多的是WebViewJavascriptBridge和EasyJSWebView这两个开源库，很多混合都采用的这种方式。
+		   </div>
+
+		   <div class="title">hybrid用的其中一个技术Native.js技术</div>
+		   <pre>
+	Native.js技术，简称NJS，是一种将手机操作系统的原生对象转义，映射为JS对象，在JS里编写原生代码的技术。
+	如果说Node.js把js扩展到服务器世界，那么Native.js则把js扩展到手机App的原生世界。
+	HTML/JS/Css全部语法只有7万多，而原生语法有几十万，Native.js大幅提升了HTML5的能力。
+	NJS突破了浏览器的功能限制，也不再需要像Hybrid那样由原生语言开发插件才能补足浏览器欠缺的功能。
+	NJS编写的代码，最终需要在HBuilder里打包发行为App安装包，或者在支持Native.js技术的浏览器里运行。目前Native.js技术不能在普通手
+	机浏览器里直接运行。
+		1.NJS大幅扩展了HTML5的能力范围，原本只有原生或Hybrid App的原生插件才能实现的功能如今可以使用JS实现。
+		2.NJS大幅提升了App开发效率，将iOS、Android、Web的3个工程师组队才能完成的App，变为1个web工程师就搞定。
+		3.NJS不再需要配置原生开发和编译环境，调试、打包均在HBuilder里进行。没有mac和xcode一样可以开发iOS应用。
+		4..再次强调，Native.js不是一个js库，不需要下载引入到页面的script中，也不像nodejs那样有单独的运行环境，Native.js的
+		运行环境是集成在5+runtime里的，使用HBuilder打包的app或流应用都可以直接使用Native.js。   	
+		   </pre>
+		   <div class="explain">
+		   		如果不熟悉原生API也没关系，我们汇总了很多NJS的代码示例，<a href="http://ask.dcloud.net.cn/article/114">http://ask.dcloud.net.cn/article/114</a><br/>
+		   		Hbuilder如何打包发布代码可以参考<a href="http://uikoo9.com/book/detail/3">http://uikoo9.com/book/detail/3</a>
+		   </div>
+
+		   <div class="title">5+runtime(html5 plus runtime)</div>
+		   <pre>
+	1.h5+项目 是用的原生的HTML5+的API做的。mui项目是封装了原生的HTML5+的API的一个框架，方便开发者迅速开发应用。
+	含mui.css（提供了很多页面样式）和mui.js（封装了原生HTML5+API）	
+
+	2.5+Runtime-增强版的手机浏览器引擎，让HTML5达到原生水平！  
+
+	3.runtime版for-app: 使用HTML5开发，然后使用HBuilder提供的云打包或本地打包将可以把5+ Runtime和开发者编写的HTML5页面打包为
+	原生App的安装包，包括Android的apk和iOS的ipa。发行到原生应用市场。	
+		   </pre>
+		   <div class="explain">API参考地址<a href="http://www.dcloud.io/runtime.html">http://www.dcloud.io/runtime.html</a></div>
+       </div>
+  </body>
+</html>
