@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  	<head>
+    	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="chrome=1">
+    	<title>Blog by limingkang</title>
+    	<link rel="stylesheet" href="stylesheets/styles.css">
+    	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    	<meta name="description" content="前端开发记录">
+        <meta name="keywords" content="livestyle,livereload,gulp,browsersync">
+    </head>
+    <body>
+        <div class="big_container">
+            <div class="title">LiveStyle的介绍和安装方法</div>
+            <pre>
+        Emmet LiveStyle的特点：
+            1. 即时更新（不会重新加载页面，样式修改以后无需保存也能预览)；
+            2. 多个页面同时预览（例：同时打开多个页面，并且关联到相同的CSS，此时修改该CSS，这些页面都能即时显示修改内容）
+            3. 双向修改（在Chrome开发者工具和Sublime Text中，只要有一处修改，两个工具的样式都会更改。）
+            4. 便捷的安装和使用
+
+        安装方法：
+            1.LiveStyle和Emmet一样，需要PyV8插件的支持。建议先安装Emmet，因为安装Emmet的同时会自动安装PyV8
+            2.安装LiveStyle插件到sublime text,搜索chrome插件下载来下载LiveStyle对于chrome的扩展插件
+            3.打开chrome的扩展程序将下载的文件拖入进去安装即可
+            4.打开页面审查元素选择livestyle，可能会显示no active editor，Chrome扩展通过Websocket协议和编辑器建立连接。如果
+            出现"无连接"错误，你当前网络设置/代理/防火墙阻塞了到http://127.0.0.1:54000的网络连接——Websocket服务器运行在这个地址
+            </pre>
+            <div class="explain">可惜只对css、less、scss文件有用,对html、js文件无效,而且在页面中引用的还是用其他工具翻译成的css文件</div>
+
+            <div class="title">livereload的安装和使用方法</div>
+            <pre>
+        安装方法：
+            1.安装chrome扩展插件livereload，一样是去网上搜索一下安装即可
+            2.npm全局安装livereload模块
+            3.到你的项目目录下面运行命令livereload开始监听
+            4.用服务器打开你的网页，之后点击右上角的安装的按个插件的图标使其运行
+            5.如果没有服务器的话使用http-server全局安装之后到你的项目目录运行命令http-server即可，之后通过
+            例如locallhose:8080/test.js这种形式访问形式访问，这就意味着至少要开两个窗口，一个用于服务器一个用于livereload
+        
+        它也可以配合gulp使用来监听文件：
+            当前目录新建 gulpfile.js 文件，写入以下代码 
+            var gulp = require('gulp'),
+                livereload = require('gulp-livereload');
+
+            gulp.task('watch', function () {    // 这里的watch，是自定义的，写成live或者别的也行
+                var server = livereload();
+                
+                // app/**/*.*的意思是 app文件夹下的 任何文件夹 的 任何文件
+                gulp.watch('app/**/*.*', function (file) {
+                    server.changed(file.path);
+                });
+            });
+            之后到当前目录运行gulp watch就不用livereload命令了
+
+        缺点：
+            LiveReload有所不足的地方是，需要搭配浏览器插件。但是，插件是取决于浏览器的，Chrome和Firefox都有可用插件，
+            但IE，或者我手机上的浏览器，就不能这样了。这时候只能手工向页面里添加一段script代码（其实插件也是做了这件事），
+            而且还要记得结束后再手工移除
+
+        LiveReload提供两种方式监听网页文档的变化：
+        1.在网页body标签之前添加一段代码
+            [html] view plain copy 在CODE上查看代码片派生到我的代码片就是产生一个script标签在里面引入一段js
+            <span>document.write('<span><</span>script src="http://' + (location.host || 'localhost').split(':')[0] +
+             ':35729/livereload.js?snipver=1"></' + 'script>')  
+        2.在浏览器中安装LiveReload插件
+            选择哪一种看个人喜好了，不过第二种还是方便一点。
+            然后在浏览器中打开网页，选择第二种方式的读者记得启动浏览器的LiveReload插件，这其实就是在网页文档中添加那段代码。
+            </pre>
+            <div class="explain">注意上面两个方法都一定要通过网页服务器地址形式打开否则无法实现自刷新,而且它对html和js都有用</div>
+
+            <div class="title">BrowserSync的安装和使用</div>
+            <pre>
+        优点：
+            1.Browsersync能让浏览器实时、快速响应您的文件更改（html、js、css、sass、less等）并自动刷新页面。更重要的是 Browsersync
+            可以同时在PC、平板、手机等设备下进项调试。您可以想象一下：“假设您的桌子上有pc、ipad、iphone、android等设备，同时打
+            开了您需要调试的页面，当您使用browsersync后，您的任何一次代码保存，以上的设备都会同时显示您的改动” 。有了它，您不
+            用在多个浏览器、多个设备间来回切换，频繁的刷新页面。
+            2.在一个浏览器中滚动页面、点击等行为也会同步到其他浏览器和设备中，这一切还可以通过可视化界面来控制
+            3.如果发生变化的文件是css，BrowserSync不会刷新整页，而是直接重新请求这个css文件，并更新到当前页中，这更加快捷。如果
+            你正在开发的是一个单页应用（SPA），刷新整页会回到初始视图，而你又需要修改后面的某一个视图时，这一功能尤其有用 
+            4.通过给的ui控制地址做一些配置，例如模拟差网络情况下页面情况等 
+            5.还可以结合其他插件来如gulp,grunt一起使用
+
+        BrowserSync目前已知的一点问题：
+            前文提到，如果发生变化的文件是css，BrowserSync会以无刷新方式来更新，这是一个很棒的效果。如果使用scss、less等预编译器，
+            将监听设置为编译后的css文件即可。但是，Web应用框架Rails会有一些问题。在开发环境中，css是在被请求的时候编译
+            （Rails一般使用sass）再返回给浏览器的，它只有缓存，而没有实际的.css文件。因此，BrowserSync的文件监听将无法指向它们，
+            而如果指向sass文件，浏览器只会以整页刷新的形式来处理，这种情况那就只能用livereload
+
+        安装及使用：
+            1.全局安装npm install -g browser-sync,安装过程会有点慢，因为要配置系统环境
+            2.打开控制台进入项目所在的目录，然后输入像这样的命令：browser-sync start --server --files "css/*.css"
+            这个命令用于纯静态站点，也就是仅一些.html文件的情况。后面的--files "css/*.css"，是指监听css目录中的后缀名为.css的文件
+            请注意这个命令里的start --server，这其实是BrowserSync自己启动了一个小型服务器。从BrowserSync的命令来看，很重要的一点
+            就是通过--files指定需要监听的文件，如果简单只是想要监听整个项目，可以写成这样：
+            browser-sync start --server  --files "**" 此时，BrowserSync仍然会正确地判断文件变化是否是css
+            3.如果是动态站点，则使用代理模式。例如PHP站点，已经建立了一个本地服务器如http://localhost:8080，此时会是这样的命令：
+            browser-sync start --proxy "localhost:8080" --files "css/*.css"
+            BrowserSync会提供一个新地址（如未被占用的话，http://localhost:3000）用于访问。
+            4.它还有一个UI控件的地址，打开后可以在里面做一些配置选项
+
+        为什么BrowserSync不需要浏览器插件：
+            因为它使用了服务器的形式（直接或代理）来处理项目文件。默认情况下，访问它的服务器上的网页
+            当前浏览的网页已连接到BrowserSync时候查看一下源码，会发现它们都被添加了与BrowserSync有关的一段script代码，就像
+            LiveReload浏览器插件做的那样。这些代码会在浏览器和BrowserSync的服务器之间建立web socket连接，一旦有监听的文件发
+            生变化，BrowserSync会通知浏览器。    
+            </pre>
+            <div class="explain">BrowserSync的一般用法则不需要浏览器插件，也不用手工添加代码（尽管也提供那样的用法）。一句控制台的命令之后，无论是在手机里还是电脑，无论用多少个浏览器（经测试，IE8+及其它），都可以拥有自动刷新的功能。文档配置地址<a href="http://www.browsersync.cn/docs/">http://www.browsersync.cn/docs/</a></div>
+        </div>
+    </body>
+</html>
