@@ -98,7 +98,13 @@
             3.如果是动态站点，则使用代理模式。例如PHP站点，已经建立了一个本地服务器如http://localhost:8080，此时会是这样的命令：
             browser-sync start --proxy "localhost:8080" --files "css/*.css"
             BrowserSync会提供一个新地址（如未被占用的话，http://localhost:3000）用于访问。
-            4.它还有一个UI控件的地址，打开后可以在里面做一些配置选项
+            4.它还有一个UI控件的地址，打开后可以在里面做一些配置选项我们在PC的浏览器中打开http://localhost:3001，这个端口为3001的
+            URL是BrowserSync的操作界面：界面操作简洁易懂。我们着重关注的是Remote Debug这一项，默认它的所有选项都是关闭的。我们开
+            启Remote Debugger (weinre)这一项，然后点击出现的红色字：Access remote debugger (opens in a new tab)，就会打开weinre
+            的控制台界面：这个界面上会列出当前连接在BrowserSync上的客户端，我们可以选择一个目标（target）来调试，因为我们的微信浏
+            览器访问的是外部链接，即http://192.168.0.141:3000，所以我们点击图中Targets下的第一个link。点击后link会变为绿色，表示当
+            前已经可以对这个客户端进行调试了。此时我们点到顶端的Elements选项卡上，就会看到微信浏览器里网页的HTML结构。鼠标移动
+            到.box的div上的时候，微信浏览器里的相应的元素就会高亮起来.
 
         为什么BrowserSync不需要浏览器插件：
             因为它使用了服务器的形式（直接或代理）来处理项目文件。默认情况下，访问它的服务器上的网页

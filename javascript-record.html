@@ -431,6 +431,12 @@
                  如果你运行document.querySelectorAll(“p”)函数时，它可能返回DOM元素的数组，也就是NodeList对象。但这个对象不具有数组的函数功能
                  var elements = document.querySelectorAll("p"); // NodeList
                  var arrayElements = [].slice.call(elements); // Now the NodeList is an array
+
+                 7.对于需要遍历是否错误的时候可以
+                 var flag=true;                
+                 在一个正确的事件中：  flag=flag && true
+                 在一个错误的事件中：  flag=false;
+                 这样只要flag错一次，那就即使运行正确事件几次也注定是false了
             </pre>
 
             <div class="title">js判断数据类型</div>
