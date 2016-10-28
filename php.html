@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+  	<head>
+    	<meta charset="utf-8">
+    	<meta http-equiv="X-UA-Compatible" content="chrome=1">
+    	<title>Blog by limingkang</title>
+    	<link rel="stylesheet" href="stylesheets/styles.css">
+    	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    	<meta name="description" content="前端开发记录">
+        <meta name="keywords" content="wampserver,mysql,redis,php">
+    </head>
+    <body>
+        <div class="big_container">
+            <div class="title">wampserver的安装</div>
+            <pre>
+        1.下载wampserver安装包，对照着一路next直接就安装完毕,这是一个集成环境，appach、mysql、php会一并安装的
+        2.进入http://localhost/phpmyadmin就可以直接可视化操作数据库了，也可直接进localhost查看所有配置
+        3.可以现在配置一下域名，总是打开localhost这太难看了,当然你也可以不配
+            一：修改host文件，Hosts是一个没有扩展名的系统文件，其基本作用就是将一些常用的网址域名与其对应的IP地址建立一个关联
+               “数据库”，当用户在浏览器中输入一个需要登录的网址时，系统会首先自动从Hosts文件中寻找对应的IP地址，一旦找到，系
+               统会立即打开对应网页，如果没有找到，则系统再会将网址提交DNS域名解析服务器进行IP地址的解析，如果发现是被屏蔽的
+               IP或域名，就会禁止打开此网页，XP 、win7系统中，HOST文件位于系统盘C:\Windows\System32\drivers\etc中，如果进去没
+               有看到Hos文件，是因为某些系统将Host文件隐藏了。在文件中添加127.0.0.1    我的新域名如lmk.com，这样来做一个对应，
+               这样打开lmk.com就相当于打开127.0.0.1
+	    二：去安装目录下面找到apache配置文件/bin/apache2.4.9/conf/httpd.conf,在这个文件里面打开
+		    Include conf/extra/httpd-vhosts.conf这一行的注释，意思就是让他去读extra/httpd-vhosts.conf这个额外配置文件
+		    LoadModule rewrite_module modules/mod_rewrite.so这行注释打开,这样才能重写配置文件才会去读上面那个额外配置文件
+	    三：在extra/httpd-vhost.conf文件中加入：
+		    <span><</span>VirtualHost *:80>
+		        DocumentRoot "E:/wamp/www/test"
+		        ServerName lmk.com
+		    <span><</span>/VirtualHost>
+		    意思就是将我的lmk.com这个名字指到E:/wamp/www/test下面的目录，相当于代理了
+	    4.所有的项目都在www文件夹下面可在下面建立你的项目文件例如我建立一个test文件夹
+	    5.这里我们选择ThinkPHP做框架，去官网下载一个版本现在用个3.2完整版就行了，下载完成之后将其解压到项目目录下面就行
+	    6.根据你下的版本去搜索相应的完全开发手册，语法的话直接去菜鸟教程里面找
+            </pre>
+            <div class="explain"><a href="http://document.thinkphp.cn/manual_3_2.html#directory_structure">tp框架3.2开发手册</a><br/><a href="http://www.runoob.com/php/php-tutorial.html">php语法查询</a></div>
+        	
+        	<div class="title">url模式</div>
+       		<pre>
+       	1.如果我们直接访问入口文件的话，由于URL中没有模块、控制器和操作，因此系统会访问默认模块（Home）下面的默认控制器（Index）的
+       	默认操作（index），因此下面的访问是等效的：
+       		http://serverName/index.php
+       		http://serverName/index.php/Home/Index/index
+       	这种URL模式就是系统默认的PATHINFO模式，不同的URL模式获取模块和操作的方法不同，ThinkPHP支持的URL模式有四种：普通模式、
+       	PATHINFO、REWRITE和兼容模式，可以设置URL_MODEL参数改变URL模式
+
+       	2.PATHINFO模式是系统的默认URL模式，提供了最好的SEO支持，系统内部已经做了环境的兼容处理，所以能够支持大多数的主机环境。
+       	对应上面的URL模式，PATHINFO模式下面的URL访问地址是： http://localhost/index.php/home/user/login/var/value/
+	PATHINFO地址的前三个参数分别表示模块/控制器/操作。
+	不过，PATHINFO模式下面，依然可以采用普通URL模式的参数方式，例如：http://localhost/index.php/home/user/login?var=value
+	PATHINFO模式下面，URL是可定制的，例如，通过下面的配置：
+	// 如果更改PATHINFO参数分隔符
+	'URL_PATHINFO_DEPR'=>'-', 
+	我们还可以支持下面的URL访问： http://localhost/index.php/home-user-login-var-value
+
+	3.REWRITE模式是在PATHINFO模式的基础上添加了重写规则的支持，可以去掉URL地址里面的入口文件index.php，但是需要额外配置WEB
+	服务器的重写规则。如果是Apache则需要在入口文件的同级添加.htaccess文件，内容如下：
+	<span><</span>IfModule mod_rewrite.c>
+	 RewriteEngine on
+	 RewriteCond %{REQUEST_FILENAME} !-d
+	 RewriteCond %{REQUEST_FILENAME} !-f
+	 RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+	<span><</span>/IfModule>
+	接下来，就可以用下面的URL地址访问了： http://localhost/home/user/login/var/value		
+       		</pre>
+       		<div class="explain">上面的所有配置都是框架的配置，所以都在框架的配置文件里面改就行了</div>
+			
+			<div class="title">controller和view关系理解</div>
+			<pre>
+    不同的框架生成的名字可能不同有的可能叫action和template，那么在控制器里面就不能写成
+    namespace Home\Controller;
+    use Think\Controller;
+    class IndexController extends Controller {       //继承框架的controller类，所以有下面的dispaly、show等方法
+        public function index(){
+            //$this->assign('foo','ThinkPHP'); 
+            //$this->show('Hello, {$foo}!');
+            //会在页面输出： Hello,ThinkPHP! 同理如果display的话在其相应页面中通过{$foo}也可以取到该值
+            $this->display();    //直接return的话就是请求的返回值
+        }
+    }
+    下面这样才对:
+    namespace Home\Action;
+    use Think\Action;
+    class IndexAction extends Action {
+        public function index(){
+            $this->display(); 
+            //这个方法调用index页面就是自己方法名字，就是index.html要改成index.php后缀的话去框架里面配置一下
+            //默认模板文件后缀TMPL_TEMPLATE_SUFFIX的值改成.php默认是.html
+        }
+    }
+    在和view层奖励对应关系的时候得遵循一定的命名规范，每一个控制器下面都得对应一个相同名字的文件夹这里我的view文件夹下面就得建立一个
+    Index文件夹，里面放置一个index.html，这个名字是对应控制器中的方法的
+			</pre>
+			<div class="explain">
+				assign方法必须在display和show方法之前调用，并且系统只会输出设定的变量，其它变量不会输出（系统变量例外），一定程度
+				上保证了变量的安全性赋值后，就可以在模板文件中输出变量了，如果使用的是内置模板的话，就可以这样输出： {$name}
+			</div>
+
+        </div>
+    </body>
+</html>

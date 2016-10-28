@@ -14,6 +14,11 @@
        <div class="big_container">
            <div class="title">less的语法</div>
            <pre>
+
+
+        /**/这个注释是会被编译的
+        //这个注释是不会被编译的   
+
         @baseColor:red;
         @dialog:.dialog;
         @color:color;
@@ -69,7 +74,7 @@
 
 
 
-        /* 定义了一个函数而且还有默认参数*/  
+        /* 定义了一个函数而且还有默认参数,当然在里面使用@arguments就可以列出所有的参数*/  
         .border-radius (@radius: 5px) {  
             -webkit-border-radius: @radius;  
             -moz-border-radius: @radius;  
@@ -140,6 +145,9 @@
 
 
         // 那如果我们现在需要在其他 class 中引入那些通用的属性集，那么我们只需要在任何 class 中像下面这样调用就可以了：
+        .bordered {
+           margin:10px;
+        }
         #menu a {
             color: #111;
             .bordered;
@@ -170,7 +178,7 @@
         你可以把所有color都以变量的形式定义在color.less，然后在另一个Less文件中 @import 'color.less'，就可以直接使用该文件中的变量
            </pre>
 
-           <div class="explain">css预处理框架很多如sass,stylus等</div>
+           <div class="explain">css预处理框架很多如sass,stylus等,可以使用koala编译去处理（就是下个软件编译并让其翻译输出到某个位置），也可以使用gulp,webpack等脚手架去编译</div>
        </div>
   </body>
 </html>

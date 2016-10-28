@@ -23,7 +23,6 @@ a:hover{cursor: pointer;text-decoration: underline;}
 body {padding-top: 10px;font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;font-size: 14px;color: #232323;background-color: #FBFAF7;line-height: 1.8em;-webkit-font-smoothing: antialiased;}
 code, pre {font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;color:#000;font-size:14px;}
 pre { padding: 30px 12px 4px 12px;background: #FDFEFB;border-radius:4px;border:1px solid #D7D8C8;overflow: auto;overflow-y: hidden;}
-#pdata {width: 920px;margin: 0 auto;}
 .index_container {width: 1000px;margin:0 auto;}
 .wrapper { width:700px;display: inline-block;vertical-align: top;margin-left: 40px;}
 .txtMarquee-top {display: inline-block;vertical-align: top;}
