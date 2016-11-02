@@ -12,7 +12,7 @@
   </head>
   <body>
        	<div class="big_container">
-       		<div class="title" style="margin-top:0;">jquery对异步对象封装时候的调用方法小结</div>
+       		<div class="title" style="margin-top:0;">jquery对异步对象封装时候的调用方法</div>
    			<pre>
    				var dfd = $.Deferred(); 
    				var dfd2 = $.Deferred();
@@ -44,26 +44,54 @@
    			</pre>
        		<div class="explain">先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了</div>
        		
-            <div class="title">各种常用状态码</div>
+            <div class="title">js判断浏览器方法以及监听横竖屏</div>
             <pre>
-                100-199 用于指定客户端应相应的某些动作。  
-                200-299 用于表示请求成功。  
-                300-399 用于已经移动的文件并且常被包含在定位头信息中指定新的地址信息。 
-                400-499 用于指出客户端的错误。 
-                400   语义有误，当前请求无法被服务器理解。 
-                401   当前请求需要用户验证  
-                403  服务器已经理解请求，但是拒绝执行它。 
-                500-599 用于支持服务器错误。  
-                503 – 服务不可用
-            </pre>
-            
-            <div class="title">web安全中的攻击</div>
-            <pre>
-                将img标签的src=0 onerror=alert(5)这样就有效荷载可以造成xss攻击
-            </pre>
-            <div class="explain">当src写值的时候可以请求到其他网站的文件，例如js文件就可以进行跨站请求攻击</div>
+                var browser = {
+                    versions: function () {
+                        var u = navigator.userAgent, app = navigator.appVersion;
+                        return {         //移动终端浏览器版本信息
+                            trident: u.indexOf('Trident') > -1, //IE内核
+                            presto: u.indexOf('Presto') > -1, //opera内核
+                            webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                            gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                            mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+                            ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                            android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                            iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                            iPad: u.indexOf('iPad') > -1, //是否iPad
+                            webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+                        };
+                    }(),
+                    language: (navigator.browserLanguage || navigator.language).toLowerCase()
+                }
+                if (browser.versions.mobile) {//判断是否是移动设备打开。browser代码在下面
+                        var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
+                        if (ua.match(/MicroMessenger/i) == "micromessenger") {
+                                //在微信中打开
+                        }
+                        if (ua.match(/WeiBo/i) == "weibo") {
+                                //在新浪微博客户端打开
+                        }
+                        if (ua.match(/QQ/i) == "qq") {
+                                //在QQ空间打开
+                        }
+                        if (browser.versions.ios) {
+                                //是否在IOS浏览器打开
+                        } 
+                        if(browser.versions.android){
+                                //是否在安卓浏览器打开
+                        }
+                } else {
+                        //否则就是PC浏览器打开
+                }
 
-            <div class="title">jq中extend方法的复制问题</div>
+                监听横屏竖屏状态：                
+                    window.addEventListener("orientationonchange",function(){})
+                    window.orientation为0则它是纵向的，横向的则是90或者-90
+                    但是真个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
+            </pre>
+
+            <div class="title">jq中extend方法的复制问题以及NAN的奇怪现象</div>
             <pre>
                 var obj1 = {
                   'a': 's1',
@@ -76,12 +104,17 @@
                 obj2.c.b[0]=400;
                 console.log(obj1);
                 console.log(obj2);
+
+                alert(typeof NaN); //弹出 'Number'
+                alert(NaN === NaN); //为 false
             </pre>
             <div class="explain">通过true或者false来判断，默认false,jq的深复制(一层一层往下复制直到最底层)和浅复制(只复制顶层的基本类型元素)。所以对象中a肯定会被复制</div>
 
             <div class="title">找到非单字节字符的换成两个单字节的，再求长度，可计总长度</div>
             <pre>
                 str.replace(/[^\00-xff]/g,"xx").length;
+                web安全中的攻击:将img标签的src=0 onerror=alert(5)这样就有效荷载可以造成xss攻击
+                当src写值的时候可以请求到其他网站的文件，例如js文件就可以进行跨站请求攻击
             </pre>
             <div class="explain">表单提交按钮类型全部改成submit类型啦,只要表单绑定submit事件，prevent默认提交，于是，既能回车响应，又能验证或者ajax或是原始提交处理</div>
 
@@ -122,12 +155,6 @@
                  可以通过document.fullScreen判断浏览器是否处于全屏状态。注意：FireFox和Chrome写法上有不同，Webkit内核浏览器需要增加个is, 如document.webkitIsFullScreen; 而Firefox则是document.mozFullScreen.
                  :full-screen{}用在CSS代码中，可以控制全屏元素（及其子元素）全屏状态时的样式。同样，不同浏览器不同前缀。如:-moz-full-screen{}或:- webkit-full-screen{}.
                  一个页面如果有多个全屏元素，在CSS控制的时候，可以使用类似#element:full-screen{}的选择器分别控制。
-            </pre>
-
-            <div class="title">对于NAN的奇怪现象</div>
-            <pre>
-                alert(typeof NaN); //弹出 'Number'
-                alert(NaN === NaN); //为 false
             </pre>
 
             <div class="title">关于存储方式的小结</div>
@@ -274,13 +301,6 @@
                  还要根据三角函数算出第一个和第四个参数的值，因为页面呈现是大小会改动
             </pre>
             <div class="explain">当使用3d做gpu渲染的时候，并不能触发重绘，他只能使元素变大小或者旋转等，不能改颜色</div>
-
-            <div class="title">监听横屏竖屏状态</div>
-            <pre>
-                 window.addEventListener("orientationonchange",function(){})
-                 window.orientation为0则它是纵向的，横向的则是90或者-90
-                 但是真个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
-            </pre>
 
             <div class="title">触摸对象</div>
             <pre>

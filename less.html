@@ -8,15 +8,13 @@
     <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="前端开发记录">
-    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+    <meta name="keywords" content="gulp,less,node,sass,compass,require,mysql,mongodb">
   </head>
   <body>
        <div class="big_container">
            <div class="title">less的语法</div>
            <pre>
-
-
-        /**/这个注释是会被编译的
+        /**/这个注释是会被编译留下来的的
         //这个注释是不会被编译的   
 
         @baseColor:red;
@@ -24,7 +22,6 @@
         @color:color;
         @hi:'hello ';
         @dear:word;
-
         body{  
            color:@baseColor;  
         }  
@@ -40,10 +37,6 @@
          // 用于字符串拼接，必须使用"@{变量名}" 的形式,注意变量上面写上引号是为了加空格，不写引号也行，只是没了空格
          content: ': @{hi}@{dear}!';    
         }
-
-
-
-
 
         #header { color: black; }
         #header .navigation {  font-size: 12px;}
@@ -61,8 +54,6 @@
             }
         }
 
-
-
         @assetFilePath: "http://127.0.0.1/yueyun/asset/images";  
         #logo {  
             background: url("@{assetFilePath}/default_4.gif") no-repeat;  
@@ -71,8 +62,6 @@
             margin-top: 22px;  
             margin-left: 12px;  
         }  
-
-
 
         /* 定义了一个函数而且还有默认参数,当然在里面使用@arguments就可以列出所有的参数*/  
         .border-radius (@radius: 5px) {  
@@ -86,9 +75,6 @@
             .border-radius(20px);  
         }  
 
-
-
-
         /* 过渡 */  
         .transition (@prop: all, @time: 1s, @ease: linear) {  
             -webkit-transition: @prop @time @ease;  
@@ -96,17 +82,11 @@
             -o-transition: @prop @time @ease;  
             -ms-transition: @prop @time @ease;  
             transition: @prop @time @ease;  
-        }  
-            
+        }             
         /* Implementation */  
         #somediv {  
             .transition(all, 0.5s, ease-in);  
         }   
-
-
-
-
-
 
         // 没有直接的 if 语句，而是 when(xxx){}
         /* 
@@ -137,13 +117,6 @@
             }  
         }  
 
-
-
-
-
-
-
-
         // 那如果我们现在需要在其他 class 中引入那些通用的属性集，那么我们只需要在任何 class 中像下面这样调用就可以了：
         .bordered {
            margin:10px;
@@ -157,28 +130,277 @@
             .bordered;
         }
 
-
-
         // 带加减法的时候
         .box{
         	width: @testwidth + 20px;   //  +20也可以，运算中只要有一个带单位就行了
         	color: #ccc-10;            //颜色值的时候不带单位
         }
 
-
-
-
-
         // 有时候有一些东西需要避免编译
         .test{
         	width: ~'calc(300px-30px)'
         }
 
-
         你可以把所有color都以变量的形式定义在color.less，然后在另一个Less文件中 @import 'color.less'，就可以直接使用该文件中的变量
            </pre>
+           <div class="explain">
+              当然除了可以使用koala编译去处理（就是下个软件编译并让其翻译输出到某个位置），也可以使用gulp,webpack等脚手架去编译，
+              相比于其他预处理器如sass,stylus等，拿sass,compass来说可以直接安装翻译而且可以自带雪碧图、浏览器兼容前缀等功能，所以
+              在不用gulp,webpack等工具的情况下个人觉得sass更好用
+           </div>
 
-           <div class="explain">css预处理框架很多如sass,stylus等,可以使用koala编译去处理（就是下个软件编译并让其翻译输出到某个位置），也可以使用gulp,webpack等脚手架去编译</div>
+           <div class="title">sass的安装步骤和常用命令</div>
+           <pre>
+        安装步骤：
+            1. 因为sass依赖于ruby环境，所以装sass之前先确认装了ruby。先导官网下载个ruby,在安装的时候，请勾选
+            Add Ruby executables to your PATH这个选项，添加环境变量，不然以后使用编译软件的时候会提示找不到ruby环境
+            2.安装完ruby之后，在开始菜单中，找到刚才我们安装的ruby，打开Start Command Prompt with Ruby
+            然后直接在命令行中输入gem install sass     升级sass版本的命令为: gem update sass 
+            3.由于国内网络原因导致 rubygems.org 存放在 Amazon S3 上面的资源文件间歇性连接失败。这时候我们可以通过gem sources命令来
+            配置源，先移除默认的https://rubygems.org源:
+                gem sources --remove https://rubygems.org/
+                gem sources -a https://ruby.taobao.org/ 
+                【如果你系统不支持https，请将淘宝源更换成：gem sources -a http://gems.ruby-china.org】
+            然后添加淘宝的源https://ruby.taobao.org/，然后查看下当前使用的源是哪个gem sources -l，如果是淘宝的，则表示可以
+            输入sass安装命令:gem install sass了 
+
+        命令：
+            1.将显示结果保存成文件： sass test.scss test.css
+            2.SASS提供四个编译风格的选项：
+            　　* nested：嵌套缩进的css代码，它是默认值。
+            　　* expanded：没有缩进的、扩展的css代码。
+            　　* compact：简洁格式的css代码。
+            　　* compressed：压缩后的css代码。
+            生产环境当中，一般使用最后一个选项：sass --style compressed test.scss test.css
+            3.你也可以让SASS监听某个文件或目录，一旦源文件有变动，就自动生成编译后的版本。
+        　　// watch a file
+        　　sass --watch input.scss:output.css
+        　　// watch a directory
+        　　sass --watch app/sass:public/stylesheets
+           </pre>
+           <div class="explain">sass有两种后缀名文件：一种后缀名为sass，不使用大括号和分号；另一种就是我们这里使用的scss文件，这种和我们平时写的css文件格式差不多，使用大括号和分号。所以最好还是用后缀名为scss的文件</div>
+       
+           <div class="title">sass的常用语法记录</div>
+           <pre>
+        SASS允许使用变量，所有变量以$开头。
+        　　$blue : #1875e7;　
+        　　div {
+        　　　color : $blue;
+        　　}
+
+        如果变量需要镶嵌在字符串之中，就必须需要写在#{}之中。
+        　　$side : left;
+        　　.rounded {
+        　　　　border-#{$side}-radius: 5px;
+        　　} 
+
+        SASS允许在代码中使用算式：
+        　　body {
+        　　　　margin: (14px/2);
+        　　　　top: 50px + 100px;
+        　　　　right: $var * 10%;
+        　　} 
+
+        sass的使用&引用父元素和注释以及嵌套都和less语法一样，不同的是sass的还支持属性嵌套：
+           p {
+       　　　　border: {
+       　　　　　　color: red;
+       　　　　}
+       　　} 
+        sass是不支持中文注释的如果想让其支持可在config.rb文件中所有的require之后加上：
+           Encoding.default_external = Encoding.find('utf-8') 
+
+        SASS允许一个选择器，继承另一个选择器。比如，现有class1如果class2要继承class1，就要使用@extend命令：
+        　　.class1 {
+        　　　　border: 1px solid #ddd;
+        　　}
+        　　.class2 {
+        　　　　@extend .class1;
+        　　　　font-size:120%;
+        　　}  
+
+        使用@mixin命令，定义一个代码块，使用@include命令，调用这个mixin 
+            @mixin rounded($vert, $horz, $radius: 10px) {
+        　　　　border-#{$vert}-#{$horz}-radius: $radius;
+        　　　　-moz-border-radius-#{$vert}#{$horz}: $radius;
+        　　　　-webkit-border-#{$vert}-#{$horz}-radius: $radius;
+        　　} 
+            #navbar li { @include rounded(top, left); }
+            #footer { @include rounded(top, left, 5px); }
+
+        @import命令，用来插入外部文件。
+        　　@import "path/filename.scss";
+        如果插入的是.css文件，则等同于css的import命令。
+        　　@import "foo.css";
+        在给文件起名字的时候如果加上一个下划线则不会编译成css文件如_test.scss可以在里面写变量什么的之后在其他页面使用
+        @import "test"引入即可，注意只要写test就行，文件名字同样也不可重名了，也就是其他文件不能叫test.scss
+
+        @if配套的还有@else命令：
+        　　@if lightness($color) > 30% {
+        　　　　background-color: #000;
+        　　} @else {
+        　　　　background-color: #fff;
+        　　}
+        lightness是一个方法相应的还有type-of检测类型的方法等
+        SASS支持for循环：
+        　　@for $i from 1 to 10 {
+        　　　　.border-#{$i} {
+        　　　　　　border: #{$i}px solid blue;
+        　　　　}
+        　　}
+        也支持while循环：
+        　　$i: 6;
+        　　@while $i > 0 {
+        　　　　.item-#{$i} { width: 2em * $i; }
+        　　　　$i: $i - 2;
+        　　}
+        each命令，作用与for类似：
+        　　@each $member in a, b, c, d {
+        　　　　.#{$member} {
+        　　　　　　background-image: url("/image/#{$member}.jpg");
+        　　　　}
+        　　}
+
+        SASS允许用户编写自己的函数。
+        　　@function double($n) {
+        　　　　@return $n * 2;
+        　　}
+        　　#sidebar {
+        　　　　width: double(5px);
+        　　}
+           </pre>
+           <div class="explain">预处理器没有好，语法基本差不多，用sass主要是为了和compass结合使用，使用sass-convert main.sass main.scss可以将sass文件转换为scss文件，同理可以反向转换命令一样改文件前后顺序即可</div>
+
+           <div class="title">compass的安装和使用方法</div>
+           <pre>
+        安装：
+            安装依然使用ruby gem安装方式，参照前面安装sass过程，gem命令如下：gem install compass
+            现在安装compass时，一般都附带安装上了sass组件，也就是说你可以跳过前面安装sass的流程了 
+
+        常用命令及其配置：
+            1.创建一个你的Compass项目，假定它的名字叫做myproject，那么在命令行键入：compass create myproject
+            对于已有项目可以运行compass init来生成，生成的sass文件中有三个.scss文件，分别给ie，打印时候和屏幕写了不同的样式
+            用的时候只要用屏幕时候的样式就行，即在screen.scss文件里面写就行了
+            2.Compass的编译命令是
+            　　compass compile
+            该命令在项目根目录下运行，会将sass子目录中的scss文件，编译成css文件，保存在stylesheets子目录中。
+            默认状态下，编译出来的css文件带有大量的注释。但是，生产环境需要压缩后的css文件，这时要使用--output-style参数。
+            　　compass compile --output-style compressed
+            Compass只编译发生变动的文件，如果你要重新编译未变动的文件，需要使用--force参数。
+            　　compass compile --force
+            除了使用命令行参数，还可以在配置文件config.rb中指定编译模式。
+            　　output_style = :expanded
+            :expanded模式表示编译后保留原格式，其他值还包括:nested、:compact和:compressed。进入生产阶段后，就要改为:compressed模式
+            　　output_style = :compressed
+            也可以通过指定environment的值（:production或者:development），智能判断编译模式。
+            　　environment = :development
+            　　output_style = (environment == :production) ? :compressed : :expanded
+            在命令行模式下，除了一次性编译命令，compass还有自动编译命令
+            　　compass watch
+            运行该命令后，只要scss文件发生变化，就会被自动编译成css文件
+           </pre>
+           <div class="explain">
+              compass是SASS团队成员开发的对SASS的一个封装，是为开发者提供一些丰富的mixin组件以及一些工具模块。compass也已经成为ruby on rails的一个标配组件
+              <br/><a href="http://compass-style.org/help/tutorials/">compass官方配置地址</a>
+           </div>
+
+           <div class="title">使用compass制作雪碧图</div>
+           <pre>
+        先假设我们images的文件夹下面有一个share文件夹里面是我要做的雪碧图的icon,名字分别是github.png、qq.png、weibo.png
+
+        1.如果我们在scss文件中写入：
+            @import "compass/utilities/sprites";    // 加载compass sprites模块
+            @import "share/*.png";                    // 导入share目录下所有png图片
+            @include all-share-sprites;                // 输出所有的雪碧图css
+        编译之后会发现images目录下出现了一个合并后的图片share-xxxxxxxx.png，而且相应的scss文件生成的css文件为：
+            .share-sprite, .share-github, .share-qq, .share-weibo {
+              background-image: url('../images/share-s7fefca4b98.png');
+              background-repeat: no-repeat;
+            }
+            .share-github {
+              background-position: 0 0;
+            }
+            .share-qq {
+              background-position: 0 -23px;
+            }
+            .share-weibo {
+              background-position: 0 -47px;
+            }
+        生成的代码中.share-sprite是雪碧图的基础类，后面介绍配置时会详细说明。生成的每个雪碧图默认的class规则是：.目录名-图片名。
+        如果想自定义，我们可以通过下面调用单个雪碧图的方式来实现
+
+        2.调用单个雪碧图样式的时候输入：
+            @import "compass/utilities/sprites";    // 加载compass sprites模块
+            @import "share/*.png";                    // 导入share目录下所有png图片
+            .test {
+               @include share-sprite(github);     //注意这里的名字一个为图片名一个为文件夹名还有单个引用中没有s是sprite
+               display:inline-block;
+               height: share-sprite-height(github);
+               width: share-sprite-width(github);
+            }
+        编译之后的文件为：
+            .share-sprite, .test {
+               background-image: url('/images/share-s7fefca4b98.png');
+               background-repeat: no-repeat;
+            }
+            .test {
+                background-position: 0 0;
+                display: inline-block;
+                height: 23px;
+                width: 24px;
+            }
+        如果想为所有生成背景图的样式里面加上对应小png图宽高则设置：
+            $share-sprite-dimensions: true;
+        如果想控制雪碧图的布局方式使用：
+            $share-layout:horizontal;   //横向布局默认为纵向布局
+        配置sprite间距：
+            $share-spacing: 5px;                // 配置所有sprite间距为5px，默认为0px
+            $share-github-spacing: 10px;        // 配置单个sprite间距为10px，默认继承 $share-spacing的值
+        配置sprite重复性：
+            $share-repeat: no-repeat/repeat-x;        // 配置所有sprite的重复性，默认为no-repeat
+            $share-github-repeat: no-repeat/repeat-x;// 配置单个sprite的重复性，默认继承   $share-repeat的值
+        配置sprite的位置：
+            $share-position: 0px;                // 配置所有sprite的位置，默认为0px
+            $share-github-position: 0px;        // 配置单个sprite的位置，默认继承 $share-position的值
+        配置sprite的布局方式：
+            $share-layout: vertical/horizontal/diagonal/smart;        // 默认布局方式为vertical
+        清除过期的sprite：
+            $share-clean-up: true/false;        // 默认值为true
+        每当添加、删除或改变图片后，都会生成新的sprite，默认情况下compass会自动的移除旧的sprite，当然也可以通过配置
+        $share-clean-up: false;来保留旧的sprite
+        配置sprite的基础类,在使用sprite时，compass会自动的生成一个基础类来应用公用的样式(如background-image)，默认的类名为
+        文件夹名-sprite，上面例子中的.share-sprite就是这个基础类，当然compass也提供了自定义这个类名的选项：
+            $share-sprite-base-class: ".class-name";
+        魔术精灵选择器开关,上面已经介绍了怎样利用利用魔术精灵选择器智能输出sprite，默认情况下compass是开启这个功能的，也就
+        是说compass默认会将以_hover, _active等名字结尾的图片自动输出对应的:hover, :active等伪类样式。当然如果不想这样的话，
+        也可以禁用它:
+            $disabled-magic-sprite-selectors: false;    // 默认为true
+
+        3.有的时候我们的图标会有多种状态，比如hover, active, focus, target等。利用compass的魔术精灵选择器我们就可以智能的合并
+        各状态的图标，并输出对应的css。使用时，我们需要将图标按照一定的规则命名。例如：
+            weibo.png            // 默认状态图标
+            weibo_hover.png     // hover状态图标
+            weibo_active.png     // active状态图标
+        scss文件如下：
+            @import "compass/utilities/sprites";
+            @import "magic/*.png";
+            @include all-magic-sprites;
+        编译后的文件如下：
+            .magic-sprite, .magic-weibo {
+              background-image: url('../images/magic-s758f6928e8.png');
+              background-repeat: no-repeat;
+            }
+            .magic-weibo {
+              background-position: 0 0;
+            }
+            .magic-weibo:hover, .magic-weibo.weibo-hover {
+              background-position: 0 -48px;
+            }
+            .magic-weibo:active, .magic-weibo.weibo-active {
+              background-position: 0 -24px;
+            }
+           </pre>
+
        </div>
   </body>
 </html>
