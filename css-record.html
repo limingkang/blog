@@ -12,8 +12,9 @@
   </head>
   <body>
        <div class="big_container">
-          <div class="title" style="margin-top:0;">多行文本溢出的样式</div>
+          <div class="title" style="margin-top:0;">常用小功能</div>
           <pre>
+          1.多行文本溢出的样式:
              overflow: hidden; 
              text-overflow: ellipsis; 
              display: box; 
@@ -21,20 +22,45 @@
              line-clamp: 2; 
              -webkit-line-clamp: 2; 
              -webkit-box-orient: vertical;
+
+          2.让overflow:auto页面滚动条出现时不跳动:
+             .wrap-outer {
+                 padding-left: calc(100vw - 100%);
+             }
+          .wrap-outer指的是居中定宽主体的父级，如果没有，创建一个（使用主体也是可以实现类似效果，不过本着宽度分离原则，不推荐）；
+          calc是CSS3中的计算，IE10+浏览器支持，IE9浏览器基本支持(不能用在background-position上)；
+          100vw相对于浏览器的window.innerWidth，是浏览器的内部宽度，注意，滚动条宽度也计算在内！而100%是可用宽度，是不含滚动条的
+          宽度。calc(100vw - 100%)就是浏览器滚动条的宽度大小（如果有，如果没有滚动条则是0）！左右都有一个滚动条宽度（或都是0）被
+          占用，主体内容就可以永远居中浏览器啦，从而没有任何跳动！
+
+          3.currentColor属性:
+            currentColor除了ie8不兼容其他均可兼容，它会继承当前元素的字体颜色，如果当前字体没写颜色，
+            那么就找其父级元素字体颜色，一层一层往上找
+
+          4.progress属性:
+            <textarea>
+                 <progress value="22" max="100"></progress>
+            </textarea>
+            progress是h5的新属性，可设置border和background-color，这表示总共100份，前22个等分有颜色，如果想做成进度条来回动的样子
+            就写这个标签然后里面什么属性都不加就行，不过不同浏览器默认颜色不一，请自己加入控制
+
+          5.这个可以支持浏览器的语音输入，不过兼容性很差：
+            <textarea>
+                 <input x-webkit-speech lang="zh-CN" />
+            </textarea>
+
+          6.对于我们平时所说的瀑布流布局，除了用jq，还可以使用css3的column分栏布局：
+            只需要给父级元素指定column-width，也就是列的宽度，就可以做到了，只不过由于它是浏览器自己计算的，
+            首先子元素的摆放顺序不是按照我们放的那样，而且有时候间距会比较大，体验不好，最后对于下拉请求还是得用jq
+
+          7.可以产生两张图片叠加的效果，其中第二张图片的效果为透明度50%：
+            background-image: -webkit-cross-fade(url(1.jpg), url(2.jpg), 50%);
+
+          8.清除浮动小计：
+            清除浮动除了用clear还可以用overflow，是因为overflow除了(visible)会重新给他里面的元素建立
+            块级格式化(block formatting context)，其中position absolute, inline-block, table-cell和table-caption都不
+            是块级样式，所以才会用到clear来控制，虽然clear是旧的方式，但还是推荐用clear来做，有些情况会比overflow处理的要好
           </pre>
-          
-          <div class="title">让overflow:auto页面滚动条出现时不跳动</div>
-          <pre>
-              .wrap-outer {
-                  padding-left: calc(100vw - 100%);
-              }
-          </pre>
-          <div class="explain">
-            .wrap-outer指的是居中定宽主体的父级，如果没有，创建一个（使用主体也是可以实现类似效果，不过本着宽度分离原则，不推荐）；
-            calc是CSS3中的计算，IE10+浏览器支持，IE9浏览器基本支持(不能用在background-position上)；
-            100vw相对于浏览器的window.innerWidth，是浏览器的内部宽度，注意，滚动条宽度也计算在内！而100%是可用宽度，是不含滚动条的宽度。
-            calc(100vw - 100%)就是浏览器滚动条的宽度大小（如果有，如果没有滚动条则是0）！左右都有一个滚动条宽度（或都是0）被占用，主体内容就可以永远居中浏览器啦，从而没有任何跳动！
-          </div>  
 
           <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
           <pre>
@@ -68,73 +94,71 @@
           </pre>
           <div class="explain">如果不去兼容低版本浏览器可以去掉上面的一些代码</div>
 
-          <div class="title">zoom-in,zoom-out属性使用</div>
+          <div class="title">一些鼠标属性使用以及计数属性</div>
           <pre>
-              .zoom-in {
-                  cursor: zoom-in; /* 大大大 */
-              }
-              .zoom-out {
-                 cursor: zoom-out; /* 小小小 */
-              }
-          </pre>
-          <div class="explain">可以使得鼠标放在该元素上显示放大镜和缩小镜，让后通过点击换图那么就可以实现简单方法缩小效果,由于兼容性不好，这是只是拓展</div>
+              1.可以使得鼠标放在该元素上显示放大镜和缩小镜，之后通过点击换图那么就可以实现简单方法缩小效果,由于兼容性不好，
+              这是只是拓展：
+                .zoom-in {
+                    cursor: zoom-in; /* 大大大 */
+                }
+                .zoom-out {
+                   cursor: zoom-out; /* 小小小 */
+                }
 
-          <div class="title">这两个属性可以使得鼠标移到该元素时候显示抓手，和抓住两个样子.</div>
-          <pre>
-              .grab { /* 抓抓抓 */
-                  cursor: -webkit-grab;
-                  cursor: -moz-grab;
-                  cursor: grab;
-              }
-              .grabbing { /* 抓住抓住 */
-                  cursor: -webkit-grabbing;
-                  cursor: -moz-grabbing;
-                  cursor: grabbing;
-              }
-          </pre>
-          <div class="explain">目前和上面一样， 除了IE浏览器（包括IE11），PC端的其他浏览器全线支持grab/grabbing</div>
+              2.这两个属性可以使得鼠标移到该元素时候显示抓手，和抓住两个样子
+                .grab { /* 抓抓抓 */
+                    cursor: -webkit-grab;
+                    cursor: -moz-grab;
+                    cursor: grab;
+                }
+                .grabbing { /* 抓住抓住 */
+                    cursor: -webkit-grabbing;
+                    cursor: -moz-grabbing;
+                    cursor: grabbing;
+                }
 
-          <div class="title">css中的记数属性，兼容性还可以,只能和content一起用，所以和before,after成了铁三角关系</div>
-          <pre>
-              body {
-                counter-reset: icecream;
-              }
-              input:checked {
-                counter-increment: icecream;
-              }
-              .total::after {
-                content: counter(icecream);
-              }
+              3.css中的记数属性，兼容性还可以,只能和content一起用，所以和before,after成了铁三角关系
+                body {
+                  counter-reset: icecream;
+                }
+                input:checked {
+                  counter-increment: icecream;
+                }
+                .total::after {
+                  content: counter(icecream);
+                }
           </pre>
-          <div class="explain">可以使得total中的内容为选中的input个数，counter-reset为设置全局计数变量，counter-increment为使得该变量加一</div>
+          <div class="explain">目前除了IE浏览器（包括IE11），PC端的其他浏览器全线支持grab/grabbing，可以使得total中的内容为选中的input个数，counter-reset为设置全局计数变量，counter-increment为使得该变量加一</div>
 
-          <div class="title">清除浮动小计</div>
-          <pre>
-              清除浮动除了用clear还可以用overflow，是因为overflow除了(visible)会重新给他里面的元素建立
-              块级格式化(block formatting context)，其中position absolute, inline-block, table-cell和table-caption都不
-              是块级样式，所以才会用到clear来控制，虽然clear是旧的方式，但还是推荐用clear来做，有些情况会比overflow处理的要好
-          </pre>
-
-          <div class="title">currentColor属性</div>
-          <pre>
-             currentColor除了ie8不兼容其他均可兼容，它会继承当前元素的字体颜色，如果当前字体没写颜色，
-             那么就找其父级元素字体颜色，一层一层往上找
-          </pre>
-
-          <div class="title">对于动画方面的记录</div>
+          <div class="title">平时写页面的时候要注意的地方</div>
           <pre>
              1.SVG animation元素可以实现动画，而且可以沿着SVG所画的路径运动，ie都不支持其他浏览器可以用，所以移动端没什么问题，
              各系统版本都支持，屏幕的像素密度也可以检测，这和分辨率有关，iphone一般为2,6plus为3
+             
              2.动画方面的话requestanimationframe兼容性基本和css3一样，但是他可以支持更多的贝塞尔滑动效果，而且有些值css3无法
              改变，但是它可以，如scrolltop等
+
+             3.布局的时候不使用table：
+                由于浏览器的流布局，对渲染树的计算通常只需要遍历一次就可以完成。但table及其内部元素除外，
+                它可能需要多次计算才能确定好其在渲染树中节点的属性，通常要花3倍于同等元素的时间,table会先等页面加载完成之后来了数
+                据才显示；可能会出现table嵌套table的可能；重绘是一个元素外观的改变所触发的浏览器行为，例如改变visibility、outline、
+                背景色等属性。浏览器会根据元素的新属性重新绘制，使元素呈现新的外观。重绘不会带来重新布局，并不一定伴随重排
+
+             4.当图标中有字的时候，我们也要写入相同的字，并将其隐藏：
+                text-indent负值可写-9999在忘记设置overflow:hidden声明时候可能会有长长虚框，但对于文字隐藏来说其为最佳方法；
+                从SEO的角度讲，文字可以被抓取；开发人员这边，也能迅速确定这段HTML的作用，便于协作；对于特殊用户例如使用屏幕
+                阅读器的盲人用户，也能知道这里内容与含义；当然，普通用户正常状态下的访问不受影响；
+                使用的文字隐藏的技术是display:none或是visibility:hidden之流。这两个声明隐藏的文字屏幕阅读器是无法抓取的，而且
+                有可能被搜索引擎酱油化。
+
+             5.静态文件放在不同域名下：
+                对于流量太低或者用户过于分散的网站,cdn的作用不是很大，但是将静态文件放在不同的域名下会有好处，
+                因为同一域名下的时候每次的请求都会带上cookies，然而cookies的解析会使得一个很小的文件变得很大
+                但是也不能搞太多的域名了，因为dns域名解析消耗也会变大，所以一般是大于两个小于五个合适
           </pre>
 
           <div class="title">reset屏幕的样式</div>
           <pre>
-              <textarea>
-                  <meta content="telephone=no" name="format-detection">  防止苹果给号码加样式
-              </textarea>
-              body {font:12px Arial,'Microsoft YaHei','SimHei';line-height: 18px;overflow: scroll;-webkit-overflow-scrolling: touch;}
               html, body, div, span, applet, object, iframe,
               h1, h2, h3, h4, h5, h6, p, blockquote, pre,
               a, abbr, acronym, address, big, cite, code,
@@ -178,66 +202,50 @@
               button{outline:none;}
               a{ text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
               input {outline: medium;} /*解决input聚焦时候有边框的问题*/
+              body {
+                font:12px Arial,'Microsoft YaHei','SimHei';line-height: 18px;overflow: scroll;
+                -webkit-overflow-scrolling: touch;
+              }
           </pre>
           <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
 
-          <div class="title">nofollow有两种用法</div>
+          <div class="title">css3一些好玩的属性，其兼容性很差，这里仅做记录</div>
           <pre>
-              1.用于meta元标签:告诉爬虫该页面上所有链接都无需追踪。
-              2.用于a标签：告诉爬虫该页面无需追踪。
-              <textarea>
-                   <meta name="robots" content="nofollow" />
-                   <a href="login.aspx" rel="nofollow">登录</a>
-              </textarea>
-          </pre>
-
-          <div class="title">progress属性</div>
-          <pre>
-              <textarea>
-                   <progress value="22" max="100"></progress>
-              </textarea>
-          </pre>
-          <div class="explain">progress是h5的新属性，可设置border和background-color，这表示总共100份，前22个等分有颜色，如果想做成进度条来回动的样子，就写这个标签然后里面什么属性都不加就行，不过不同浏览器默认颜色不一，请自己加入控制</div>
-
-          <div class="title">布局的时候不使用table的原因以及重绘的理解</div>
-          <pre>
-              1.由于浏览器的流布局，对渲染树的计算通常只需要遍历一次就可以完成。但table及其内部元素除外，它可能需要多次计算才能确定好
-              其在渲染树中节点的属性，通常要花3倍于同等元素的时间,table会先等页面加载完成之后来了数据才显示
-              可能会出现table嵌套table的可能
-              2.重绘是一个元素外观的改变所触发的浏览器行为，例如改变visibility、outline、背景色等属性。浏览器会根据元素的新属性
-              重新绘制，使元素呈现新的外观。重绘不会带来重新布局，并不一定伴随重排
-          </pre>
-
-          <div class="title">将图片至为灰色的方法，该属性兼容性很差，仅做记录</div>
-          <pre>
-              .gray { 
-                  -webkit-filter: grayscale(100%);
-                  -moz-filter: grayscale(100%);
-                  -ms-filter: grayscale(100%);
-                  -o-filter: grayscale(100%);
+              1.将图片至为灰色的方法：
+                .gray { 
+                    -webkit-filter: grayscale(100%);
+                    -moz-filter: grayscale(100%);
+                    -ms-filter: grayscale(100%);
+                    -o-filter: grayscale(100%);
+                    
+                    filter: grayscale(100%);
                   
-                  filter: grayscale(100%);
-                
-                  filter: gray;
-              }
-          </pre>
+                    filter: gray;
+                }
 
-          <div class="title">这个可以支持浏览器的语音输入，不过兼容性巨差</div>
-          <pre>
-              <textarea>
-                   <input x-webkit-speech lang="zh-CN" />
-              </textarea>
-          </pre>
+              2.image-set属性：
+                div {
+                  background-image: image-set( "test.png" 1x, "test-2x.png" 2x );
+                }
+                这可以为不同的屏幕像素密度来指定不同的背景图片
+                @media only screen and (min-device-pixel-ratio:2){
+                  这同样可以指定像素密度为2的时候的样式，也就是retinal屏
+                }
 
-          <div class="title">对于我们平时所说的瀑布流布局，除了用jq，还可以使用css3的column分栏布局</div>
-          <pre>
-               只需要给父级元素指定column-width，也就是列的宽度，就可以做到了，只不过由于它是浏览器自己计算的，
-               首先子元素的摆放顺序不是按照我们放的那样，而且有时候间距会比较大，体验不好，最后对于下拉请求还是得用jq
-          </pre>
+              3.background-clip 和 background-origin 是 CSS3 中新加的 background module 属性：
+                background-clip 用来判断 background 是否包含 border 区域
+                而 background-origin 用来决定 background-position 计算的参考位置
+                还有background-size属性可以控制背景图的大小
 
-          <div class="title">可以产生两张图片叠加的效果，其中第二张图片的效果为透明度50%</div>
-          <pre>
-               background-image: -webkit-cross-fade(url(1.jpg), url(2.jpg), 50%);
+              4.object-fit这个属性最好的就是控制img图像，但是兼容性不好，ie全都不支持：
+                一.fill:此值为boject-fit的默认值，替换内容大小被设置为填充元素的内容框，也就是说，元素的内容扩大到完全填充容器的
+                外形尺寸即使这打破其内在的宽高比。
+                二.contain：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为一个包含元素的宽度和高度。也就
+                是说，如果你在替换元素上设置一个明确的高度和宽度，此值将导致内容大小，完全在固定的比例显示，但仍在元素尺寸内显示。
+                三.cover：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为覆盖整个元素的宽度和高度。也就是说，
+                替换元素内容大小保持长宽比，但改变宽度和高度，以便完全覆盖内容元素。
+                四.none：替换元素内容不调整大小以适应内部元素容器，内容忽略设置在元素上的任何高度和权重，并且仍在元素尺寸内显示。
+                5.scale-down：当内容大小设置了non或contain，将导致具体对象变得更小。
           </pre>
 
           <div class="title">关于选择器的奇怪现象</div>
@@ -255,60 +263,28 @@
           </pre>
           <div class="explain">貌似这种后代选择器情形，祖先选择器对应DOM无论多深多浅都是同一级别的，而最终起作用的是选择器声明在CSS样式中的顺序，即优先显示后面的CSS声明</div>
 
-          <div class="title">当图标中有字的时候，我们也要写入相同的字，并将其隐藏</div>
-          <pre>
-               1.text-indent负值可写-9999在忘记设置overflow:hidden声明时候可能会有长长虚框，但对于这一层的文字隐藏来说，其为最佳方法
-               2.从SEO的角度讲，文字可以被抓取；开发人员这边，也能迅速确定这段HTML的作用，便于协作；对于特殊用户例如使用屏幕阅读器的
-               盲人用户，也能知道这里内容与含义；当然，普通用户正常状态下的访问不受影响。
-               3.使用的文字隐藏的技术是display:none或是visibility:hidden之流。这两个声明隐藏的文字屏幕阅读器是无法抓取的。
-               而且，有可能被搜索引擎酱油化。
-          </pre>
-
           <div class="title">h5实现表单上传想法</div>
           <pre>
-               先将Input中type类型指定为file之后将其放在form表单中，不过传统的form表单提交会导致页面刷新，但是在有些情况下，我们不希望页面被刷新，这种时候我们都是使用Ajax的方式进行请求的
-               data : $( '选中的form表单').serialize()该方法可以对form表单进行序列化，从而将form表单中的所有参数传递到服务端
-               XMLHttpRequest Level 2添加了一个新的接口FormData.利用FormData对象,我们可以通过JavaScript用一些键值对来模拟一系列表单控件
-               var oData = new FormData(document.forms.namedItem("选择的form表单的name值" )); 这样oData就可以获得表单所有值，当数据直接上传就行了
+               先将Input中type类型指定为file之后将其放在form表单中，不过传统的form表单提交会导致页面刷新，但是在有些情况下，我们
+               不希望页面被刷新，这种时候我们都是使用Ajax的方式进行请求的data : $( '选中的form表单').serialize()该方法可以对form
+               表单进行序列化，从而将form表单中的所有参数传递到服务端。XMLHttpRequest Level 2添加了一个新的接口FormData.利用
+               FormData对象,我们可以通过JavaScript用一些键值对来模拟一系列表单控件
+               var oData = new FormData(document.forms.namedItem("选择的form表单的name值" )); 这样oData就可以获得表单所有值，
+               当数据直接上传就行了
           </pre>
 
           <div class="title">媒体查询的一些用法</div>
           <pre>
-               定义屏幕时候的样式，以及打印时候的样式
-               <textarea>
-                  <link media="screen" rel="stylesheet" href="example.css" />
-                  <link media="print" rel="stylesheet" href="example.css" />
-               </textarea>
-               only的用法,写的时候这里只是屏幕上判断不在打印时候判断，不写表示二者都可,第一个针对设备的物理宽度，自己手动缩浏览器大小不会改变，下面那个可以
-               <textarea style="width:124%;">
-                  <link media="only screen and (min-device-width:300px) and (max-device-width:900px)" rel="stylesheet" href="example.css" />
-                  <link rel="stylesheet" media="(min-width:701px) and (max-width:900px)" href="mediu.css" />
-               </textarea>
-          </pre>
-
-          <div class="title">静态文件放在不同域名下</div>
-          <pre>
-               对于流量太低或者用户过于分散的网站,cdn的作用不是很大，但是将静态文件放在不同的域名下会有好处，
-               因为同一域名下的时候每次的请求都会带上cookies，然而cookies的解析会使得一个很小的文件变得很大
-               但是也不能搞太多的域名了，因为dns域名解析消耗也会变大，所以一般是大于两个小于五个合适
-          </pre>
-
-          <div class="title">css3 image-set属性</div>
-          <pre>
-              div {
-                background-image: image-set( "test.png" 1x, "test-2x.png" 2x );
-              }
-              这可以为不同的屏幕像素密度来指定不同的背景图片
-              @media only screen and (min-device-pixel-ratio:2){
-                这同样可以指定像素密度为2的时候的样式，也就是retinal屏
-              }
-          </pre>
-
-          <div class="title">background-clip 和 background-origin 是 CSS3 中新加的 background module 属性</div>
-          <pre>
-              background-clip 用来判断 background 是否包含 border 区域
-              而 background-origin 用来决定 background-position 计算的参考位置
-              还有background-size属性可以控制背景图的大小
+定义屏幕时候的样式，以及打印时候的样式
+<textarea>
+  <link media="screen" rel="stylesheet" href="example.css" />
+  <link media="print" rel="stylesheet" href="example.css" />
+</textarea>
+下面第一个针对设备的物理宽度，自己手动缩浏览器大小不会改变，第二个可以
+<textarea style="width:100%;">
+<link media="only screen and (min-device-width:300px) and (max-device-width:900px)" rel="stylesheet" href="a.css"/>
+<link rel="stylesheet" media="(min-width:701px) and (max-width:900px)" href="mediu.css" />
+</textarea>
           </pre>
 
           <div class="title">flex布局新旧混合写法详解（兼容微信）</div>
@@ -455,82 +431,68 @@
               当你进行媒体查询的时候，最好使用em因为只有他在不同浏览器的表现基本一致，注意这是它是根据根元素的字体大小决定的
           </pre>
 
-          <div class="title">object-fit的用法</div>
-          <pre>
-              1.fill:此值为boject-fit的默认值，替换内容大小被设置为填充元素的内容框，也就是说，元素的内容扩大到完全填充容器的外形尺寸
-              即使这打破其内在的宽高比。
-              2.contain：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为一个包含元素的宽度和高度。也就是说，
-              如果你在替换元素上设置一个明确的高度和宽度，此值将导致内容大小，完全在固定的比例显示，但仍在元素尺寸内显示。
-              3.cover：替换元素内容大小保持长宽比例填充元素内容容器，其具体对象大小被解析为覆盖整个元素的宽度和高度。也就是说，
-              替换元素内容大小保持长宽比，但改变宽度和高度，以便完全覆盖内容元素。
-              4.none：替换元素内容不调整大小以适应内部元素的容器，内容完全忽略设置在元素上的任何高度和权重，并且仍在元素尺寸内显示。
-              5.scale-down：当内容大小设置了non或contain，将导致具体对象变得更小。
-          </pre>
-          <div class="explain">这个属性最好的就是控制img图像，但是兼容性不好，ie全都不支持</div>
-
           <div class="title">相关meta设置汇总</div>
           <pre>
-              <textarea style="height:400px;width:120%;">
-                  <meta charset="UTF-8">
-                  <meta http-equiv="refresh" content="5;url=" />
-                  <link rel="copyright" href="copyright.html" 　/>
-                  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-                  <meta name="viewport" content="width=device-width, initial-scale=1" />
-                  <meta name="description" content="150 words" />
-                  <meta name="keywords" content="your tags" />
-                  <!--
-                      all：文件将被检索，且页面上的链接可以被查询；
-                      none：文件将不被检索，且页面上的链接不可以被查询；
-                      index：文件将被检索；
-                      follow：页面上的链接可以被查询；
-                      noindex：文件将不被检索；
-                      nofollow：页面上的链接不可以被查询。
-                   -->
-                  <meta name="robots" content="index,follow" />
-                  <meta name="author" content="author name" />
-                  <meta name="google" content="index,follow" />
-                  <meta name="googlebot" content="index,follow" />
-                  <meta name="verify" content="index,follow" />
-                  <!-- 启用 WebApp 全屏模式 -->
-                  <meta name="apple-mobile-web-app-capable" content="yes" />
-                  <!-- 隐藏状态栏/设置状态栏颜色：只有在开启WebApp全屏模式时才生效。content的值为default | black | black-translucent 。 -->
-                  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-                  <!-- 添加到主屏后的标题 -->
-                  <meta name="apple-mobile-web-app-title" content="标题">
-                  <!-- 忽略数字自动识别为电话号码 -->
-                  <meta content="telephone=no" name="format-detection" />
-                  <!-- 忽略识别邮箱 -->
-                  <meta content="email=no" name="format-detection" />
-                  <meta name="apple-itunes-app" content="app-id=myAppStoreID, affiliate-data=myAffiliateData, app-argument=myURL" />
-                  <!-- 添加智能 App 广告条 Smart App Banner：告诉浏览器这个网站对应的app，并在页面上显示下载banner:https://developer.apple.com/library/ios/documentation/AppleApplications/Reference/SafariWebContent/PromotingAppswithAppBanners/PromotingAppswithAppBanners.html -->
-                  <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
-                  <meta name="HandheldFriendly" content="true">
-                  <!-- 微软的老式浏览器 -->
-                  <meta name="MobileOptimized" content="320">
-                  <!-- uc强制竖屏 -->
-                  <meta name="screen-orientation" content="portrait">
-                  <!-- QQ强制竖屏 -->
-                  <meta name="x5-orientation" content="portrait">
-                  <!-- UC强制全屏 -->
-                  <meta name="full-screen" content="yes">
-                  <!-- QQ强制全屏 -->
-                  <meta name="x5-fullscreen" content="true">
-                  <!-- UC应用模式 -->
-                  <meta name="browsermode" content="application">
-                  <!-- QQ应用模式 -->
-                  <meta name="x5-page-mode" content="app">
-                  <!-- windows phone 点击无高光 -->
-                  <meta name="msapplication-tap-highlight" content="no">
-                  <!-- 百度移动端搜索为了迎合日益发展的移动设备，对其搜索结果进行自认为很赞的转码，说白了就是改改css样式，当
-                  然是通过分析后改的，于是乎找到了几个结果可以有效防止百度移动搜索转码，
-                  其中最简单的就是在全站头部加个meta： -->
-                  <meta http-equiv="Cache-Control" content="no-siteapp">
-              </textarea>
+          <textarea style="height:800px;">
+              <meta charset="UTF-8">
+              <meta http-equiv="refresh" content="5;url=" />
+              <link rel="copyright" href="copyright.html" 　/>
+              <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <meta name="description" content="150 words" />
+              <meta name="keywords" content="your tags" />
+              <!--
+                  all：文件将被检索，且页面上的链接可以被查询；
+                  none：文件将不被检索，且页面上的链接不可以被查询；
+                  index：文件将被检索；
+                  follow：页面上的链接可以被查询；
+                  noindex：文件将不被检索；
+                  nofollow：页面上的链接不可以被查询。
+               -->
+              <meta name="robots" content="index,follow" />
+              <meta name="author" content="author name" />
+              <meta name="google" content="index,follow" />
+              <meta name="googlebot" content="index,follow" />
+              <meta name="verify" content="index,follow" />
+              <!-- 启用 WebApp 全屏模式 -->
+              <meta name="apple-mobile-web-app-capable" content="yes" />
+              <!-- 隐藏状态栏/设置状态栏颜色：只有在开启WebApp全屏模式时才生效。
+              content的值为default | black | black-translucent 。 -->
+              <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+              <!-- 添加到主屏后的标题 -->
+              <meta name="apple-mobile-web-app-title" content="标题">
+              <!-- 忽略数字自动识别为电话号码 -->
+              <meta content="telephone=no" name="format-detection" />
+              <!-- 忽略识别邮箱 -->
+              <meta content="email=no" name="format-detection" />
+              <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+              <meta name="HandheldFriendly" content="true">
+              <!-- 微软的老式浏览器 -->
+              <meta name="MobileOptimized" content="320">
+              <!-- uc强制竖屏 -->
+              <meta name="screen-orientation" content="portrait">
+              <!-- QQ强制竖屏 -->
+              <meta name="x5-orientation" content="portrait">
+              <!-- UC强制全屏 -->
+              <meta name="full-screen" content="yes">
+              <!-- QQ强制全屏 -->
+              <meta name="x5-fullscreen" content="true">
+              <!-- UC应用模式 -->
+              <meta name="browsermode" content="application">
+              <!-- QQ应用模式 -->
+              <meta name="x5-page-mode" content="app">
+              <!-- windows phone 点击无高光 -->
+              <meta name="msapplication-tap-highlight" content="no">
+              <!-- 百度移动端搜索为了迎合日益发展的移动设备，对其搜索结果进行自认为很赞的转码，
+              说白了就是改改css样式当然是通过分析后改的，于是乎找到了几个结果可以有效防止百度移
+              动搜索转码，其中最简单的就是在全站头部加个meta： -->
+              <meta http-equiv="Cache-Control" content="no-siteapp">
+          </textarea>
           </pre>
 
           <div class="title">垂直水平居中</div>
           <pre>
-             div {height: 200px;text-align: center;}
+             1.div {height: 200px;text-align: center;}
              img {vertical-align: middle;}
              p {vertical-align: middle;display:inline-block;}
              i {display: inline-block;height: 100%;vertical-align: middle;}
@@ -538,12 +500,12 @@
                   <div><img src="#"><i></i></div>
                   <div><p>fdfdfds</p><i></i></div>
              </textarea>
-          </pre>
-          <div class="explain">CSS Hack大致有3种表现形式，CSS类内部Hack、选择器Hack以及HTML头部引用(if IE)Hack，CSS Hack主要针对类内部Hack：比如 IE6能识别下划线"_"和星号" * "，IE7能识别星号" * "，但不能识别下划线"_"</div>
-        
-          <div class="title">垂直水平居中2</div>
-          <pre>
-             .button {position: absolute; left: 0; right: 0; width: 100px;height: 120px;top: 0;bottom: 0;background-color: red;margin: auto; }
+
+             2.兼容性ie8即以上
+             .button {
+                  position: absolute; left: 0; right: 0; width: 100px;height: 120px;
+                  top: 0;bottom: 0;background-color: red;margin: auto; 
+             }
              div {background-color: black;height: 500px;width: 500px;position: relative;}
              <textarea style="height:140px;">
                   <div>
@@ -553,7 +515,7 @@
                   </div>
              </textarea>
           </pre>
-          <div class="explain">兼容性ie8即以上</div>
+          <div class="explain">CSS Hack大致有3种表现形式，CSS类内部Hack、选择器Hack以及HTML头部引用(if IE)Hack，CSS Hack主要针对类内部Hack：比如 IE6能识别下划线"_"和星号" * "，IE7能识别星号" * "，但不能识别下划线"_"</div>
 
           <div class="title">文件加载动画css3</div>
           <pre>

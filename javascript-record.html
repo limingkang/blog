@@ -16,7 +16,6 @@
    			<pre>
    				var dfd = $.Deferred(); 
    				var dfd2 = $.Deferred();
-
    				function fn1(d){
    				    setTimeout( function(){
    				       d.resolve('13');
@@ -27,10 +26,8 @@
    				      d.resolve('2');
    				    }, 200);
    				}
-
    				fn1(dfd);
    				fn2(dfd2);
-
    				$.when(dfd,dfd2).done(function(data1,data2){
    				   console.log(data1);
    				   console.log(data2);
@@ -44,6 +41,26 @@
    			</pre>
        		<div class="explain">先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了</div>
        		
+            <div class="title">js相等==运算符的比较规则小结</div>
+            <pre>
+            如果x不是正常值（比如抛出一个错误），中断执行。
+            如果y不是正常值，中断执行。
+            如果Type(x)与Type(y)相同，执行严格相等运算x === y。
+            如果x是null，y是undefined，返回true。
+            如果x是undefined，y是null，返回true。
+            如果Type(x)是数值，Type(y)是字符串，返回x == ToNumber(y)的结果。
+            如果Type(x)是字符串，Type(y)是数值，返回ToNumber(x) == y的结果。
+            如果Type(x)是布尔值，返回ToNumber(x) == y的结果。
+            如果Type(y)是布尔值，返回x == ToNumber(y)的结果。
+            如果Type(x)是字符串或数值或Symbol值，Type(y)是对象，返回x == ToPrimitive(y)的结果。
+            如果Type(x)是对象，Type(y)是字符串或数值或Symbol值，返回ToPrimitive(x) == y的结果。
+            上面都不满足返回false。
+
+            {}==null  //false
+            0==null   //false    
+            </pre>
+            <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
+
             <div class="title">js判断浏览器方法以及监听横竖屏</div>
             <pre>
                 var browser = {
@@ -91,14 +108,14 @@
                     但是真个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
             </pre>
 
-            <div class="title">jq中extend方法的复制问题以及NAN的奇怪现象</div>
+            <div class="title">jq中extend方法的复制以及NAN的奇怪现象</div>
             <pre>
                 var obj1 = {
                   'a': 's1',
                   'b': [1,2,3,{'a':'s2'}],
                   'c': {'a':'s3', 'b': [4,5,6]}
                 }
-                var obj2 = $.extend(true, {}, obj1);
+                var obj2 = $.extend(true, {}, obj1);   //深拷贝与浅拷贝
                 obj2.a='s1s1';
                 obj2.b[0]=100;
                 obj2.c.b[0]=400;
@@ -110,23 +127,17 @@
             </pre>
             <div class="explain">通过true或者false来判断，默认false,jq的深复制(一层一层往下复制直到最底层)和浅复制(只复制顶层的基本类型元素)。所以对象中a肯定会被复制</div>
 
-            <div class="title">找到非单字节字符的换成两个单字节的，再求长度，可计总长度</div>
-            <pre>
-                str.replace(/[^\00-xff]/g,"xx").length;
-                web安全中的攻击:将img标签的src=0 onerror=alert(5)这样就有效荷载可以造成xss攻击
-                当src写值的时候可以请求到其他网站的文件，例如js文件就可以进行跨站请求攻击
-            </pre>
             <div class="explain">表单提交按钮类型全部改成submit类型啦,只要表单绑定submit事件，prevent默认提交，于是，既能回车响应，又能验证或者ajax或是原始提交处理</div>
 
             <div class="title">连接地址显示你链接的那个网站的图标</div>
             <pre>
-                element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
-                element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
-                第一个使用的是谷歌的api不过后一个好像更好用些，实例：
-                <textarea style="width:90%;">
-                	<img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
-                	<img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
-                </textarea>
+            element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
+            element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
+            第一个使用的是谷歌的api不过后一个好像更好用些，实例：
+            <textarea style="width:90%;">
+        	<img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
+        	<img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
+            </textarea>
             </pre>
 
             <div class="title">css3动画的事件</div>
@@ -427,7 +438,8 @@
                  如果一些属性或函数存在于一个对象中，你也可以这样做检测，如下面的代码所示：user && user.login();
                  对于||判断也是如此，如果第一个为true则后面不走，否则就走
 
-                 4.如果是一个小型数组，这样做很好，如果你要处理的是一个大的数组，这段代码在每次迭代都将会重新计算数组的大小，这将会导致一些延误。为了避免这种现象出现，可以将array.length做一个缓存：
+                 4.如果是一个小型数组，这样做很好，如果你要处理的是一个大的数组，这段代码在每次迭代都将会重新计算数组的大小，这
+                 将会导致一些延误。为了避免这种现象出现，可以将array.length做一个缓存：
                  for(var i = 0; i < array.length; i++) {
                      console.log(array[i]);
                  }
@@ -448,7 +460,8 @@
                     应该如此：console.log(array1.push.apply(array1, array2));
 
                  6.将NodeList转换成数组
-                 如果你运行document.querySelectorAll(“p”)函数时，它可能返回DOM元素的数组，也就是NodeList对象。但这个对象不具有数组的函数功能
+                 如果你运行document.querySelectorAll(“p”)函数时，它可能返回DOM元素的数组，也就是NodeList对象。但这个对象不具
+                 有数组的函数功能;
                  var elements = document.querySelectorAll("p"); // NodeList
                  var arrayElements = [].slice.call(elements); // Now the NodeList is an array
 
@@ -457,20 +470,23 @@
                  在一个正确的事件中：  flag=flag && true
                  在一个错误的事件中：  flag=false;
                  这样只要flag错一次，那就即使运行正确事件几次也注定是false了
-            </pre>
 
-            <div class="title">js判断数据类型</div>
-            <pre>
-                使用 typeof 运算符判断一个原始值变量的类型还有undefined是没有问题的，
-                但如果判断的是引用值类型就会有局限性，比如 null 和数组的结果都是 object
-                要想判断变量属于哪种内置类型，最靠谱的方式是调用 Object.prototype.toString 方法：
-                Object.prototype.toString.call([])
-                // => "[object Array]"
-                Object.prototype.toString.call(null)
-                // => "[object Null]"
-                Object.prototype.toString.call(undefined)
-                // => "[object Undefined]"
-                注意对象的toString方法和数组和字符串的toString方法是不一样的一个检测的一个用来转换为字符串
+                 8.找到非单字节字符的换成两个单字节的，再求长度，可计总长度
+                 str.replace(/[^\00-xff]/g,"xx").length;
+                 web安全中的攻击:将img标签的src=0 onerror=alert(5)这样就有效荷载可以造成xss攻击
+                 当src写值的时候可以请求到其他网站的文件，例如js文件就可以进行跨站请求攻击
+
+                 9.js判断数据类型
+                 使用 typeof 运算符判断一个原始值变量的类型还有undefined是没有问题的，
+                 但如果判断的是引用值类型就会有局限性，比如 null 和数组的结果都是 object
+                 要想判断变量属于哪种内置类型，最靠谱的方式是调用 Object.prototype.toString 方法：
+                 Object.prototype.toString.call([])
+                 // => "[object Array]"
+                 Object.prototype.toString.call(null)
+                 // => "[object Null]"
+                 Object.prototype.toString.call(undefined)
+                 // => "[object Undefined]"
+                 注意对象的toString方法和数组和字符串的toString方法是不一样的一个检测的一个用来转换为字符串
             </pre>
 
             <div class="title">数组去重的方法</div>
@@ -655,26 +671,6 @@
 
             trampoline(sum(1, 100000))   
             </pre>
-
-            <div class="title">js相等==运算符的比较规则小结</div>
-            <pre>
-            如果x不是正常值（比如抛出一个错误），中断执行。
-            如果y不是正常值，中断执行。
-            如果Type(x)与Type(y)相同，执行严格相等运算x === y。
-            如果x是null，y是undefined，返回true。
-            如果x是undefined，y是null，返回true。
-            如果Type(x)是数值，Type(y)是字符串，返回x == ToNumber(y)的结果。
-            如果Type(x)是字符串，Type(y)是数值，返回ToNumber(x) == y的结果。
-            如果Type(x)是布尔值，返回ToNumber(x) == y的结果。
-            如果Type(y)是布尔值，返回x == ToNumber(y)的结果。
-            如果Type(x)是字符串或数值或Symbol值，Type(y)是对象，返回x == ToPrimitive(y)的结果。
-            如果Type(x)是对象，Type(y)是字符串或数值或Symbol值，返回ToPrimitive(x) == y的结果。
-            上面都不满足返回false。
-
-            {}==null  //false
-            0==null   //false    
-            </pre>
-            <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
 
             <div class="title">正则表达式小结</div>
             <pre>
