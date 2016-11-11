@@ -113,6 +113,101 @@
             生变化，BrowserSync会通知浏览器。    
             </pre>
             <div class="explain">BrowserSync的一般用法则不需要浏览器插件，也不用手工添加代码（尽管也提供那样的用法）。一句控制台的命令之后，无论是在手机里还是电脑，无论用多少个浏览器（经测试，IE8+及其它），都可以拥有自动刷新的功能。文档配置地址<a href="http://www.browsersync.cn/docs/">http://www.browsersync.cn/docs/</a></div>
+        
+            <div class="title">以下是自己用的一个结合gulp的配置例子</div>
+            <pre>
+        文件目录如下：
+            |——pc
+                |——images
+                |——javascripts
+                |——build_js
+                |——sass
+                |——index.html
+                |——stylesheets
+                
+        gulpfile.js文件如下：
+            var gulp        = require('gulp');
+            var browserSync = require('browser-sync').create();
+            var sass        = require('gulp-sass');
+            var concat      = require('gulp-concat');  //合并文件
+            var uglify      = require('gulp-uglify');   //压缩js文件
+            var rename      = require('gulp-rename');    //重命名文件
+            var imagemin    = require('gulp-imagemin');  // 压缩图片
+            var minifycss   = require('gulp-minify-css');   //压缩css文件
+            var reload      = browserSync.reload;
+
+            var dir         = "./template/pc";      //对应到的基础目录
+
+            // // 代理
+            // gulp.task('browser-sync', function() {
+            //     browserSync.init({
+            //         proxy: "你的域名或IP"
+            //     });
+            // });
+
+            // 静态服务器 + 监听 scss/html 文件
+            gulp.task('serve', ['testCssmin','scripts'], function() {
+
+                // browserSync.init({
+                //     server: dir
+                // });
+                gulp.watch(dir+"/sass/*.scss", ['testCssmin']);
+                gulp.watch(dir+"/*.html").on('change', reload);
+                gulp.watch(dir+'/javascripts/*.js', ['js-watch']);
+            });
+
+            // scss编译为css,并且return出一个stream流，来处理异步,当然可以直接放在testCssmin任务中写在一起
+            gulp.task('sass', function() {
+                return gulp.src(dir+"/sass/*.scss")
+                       .pipe(sass())
+                       .pipe(gulp.dest(dir+"/sass"));
+
+            });
+
+            // 压缩css并将注入到浏览器里实现更新
+            gulp.task('testCssmin',['sass'], function () {
+               gulp.src(dir+'/sass/screen.css')
+                   .pipe(concat('screen.min.css'))
+                   .pipe(minifycss({
+                       advanced: true,//类型：Boolean 默认：true [是否开启高级优化（合并选择器等）]
+                       keepBreaks: false,//类型：Boolean 默认：false [是否保留换行]
+                       keepSpecialComments: '*'
+                   }))
+                   .pipe(gulp.dest(dir+'/stylesheets'))
+                   .pipe(reload({stream: true}));
+            });
+
+            // 合并，压缩js文件,并且return出工作流
+            gulp.task('scripts', function() {
+                return  gulp.src(dir+'/javascripts/*.js')
+                        .pipe(concat('all.min.js'))
+                        .pipe(uglify({
+                            mangle: true,//类型：Boolean 默认：true 是否修改变量名,注意参数名不变只是改var出来的变量
+                            compress: true,//类型：Boolean 默认：true 是否完全压缩
+                            preserveComments: false //all为保留所有注释,false为所有的注释不保留
+                            // mangle: {except: ['require' ,'exports' ,'module' ,'$']}//排除混淆关键字
+                        }))
+                        .pipe(gulp.dest(dir+'/build_js'));
+            });
+            // 工作流return出来结束之后重载浏览器
+            gulp.task('js-watch', ['scripts'], function(){
+                reload();
+            });
+
+            gulp.task('default', ['serve']);
+
+            // 项目完成之后，运行压缩图片任务，不用改名字的
+            gulp.task('minimages', function(){
+                gulp.src(dir+'/images/*.{png,jpg,gif,ico}')
+                    .pipe(imagemin({
+                        optimizationLevel: 5, //类型：Number  默认：3  取值范围：0-7（优化等级）
+                        progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+                        interlaced: true, //类型：Boolean 默认：false 隔行扫描gif进行渲染
+                        multipass: true //类型：Boolean 默认：false 多次优化svg直到完全优化
+                    }))
+                    .pipe(gulp.dest(dir+'/images'));
+            });        
+            </pre>
         </div>
     </body>
 </html>

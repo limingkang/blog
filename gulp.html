@@ -14,7 +14,8 @@
       <div class="big_container">
            <div class="title">gulpfile.js</div>
            <pre>
-                // 引入 gulp,注意他的任务是异步执行的
+                // 引入 gulp,注意他的任务是异步执行的,也就是在数组中的任务是异步的，处理方法就是参考下面官网异步处理方法
+                // 如果文件输出到同一个位置的话，最好改名字，当然原名也行，会直接覆盖也很好，尤其是图片压缩的时候
                 var gulp = require('gulp'); 
 
                 var connect = require('gulp-connect');    // 起服务器构建页面的实时刷新
@@ -26,24 +27,39 @@
                 var htmlmin = require('gulp-htmlmin');  //压缩html文件
                 var imagemin = require('gulp-imagemin');  // 压缩图片
                 var livereload = require('gulp-livereload'); //服务器控制客户端同步刷新 
-                var minifycss = require('gulp-minify-css');   //压缩css文件
+                var minifycss = require('gulp-clean-css');   //压缩css文件
                 // gulp-autoprefixer使用Autoprefixer来补全浏览器兼容的css
 
                 // 编译less文件
                 gulp.task('testLess',function(){
-                    gulp.src('./src/stylesheet/less/mystyle_one.less')   //该任务针对的文件
-                        .pipe(less())                                    //该任务调用的模块
-                        .pipe(gulp.dest('./src/stylesheet/css'));        //将会在该路径线面生成mystyle_one.css文件
+                    return gulp.src('./src/stylesheet/less/mystyle_one.less')   //该任务针对的文件
+                          .pipe(less())                                    //该任务调用的模块
+                          .pipe(gulp.dest('./src/stylesheet/css'));        //将会在该路径线面生成mystyle_one.css文件
                 });
 
-                //编译Sass
+                //编译Sass并且return出一个stream流，来配合下面的压缩出现的异步处理
                 gulp.task('sass', function() {
-                    gulp.src('./scss/*.scss')
-                         .pipe(sass())
-                         .pipe(gulp.dest('./css'));
+                    return gulp.src('./scss/*.scss')
+                           .pipe(sass())
+                           .pipe(gulp.dest('./css'));
                 });
 
-                // 压缩图片
+               //压缩css文件
+               gulp.task('testCssmin',['sass'], function () {
+                   gulp.src('src/stylesheet/css/test.css')
+                       .pipe(minifycss({
+                           advanced: false,//类型：Boolean 默认：true [是否开启高级优化（合并选择器等）]
+                           compatibility: 'ie7',//保留ie7及以下兼容写法 类型：String 默认：''or'*' 
+                           //[启用兼容模式； 'ie7'：IE7兼容模式，'ie8'：IE8兼容模式，'*'：IE9+兼容模式]
+                           keepBreaks: false,//类型：Boolean 默认：false [是否保留换行]
+                           keepSpecialComments: '*'
+                           //保留所有特殊前缀 当你用autoprefixer生成的浏览器前缀，如果不加这个参数，有可能将会删除你的部分前缀
+                       }))
+                       .pipe(rename('test.min.css'))
+                       .pipe(gulp.dest('src/stylesheet/css'));
+               });
+
+               // 压缩图片
                 gulp.task('minimages', function(){
                     gulp.src('./src/images/image/*.{png,jpg,gif,ico}')
                         .pipe(imagemin({
@@ -66,20 +82,6 @@
                         })))
                         .pipe(gulp.dest('./src/images/minimage/'));
                 });
-               //压缩css文件
-               gulp.task('testCssmin', function () {
-                   gulp.src('src/stylesheet/css/test.css')
-                       .pipe(minifycss({
-                           advanced: false,//类型：Boolean 默认：true [是否开启高级优化（合并选择器等）]
-                           compatibility: 'ie7',//保留ie7及以下兼容写法 类型：String 默认：''or'*' 
-                           //[启用兼容模式； 'ie7'：IE7兼容模式，'ie8'：IE8兼容模式，'*'：IE9+兼容模式]
-                           keepBreaks: false,//类型：Boolean 默认：false [是否保留换行]
-                           keepSpecialComments: '*'
-                           //保留所有特殊前缀 当你用autoprefixer生成的浏览器前缀，如果不加这个参数，有可能将会删除你的部分前缀
-                       }))
-                       .pipe(rename('test.min.css'))
-                       .pipe(gulp.dest('src/stylesheet/css'));
-               });
 
                 // 检查脚本
                 gulp.task('jshint', function() {
@@ -175,6 +177,7 @@
                     .pipe(gulp.dest("dist"));     
                 });  
            </pre>
+           <div class="explain"><a href="http://www.gulpjs.com.cn/docs/api/">gulp中文api文档</a></div>
 
            <div class="title">下面是一个成型项目的gulp,webpack,vue的配置文件</div>
            <pre>

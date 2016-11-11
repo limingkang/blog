@@ -53,40 +53,17 @@
            2.Vue在普通JavaScript对象上建立响应，提供自动化的计算属性。在Ember中要将所有东西放在Ember对象内，并且手工为计算属性声明依赖
            3.Vue 的模板语法可以用全功能的 JavaScript 表达式，而 Handlebars 的语法和帮助函数语法相比之下非常受限
            4.在性能上，Vue甩开Ember几条街，即使是Ember 2.0最新的Glimmer引擎。Vue 自动批量更新，在性能比较关键时 Ember 要手工管理循环
+          
+        vue的服务器端渲染(SSR):
+           如果你只是用服务端渲染来改善一个少数的营销页面（如 首页，关于，联系 等等）的SEO，那你可以用预渲染替换。预渲染不像服务器
+           渲染那样即时编译HTML,预渲染只是在构建时为了特定的路由生成特定的几个静态页面。其优势是预渲染的设置更加简单，可以保持前端
+           是一个完整的静态站。node有vue-server-renderer这个模块可以做到，正如react的React.renderToString方法，之所以可以做到是因
+           为其实vue的底层也采用了virtual dom，而且vuex也借鉴了redux的思想。
            </pre>
-           <div class="explain">vue.js1.0中文文档地址<a href="http://cn.vuejs.org/guide/installation.html">http://cn.vuejs.org/guide/installation.html</a></div>
-           <div class="explain">vue.js2.0中文文档地址<a href="https://vuefe.cn/guide/">https://vuefe.cn/guide/</a></div>
+           <div class="explain">vue.js中文文档地址<a href="http://cn.vuejs.org/guide/installation.html">http://cn.vuejs.org/guide/installation.html</a></div>
            <div class="explain">vue-router单页应用插件地址<a href="http://router.vuejs.org/zh-cn/installation.html">http://router.vuejs.org/zh-cn/installation.html</a></div>
+           <div class="explain">vue-resource的使用<a href="http://www.bootcdn.cn/vue-resource/readme/">http://www.bootcdn.cn/vue-resource/readme/</a></div>
        	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看</div>
-
-           <div class="title">实例的生命周期</div>
-           <pre>
-        Vue 实例在创建时有一系列初始化步骤——例如，它需要建立数据观察，编译模板，创建必要的数据绑定。在此过程中，它也将调用一些生命
-        周期钩子，给自定义逻辑提供运行机会。例如 created 钩子在实例创建后调用：
-	        var vm = new Vue({
-	          data: {
-	            a: 1
-	          },
-	          created: function () {
-	            // `this` 指向 vm 实例
-	            console.log('a is: ' + this.a)
-	          }
-	        })
-	        // -> "a is: 1"
-        也有一些其它的钩子，在实例生命周期的不同阶段调用，如 compiled、 ready 、destroyed。钩子的 this 指向调用它的 Vue 实例。
-        Vue.js没有是没有控制器的概念的，组件的自定义逻辑可以分割在这些钩子中
-           </pre>
-           <div class="explain">具体详细生命周期可查官方文档</div>
-
-           <div class="title">条件渲染v-if和v-show的区别</div>
-           <pre>
-        在切换 v-if 块时，Vue.js 有一个局部编译/卸载过程，因为 v-if 之中的模板也可能包括数据绑定或子组件。v-if 是真实的条件渲染，因为
-        它会确保条件块在切换当中合适地销毁与重建条件块内的事件监听器和子组件。
-        v-if 也是惰性的：如果在初始渲染时条件为假，则什么也不做——在条件第一次变为真时才开始局部编译（编译会被缓存起来）。
-        相比之下，v-show 简单得多——元素始终被编译并保留，只是简单地基于 CSS 切换。
-        一般来说，v-if 有更高的切换消耗而 v-show 有更高的初始渲染消耗。因此，如果需要频繁切换 v-show 较好，如果在运行时条件不大可能
-        改变v-if 较好。
-           </pre>
 
            <div class="title">数组变动检测</div>
            <pre>
@@ -103,7 +80,7 @@
 	因而用另一个数组替换数组是一个非常高效的操作
 
 	3.有时需要用全新对象（例如通过 API 调用创建的对象）替换数组。因为 v-for 默认通过数据对象的特征来决定对已有作用域和 DOM 元素的
-	复用程度，这可能导致重新渲染整个列表。但是，如果每个对象都有一个唯一 ID 的属性，便可以使用 track-by 特性给 Vue.js 一个提示，
+	复用程度，这可能导致重新渲染整个列表。但是，如果每个对象都有一个唯一 ID 的属性，便可以使用key特性给 Vue.js 一个提示，
 	Vue.js 因而能尽可能地复用已有实例。例如，假定数据为：
 		{
 		  items: [
@@ -113,7 +90,7 @@
 		}
 	然后可以这样给出提示：
 	<textarea>
-		<div v-for="item in items" track-by="_uid"><!-- content --></div>
+		<div v-for="item in items" v-bind:key="item._uid"><!-- content --></div>
 	</textarea>
     	然后在替换数组 items 时，如果 Vue.js 遇到一个包含 _uid: '88f869d' 的新对象，这个对象的_uid和上面的一样，只是其他值不一样,
     	它知道它可以复用这个已有对象的作用域与DOM 元素。
@@ -220,11 +197,11 @@
         在默认情况下，v-model 在input 事件中同步输入框值与数据，可以添加一个特性 lazy，从而改到在 change 事件中同步：
         <textarea style="height:66px;">
         	<!-- 在 "change" 而不是 "input" 事件中更新 -->
-			<input v-model="msg" lazy>
+			<input v-model.lazy="msg">
         </textarea>
         如果想自动将用户的输入转为 Number 类型（如果原值的转换结果为 NaN 则返回原值），可以添加一个特性 number：
         <textarea>
-        <input v-model="age" number>
+        <input v-model.number="age">
         </textarea>
         debounce 设置一个最小的延时，在每次敲击之后延时同步输入框的值与数据。如果每次更新都要进行高耗操作（例如在输入提示中 Ajax 请求）
         注意 debounce 参数不会延迟 input 事件：它延迟“写入”底层数据。因此在使用 debounce 时应当用 vm.$watch() 响应数据的变化。
@@ -254,24 +231,6 @@
            3.如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作（插入/删除）在下一帧中立即执行。
            </pre>
 
-           <div class="title">渐进过渡</div>
-           <pre>
-        transition 与 v-for 一起用时可以创建渐近过渡。给过渡元素添加一个特性 stagger, enter-stagger 或 leave-stagger：
-        以下就是为每个项目增加一个100毫秒的延时
-        <textarea>
-        	<div v-for="item in list" transition="stagger" stagger="100"></div>
-        </textarea>
-
-        或者，提供一个钩子 stagger, enter-stagger 或 leave-stagger，以更好的控制：
-        Vue.transition('stagger', {
-          stagger: function (index) {
-            // 每个过渡项目增加 50ms 延时
-            // 但是最大延时限制为 300ms
-            return Math.min(300, index * 50)
-          }
-        })
-           </pre>
-
            <div class="title">模板解析</div>
            <pre>
         Vue 的模板是 DOM 模板，使用浏览器原生的解析器而不是自己实现一个。相比字符串模板，DOM 模板有一些好处，但是也有问题，它必须是
@@ -293,23 +252,6 @@
         	</table>
         </textarea>	
            </pre>
-
-           <div class="title">prop绑定类型</div>
-           <pre>
-        prop 默认是单向绑定：当父组件的属性变化时，将传导给子组件，但是反过来不会。这是为了防止子组件无意修改了父组件的状态——这会让
-        应用的数据流难以理解。不过，也可以使用 .sync 或 .once 绑定修饰符显式地强制双向或单次绑定
-        <textarea style="height:200px;">
-        	<!-- 默认为单向绑定 -->
-        	<child :msg="parentMsg"></child>
-
-        	<!-- 双向绑定 -->
-        	<child :msg.sync="parentMsg"></child>
-
-        	<!-- 单次绑定 -->
-        	<child :msg.once="parentMsg"></child>
-        </textarea>   	
-           </pre>
-           <div class="explain">双向绑定会把子组件的 msg 属性同步回父组件的 parentMsg 属性。单次绑定在建立之后不会同步之后的变化,注意如果 prop 是一个对象或数组，是按引用传递。在子组件内修改它会影响父组件的状态，不管是使用哪种绑定类型</div>
 
            <div class="title">prop验证</div>
            <pre>
@@ -476,30 +418,6 @@
         	</my-component>
         </textarea>	
            </pre>
-
-           <div class="title">片段实例</div>
-           <pre>
-        在使用 template 选项时，模板的内容将替换实例的挂载元素。因而推荐模板的顶级元素始终是单个元素
-        下面几种情况会让实例变成一个片断实例：
-	        模板包含多个顶级元素。
-	        模板只包含普通文本。
-	        模板只包含其它组件（其它组件可能是一个片段实例）
-	        模板根节点有一个流程控制指令，如 v-if 或 v-for。
-        这些情况让实例有未知数量的顶级元素，它将把它的 DOM 内容当作片断。片断实例仍然会正确地渲染内容。不过，它没有一个根节点，
-        它的 $el 指向一个锚节点，即一个空的文本节点（在开发模式下是一个注释节点）。
-        但是更重要的是，组件元素上的非流程控制指令，非 prop 特性和过渡将被忽略，因为没有根元素供绑定：
-        <textarea style="height:200px;">
-        	<!-- 不可以，因为没有根元素 -->
-        	<example v-show="ok" transition="fade"></example>
-
-        	<!-- props 可以 -->
-        	<example :prop="someData"></example>
-
-        	<!-- 流程控制可以，但是不能有过渡 -->
-        	<example v-if="ok"></example>
-        </textarea>
-           </pre>
-           <div class="explain">当然片断实例有它的用处，不过通常给组件一个根节点比较好。它会保证组件元素上的指令和特性能正确地转换，同时性能也稍微好些</div>
 
            <div class="title">追踪数据变化以及数据变化的检测</div>
            <pre>

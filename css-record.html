@@ -199,13 +199,10 @@
                 border-collapse: collapse;
                 border-spacing: 0;
               }
-              button{outline:none;}
-              a{ text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
-              input {outline: medium;} /*解决input聚焦时候有边框的问题*/
-              body {
-                font:12px Arial,'Microsoft YaHei','SimHei';line-height: 18px;overflow: scroll;
-                -webkit-overflow-scrolling: touch;
-              }
+              button { outline:none;}
+              a { text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
+              input { outline: medium;} /*解决input聚焦时候有边框的问题*/
+              body { font: Arial,'Microsoft YaHei','SimHei'; -webkit-overflow-scrolling: touch;}
           </pre>
           <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
 
