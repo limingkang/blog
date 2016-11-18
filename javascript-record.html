@@ -206,7 +206,7 @@
                 监听横屏竖屏状态：                
                     window.addEventListener("orientationonchange",function(){})
                     window.orientation为0则它是纵向的，横向的则是90或者-90
-                    但是真个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
+                    但是这个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
             </pre>
 
             <div class="title">jq中extend方法的复制以及NAN的奇怪现象</div>
@@ -239,24 +239,6 @@
         	<img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
         	<img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
             </textarea>
-            </pre>
-
-            <div class="title">css3动画的事件</div>
-            <pre>
-                 开始事件 webkitAnimationStart 
-                 结束事件 webkitAnimationEnd 
-                 重复运动事件 webkitAnimationIteration 
-                 tt.addEventListener("webkitAnimationStart", function(){ //动画开始时事件 
-                 console.log(1);//动画开始时，控制台输出1 
-                 }, false); 
-                 tt.addEventListener("webkitAnimationIteration", function(){ //动画重复运动时的事件 
-                 console.log(3);//第一遍动作完成时，控制台输出3 
-                 }, false); 
-                 同样transition也有属性transitionend等同上面一样绑定使用
-                 2.css3动画的强大之处在于，他是在独立于javascript的执行线程的另一个线程中执行的，在多核的设备上，及时javascript的执行线程正在工作，
-                 流畅的动画效果也是可以实现的，当然动画会增加cpu的负荷，但不会降低脚本对事件的及时处理能力
-                 3.requestanimationframe可以直接调用，也可以通过window来调用，接收一个函数作为回调，返回一个ID值，通过把这个ID值传给
-                 window.cancelAnimationFrame()可以取消该次动画。requestAnimationFrame(callback)//callback为回调函数
             </pre>
 
             <div class="title">全屏效果JavaScript实现</div>
@@ -323,17 +305,84 @@
             </pre>
             <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>
 
-            <div class="title">escape和encodeURIComponent方法的区别</div>
+            <div class="title">手动实现观察者模式</div>
             <pre>
-                unescape(encondeURIComponent(JSON.stringify(localStorage))).length会给出字符串的大小(以字节为单位)，5MB是1024*1024*5字节，只要可以知道缓存是否溢出
-            	escape() 函数可对字符串进行编码，这样就可以在所有的计算机上读取该字符串。
-	            	语法：escape(string) string必需是要被转义或编码的字符串。
-	            	返回值：返回一个包含了 charstring 内容的字符串值（Unicode 格式）。所有空格、标点、重音符号以及其他非 ASCII字符都用 %xx 编码代替，其中 xx 等于表示该字符的十六进制数。例如，空格返回的是”%20″ 。字符值大于255 的以%uxxxx 格式存储。
-	            	说明：该方法不会对 ASCII 字母和数字进行编码，也不会对下面这些 ASCII 标点符号进行编码： * @ – _ + . / 。其他所有的字符都会被转义序列替换。
-            		unescape 方法，解码用 escape 方法进行了编码的 String 对象，就是字符串了
-            	encodeURIComponent() 函数作用：可把字符串作为URI 组件进行编码。
-	            	1、该方法不会对 ASCII 字母和数字进行编码，也不会对这些 ASCII 标点符号进行编码： - _ . ! ~ * ' ( ) '
-	            	2、其他字符（比如 ：;/?:@&=+$,# 这些用于分隔 URI 组件的标点符号），都是由一个或多个十六进制的转义序列替换的。
+                var Observer = (function(slice) {
+                    //订阅函数，可以传入多个任务名，会将其做为events的键相应值为一个数组里面放的是对应任务函数
+                    function bind(event, fn) {
+                        var events = this.events = this.events || {},
+                            parts = event.split(/\s+/),
+                            i = 0,
+                            num = parts.length,
+                            part;
+                        //如果事件已经注册并且有对应函数事件则返回
+                        if (events[event] && events[event].length) return this;
+                        //注册事件，一个任务名只能对应一个任务函数
+                        for (; i < num; i++) {
+                            events[(part = parts[i])] = events[part] || [];
+                            events[part].push(fn);
+                        }
+                        return this;
+                    }
+                    //只订阅一次
+                    function one(event, fn) {
+                        this.bind(event, function fnc() {
+                            fn.apply(this, slice.call(arguments));
+                            this.unbind(event, fnc);
+                        });
+                        return this;
+                    }
+                    //清空不需要的events中的事件
+                    function unbind(event, fn) {
+                        var events = this.events,
+                            eventName, i, parts, num;
+                        if (!events) return;
+                        parts = event.split(/\s+/);
+                        for (i = 0, num = parts.length; i < num; i++) {
+                            if ((eventName = parts[i]) in events !== false) {
+                                events[eventName].splice(events[eventName].indexOf(fn), 1);
+                                if (!events[eventName].length) { //修正没有事件直接删除空数组
+                                    delete events[eventName];
+                                }
+                            }
+                        }
+                        return this;
+                    }
+                    //触发函数
+                    function trigger(event) {
+                        var events = this.events,
+                            i, args, falg;
+                        //如果没有传入事件名或者事件并没有注册则返回
+                        if (!events || event in events === false) return;
+                        //第一个参数是事件名，以后的参数是要传入给该事件的参数，所以截取形参的第一个参数的后面的
+                        args = slice.call(arguments, 1);
+                        for (i = events[event].length - 1; i >= 0; i--) {
+                            falg = events[event][i].apply(this, args);
+                        }
+                        return falg; //修正带返回
+                    }
+                    //返回实际要调用的函数
+                    return function() {
+                        this.on =
+                            this.subscribe = bind;
+                        this.off =
+                            this.unsubscribe = unbind;
+                        this.trigger =
+                            this.publish = trigger;
+                        this.one = one;
+                        return this;
+                    };
+                    
+                })([].slice);
+
+                创建一个观察者对象
+                var observer = new Observer();
+                通过调用subscribe方法，实现一个事件的观察
+                observer.subscribe("任务名"，处理函数)
+                通过publish触发观察事件，在任意时刻触发了这个观察的任务名，将会触发这个事件订阅subscribe方法
+                observer.publish("任务名")
+                取消事件订阅，意味着就不会执行了
+                 observer.unsubscribe("任务名")
             </pre>
 
             <div class="title">无刷新改变url，还点击前进后退按钮，ajax只能改变页面内容，这里就得加上pushState,简称pjax</div>

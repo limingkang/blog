@@ -60,6 +60,39 @@
             清除浮动除了用clear还可以用overflow，是因为overflow除了(visible)会重新给他里面的元素建立
             块级格式化(block formatting context)，其中position absolute, inline-block, table-cell和table-caption都不
             是块级样式，所以才会用到clear来控制，虽然clear是旧的方式，但还是推荐用clear来做，有些情况会比overflow处理的要好
+
+          9.实现三条杠效果
+             .contain {
+                 width:120px;
+                 height:20px;
+                 border-top:20px double;
+                 border-bottom:20px solid;
+             }
+
+          10.实现加号点击更多的效果,以及移动上去颜色渐变的效果，注意border-color的颜色默认继承color的颜色
+             .add {
+                color:#333;
+                transition:color .25s;
+                border:1px solid;
+             }
+             .add:before {
+                border-top:10px solid;
+             }
+             .add:after {
+                border-left:10px solid;
+             }
+             .add:hover {
+                color:#06c;
+             }
+
+          11.小三角形的实现,各种斜的三角等，写上相应的部分transparent即可,当宽高不是0的时候实际上是梯形,实际使用的时候最好使用
+          before和after等伪元素来插入一个节点，可减少html结构
+             .triangle {
+                width:0px;
+                height:0px;
+                border-style:100px solid;
+                border-style:red green black yellow;
+             }
           </pre>
 
           <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
@@ -157,6 +190,47 @@
                 但是也不能搞太多的域名了，因为dns域名解析消耗也会变大，所以一般是大于两个小于五个合适
           </pre>
 
+          <div class="title">移动端布局的想法</div>
+          <pre>
+              1.逻辑像素：
+                 一个是逻辑像素，也叫做逻辑点，logic point，单位pt。例如那个375×667正式是iphone6的逻辑像素，而在iphone6之前的逻辑
+                 像素都是320宽。这个逻辑像素才是真正表示显示内容多寡的一个单位。也就是说，我宽375，肯定要比你320要显示多内容，所
+                 以这个逻辑像素又叫逻辑点，你可以理解为内容点，这个大小是确定的，和分辨率、屏幕什么的没有关系，而这个单位就是对应
+                 的我们布局中的px
+              2.物理像素：
+                 物理像素也就是我们经常用到的pixel，单位px。就是用来衡量一个内容是由多少单位组成。就比如在iphone4之前的屏幕，同
+                 样是一个14pt的字符“a”,就相当于14px，就是1pt=1px，所以iphone4之前的设备屏幕，我们叫做1x。
+                 到了iphone4~6，都是一个14pt的字符“a”，相当于28像素，也就是1pt=2px，所以这个字符的精细度就上去了，我们叫做2x。
+                 到了iphone6 plus，那么就更牛逼了，一个14pt的字符“a”,构成像素又增加到了42px，也就是1pt=3px，我们叫做3x。
+                 所以说是多少x，不是因为给定了像素来判断多少x，而是本来iphone6plus，决定了显示屏的逻辑像素，又决定了做3x屏幕，才
+                 会有1242×2208这个像素值出来，然后设计师就按这个像素值去做图。这个像素也与屏幕的尺寸没有关系。例如设计师做了一个
+                 750px宽的画布，ps调整的分辨率为2,那么对应实际尺寸就是375pt,这个又对应了我们布局时候的375px也就是iphone6,那么如果
+                 ps中一个字体为36px那么就对应18pt,布局时候在iphone6下就是18px大小
+              上面所说的宽度高度都是指的屏幕大小而非设备大小，例如iphone7屏幕可见尺寸为宽375的，屏幕可见尺寸对角线长度为4.7寸
+              3.布局方法：
+                 1rem默认等于16px，分别设置不同设备宽度下对应字体大小基数，当然也可以通过js去计算
+                 var clientWidth = document.documentElement.clientWidth;
+                 document.documentElement.style.fontSize = 50 * (clientWidth / 320) + 'px';
+                 html {
+                     font-size: 62.5%; /* 10÷16=62.5% */
+                 }
+                 这样去设置百分比没有错，但是考虑到设计师给的画布，如果我们一量出来是55px,我希望直接写0.55rem直接除以100会比较好算
+                 量出来对应css布局时候应该是55/2px才对，那么font-size=55/2/0.55=50px
+                 html {
+                    font-size:50px;
+                 }
+                 @media only screen and (min-width: 321px){
+                     html {
+                         font-size: 375*50/320=58.59375px
+                     }
+                 }
+                 @media only screen and (min-width: 376px){
+                     html {
+                         font-size: 414*50/320=64.6875px;
+                     }
+                 }
+          </pre>
+
           <div class="title">reset屏幕的样式</div>
           <pre>
               html, body, div, span, applet, object, iframe,
@@ -202,7 +276,7 @@
               button { outline:none;}
               a { text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
               input { outline: medium;} /*解决input聚焦时候有边框的问题*/
-              body { font: Arial,'Microsoft YaHei','SimHei'; -webkit-overflow-scrolling: touch;}
+              body { font-family:Arial,'Microsoft YaHei','SimHei'; -webkit-overflow-scrolling: touch;}
           </pre>
           <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
 
@@ -495,7 +569,7 @@
              i {display: inline-block;height: 100%;vertical-align: middle;}
              <textarea>
                   <div><img src="#"><i></i></div>
-                  <div><p>fdfdfds</p><i></i></div>
+                  <div><p>测试</p><i></i></div>
              </textarea>
 
              2.兼容性ie8即以上
@@ -511,6 +585,12 @@
                     </p>
                   </div>
              </textarea>
+             对于margin的auto值来说，指的就是自动占据剩余空间的意思，如果一个块状元素设置宽度之后再同时设置:
+                  margin-left:auto;margin-right:0;
+             由于其水平方向是铺满的，所以上面那个就可以使元素相当于右浮了所以设置margin:0 auto可以水平居中的原因就在这里但是在你
+             设置margin:auto的时候不可以垂直方向也居中，就是因为垂直方向上其自身不是填充满父元素的，如果是填满的也可垂直，这就是
+             上面那个方法可以垂直水平居中的原因,补充一点，定位元素的定位方向写margin才有效，例如写了left:4%;那么margin-left有效然
+             而写margin-right就没有效果
           </pre>
           <div class="explain">CSS Hack大致有3种表现形式，CSS类内部Hack、选择器Hack以及HTML头部引用(if IE)Hack，CSS Hack主要针对类内部Hack：比如 IE6能识别下划线"_"和星号" * "，IE7能识别星号" * "，但不能识别下划线"_"</div>
 
