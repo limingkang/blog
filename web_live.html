@@ -134,6 +134,7 @@
             var rename      = require('gulp-rename');    //重命名文件
             var imagemin    = require('gulp-imagemin');  // 压缩图片
             var minifycss   = require('gulp-minify-css');   //压缩css文件
+            var base64      = require('gulp-base64');    //把css里面背景图进行base64编码
             var reload      = browserSync.reload;
 
             var dir         = "./template/pc";      //对应到的基础目录
@@ -160,6 +161,13 @@
             gulp.task('sass', function() {
                 return gulp.src(dir+"/sass/*.scss")
                        .pipe(sass())
+                       .pipe(base64({
+                          baseDir:'images',      //如果css里面写的是相对路径，那这个就很有用，这是相对于gulpfile.js的目录
+                          extensions:['png'],
+                          exclude:[],
+                          maxImageSize:20*1024,
+                          debug:false
+                       }))
                        .pipe(gulp.dest(dir+"/sass"));
 
             });

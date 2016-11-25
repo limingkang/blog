@@ -58,6 +58,11 @@
 
             {}==null  //false
             0==null   //false    
+
+
+            比较奇怪的现象：
+                alert(typeof NaN); //弹出 'Number'
+                alert(NaN === NaN); //为 false
             </pre>
             <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
 
@@ -207,48 +212,6 @@
                     window.addEventListener("orientationonchange",function(){})
                     window.orientation为0则它是纵向的，横向的则是90或者-90
                     但是这个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
-            </pre>
-
-            <div class="title">jq中extend方法的复制以及NAN的奇怪现象</div>
-            <pre>
-                var obj1 = {
-                  'a': 's1',
-                  'b': [1,2,3,{'a':'s2'}],
-                  'c': {'a':'s3', 'b': [4,5,6]}
-                }
-                var obj2 = $.extend(true, {}, obj1);   //深拷贝与浅拷贝
-                obj2.a='s1s1';
-                obj2.b[0]=100;
-                obj2.c.b[0]=400;
-                console.log(obj1);
-                console.log(obj2);
-
-                alert(typeof NaN); //弹出 'Number'
-                alert(NaN === NaN); //为 false
-            </pre>
-            <div class="explain">通过true或者false来判断，默认false,jq的深复制(一层一层往下复制直到最底层)和浅复制(只复制顶层的基本类型元素)。所以对象中a肯定会被复制</div>
-
-            <div class="explain">表单提交按钮类型全部改成submit类型啦,只要表单绑定submit事件，prevent默认提交，于是，既能回车响应，又能验证或者ajax或是原始提交处理</div>
-
-            <div class="title">连接地址显示你链接的那个网站的图标</div>
-            <pre>
-            element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
-            element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
-            第一个使用的是谷歌的api不过后一个好像更好用些，实例：
-            <textarea style="width:90%;">
-        	<img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
-        	<img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
-            </textarea>
-            </pre>
-
-            <div class="title">全屏效果JavaScript实现</div>
-            <pre>
-                 全屏效果click, mousedwon, mouseup事件才能触发
-                 全屏方法为：全屏元素.requestFullScreen(); 目前不同的浏览器需要不同的前缀，如mozRequestFullScreen或webkitRequestFullScreen
-                 取消全屏为：全屏元素.cancelFullScreen(); 同样，不同浏览器需要添加私有前缀，如mozCancelFullScreen或webkitCancelFullScreen.
-                 可以通过document.fullScreen判断浏览器是否处于全屏状态。注意：FireFox和Chrome写法上有不同，Webkit内核浏览器需要增加个is, 如document.webkitIsFullScreen; 而Firefox则是document.mozFullScreen.
-                 :full-screen{}用在CSS代码中，可以控制全屏元素（及其子元素）全屏状态时的样式。同样，不同浏览器不同前缀。如:-moz-full-screen{}或:- webkit-full-screen{}.
-                 一个页面如果有多个全屏元素，在CSS控制的时候，可以使用类似#element:full-screen{}的选择器分别控制。
             </pre>
 
             <div class="title">关于存储方式的小结</div>
@@ -676,6 +639,64 @@
                 arr.unique3(); // [1, 2, 3, 4, "a", "b", 56, 32, 34, "c", 5, "1", "2"]
                 但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
             </pre>
+
+            <div class="title">h5api实现全屏效果</div>
+            <pre>
+            全屏: 
+                var docElm = document.documentElement;                
+                //FireFox 
+                else if (docElm.mozRequestFullScreen) {                  
+                  docElm.mozRequestFullScreen();                  
+                }                 
+                //Chrome等                  
+                else if (docElm.webkitRequestFullScreen) {                  
+                  docElm.webkitRequestFullScreen();                  
+                }                
+                //IE11                
+                else if (elem.msRequestFullscreen) {                 
+                 elem.msRequestFullscreen();                
+                }
+            退出全屏: 
+                if (document.exitFullscreen) { 
+                document.exitFullscreen(); 
+                } 
+                else if (document.mozCancelFullScreen) { 
+                document.mozCancelFullScreen(); 
+                } 
+                else if (document.webkitCancelFullScreen) { 
+                document.webkitCancelFullScreen(); 
+                } 
+                else if (document.msExitFullscreen) { 
+                document.msExitFullscreen(); 
+                }
+            事件监听:
+                document.addEventListener("fullscreenchange", function () { 
+                fullscreenState.innerHTML = (document.fullscreen)? "" : "not ";}, false); 
+                 
+                document.addEventListener("mozfullscreenchange", function () { 
+                fullscreenState.innerHTML = (document.mozFullScreen)? "" : "not ";}, false); 
+                 
+                document.addEventListener("webkitfullscreenchange", function () { 
+                fullscreenState.innerHTML = (document.webkitIsFullScreen)? "" : "not ";}, false); 
+                document.addEventListener("msfullscreenchange", function () { 
+                fullscreenState.innerHTML = (document.msFullscreenElement)? "" : "not ";}, false);
+            样式控制：
+                html:-moz-full-screen { 
+                background: red; 
+                } 
+                 
+                html:-webkit-full-screen { 
+                background: red; 
+                } 
+                 
+                html:fullscreen { 
+                background: red; 
+                }
+            </pre>
+            <div class="explain">
+                项目中需要将后台浏览器的窗口全屏，也就是我们点击一个按钮要实现按F11全屏的效果。 在HTML5中,W3C制定了关于全屏的API，
+                就可以实现全屏幕的效果，也可以让页面中的图片，视频等全屏目前只有google chrome 15 +, safri5.1+,firfox10+,IE11支持
+            </div>
 
             <div class="title">h5使用formdata实现文件上传</div>
             <pre>

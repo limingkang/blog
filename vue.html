@@ -24,7 +24,6 @@
            内的每一次变化，所有 watcher 都要重新计算。并且，如果一些 watcher 触发另一个更新，脏检查循环（digest cycle）可能要运行多次
            Angular 用户常常要使用深奥的技术，以解决脏检查循环的问题。有时没有简单的办法来优化有大量 watcher 的作用域。Vue.js 则根本
            没有这个问题，因为它使用基于依赖追踪的观察系统并且异步列队更新，所有的数据变化都是独立地触发，除非它们之间有明确的依赖关系
-           唯一需要做的优化是在 v-for 上使用 track-by
 
         vue和react的比较：
            1.React 的渲染建立在 Virtual DOM 上——一种在内存中描述 DOM 树状态的数据结构。当状态发生变化时，React 重新渲染 Virtual DOM
@@ -63,56 +62,8 @@
            <div class="explain">vue.js中文文档地址<a href="http://cn.vuejs.org/guide/installation.html">http://cn.vuejs.org/guide/installation.html</a></div>
            <div class="explain">vue-router中文文档<a href="http://router.vuejs.org/zh-cn/">http://router.vuejs.org/zh-cn/</a></div>
            <div class="explain">vue-resource中文文档<a href="http://www.bootcdn.cn/vue-resource/readme/">http://www.bootcdn.cn/vue-resource/readme/</a></div>
-           <div class="explain">vue中文文档<a href="http://vuex.vuejs.org/zh-cn/index.html">http://vuex.vuejs.org/zh-cn/index.html</a></div>
-       	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看</div>
-
-           <div class="title">数组变动检测</div>
-           <pre>
-        1.Vue.js 包装了被观察数组的变异方法，故它们能触发视图更新。被包装的方法有：
-        	push()、pop()、shift()、unshift()、splice()、sort()、reverse()
-        	你可以打开浏览器的控制台，用这些方法修改上例的 items 数组。例如：example1.items.push({ message: 'Baz' })   	
-        
-        2.变异方法，如名字所示，修改了原始数组。相比之下，也有非变异方法，如 filter(), concat() 和 slice()，不会修改原始数组而是返回
-        一个新数组。在使用非变异方法时，可以直接用新数组替换旧数组：
-			example1.items = example1.items.filter(function (item) {
-			  return item.message.match(/Foo/)
-			})
-	可能你觉得这将导致 Vue.js 弃用已有 DOM 并重新渲染整个列表——幸运的是并非如此。 Vue.js 实现了一些启发算法，以最大化复用 DOM 元素
-	因而用另一个数组替换数组是一个非常高效的操作
-
-	3.有时需要用全新对象（例如通过 API 调用创建的对象）替换数组。因为 v-for 默认通过数据对象的特征来决定对已有作用域和 DOM 元素的
-	复用程度，这可能导致重新渲染整个列表。但是，如果每个对象都有一个唯一 ID 的属性，便可以使用key特性给 Vue.js 一个提示，
-	Vue.js 因而能尽可能地复用已有实例。例如，假定数据为：
-		{
-		  items: [
-		    { _uid: '88f869d', ... },
-		    { _uid: '7496c10', ... }
-		  ]
-		}
-	然后可以这样给出提示：
-	<textarea>
-		<div v-for="item in items" v-bind:key="item._uid"><!-- content --></div>
-	</textarea>
-    	然后在替换数组 items 时，如果 Vue.js 遇到一个包含 _uid: '88f869d' 的新对象，这个对象的_uid和上面的一样，只是其他值不一样,
-    	它知道它可以复用这个已有对象的作用域与DOM 元素。
-           
-        4.因为 JavaScript 的限制，Vue.js 不能检测到下面数组变化：
-		直接用索引设置元素，如 vm.items[0] = {}；
-		修改数据的长度，如 vm.items.length = 0。
-	为了解决问题 (1)，Vue.js 扩展了观察数组，为它添加了一个 $set() 方法：
-		// 与 `example1.items[0] = ...` 相同，但是能触发视图更新
-		example1.items.$set(0, { childMsg: 'Changed!'})
-		至于问题 (2)，只需用一个空数组替换 items。
-	除了 $set()， Vue.js 也为观察数组添加了 $remove() 方法，用于从目标数组中查找并删除元素，在内部它调用 splice().不必这样：
-		var index = this.items.indexOf(item)
-		if (index !== -1) {
-		  this.items.splice(index, 1)
-		}
-	只用这样：
-		this.items.$remove(item)
-	使用 Object.freeze()在遍历一个数组时，如果数组元素是对象并且对象用 Object.freeze() 冻结，你需要明确指定 track-by。在这
-	种情况下如果 Vue.js 不能自动追踪对象，将给出一条警告
-           </pre>
+           <div class="explain">vuex中文文档<a href="http://vuex.vuejs.org/zh-cn/index.html">http://vuex.vuejs.org/zh-cn/index.html</a></div>
+       	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看vue-vue_router-vuex这个小应用</div>
 
            <div class="title">事件处理</div>
            <pre>
@@ -128,108 +79,119 @@
         }
         2.在事件处理器中经常需要调用 event.preventDefault() 或 event.stopPropagation()。尽管我们在方法内可以轻松做到，不过让方法
         是纯粹的数据逻辑而不处理 DOM 事件细节会更好。为了解决这个问题，Vue.js 为 v-on 提供两个 事件修饰符：.prevent 与 .stop 
-        <textarea style="height:720px;">
-        	<!-- 阻止单击事件冒泡 -->
-        	<a v-on:click.stop="doThis"></a>
-
-        	<!-- 提交事件不再重载页面 -->
-        	<form v-on:submit.prevent="onSubmit"></form>
-
-        	<!-- 修饰符可以串联 -->
-        	<a v-on:click.stop.prevent="doThat">
-
-        	<!-- 只有修饰符 -->
-        	<form v-on:submit.prevent></form>
-
-        	1.0.16 添加了两个额外的修饰符：
-        	<!-- 添加事件侦听器时使用 capture 模式 -->
-        	<div v-on:click.capture="doThis">...</div>
-
-        	<!-- 只当事件在该元素本身（而不是子元素）触发时触发回调 -->
-        	<div v-on:click.self="doThat">...</div>
-
-        	全部的按键别名：enter,tab,delete,esc,space,up,down,left,right
-        	<!-- 只有在 keyCode 是 13 时调用 vm.submit() -->
-        	<input v-on:keyup.13="submit">
-
-        	<!-- 同上 -->
-        	<input v-on:keyup.enter="submit">
-
-        	<!-- 缩写语法 -->
-        	<input @keyup.enter="submit">
-
-        	1.0.17+： 可以自定义按键别名：可以使用 @keyup.f1
-        	Vue.directive('on').keyCodes.f1 = 112
-        </textarea> 	
            </pre>
 
-           <div class="title">表单控件绑定</div>
+           <div class="title">过渡效果的理解</div>
            <pre>
-        对于单选按钮，勾选框及选择框选项，v-model 绑定的 value 通常是静态字符串（对于勾选框是逻辑值）：
-        <textarea style="height:250px;">
-        <!-- 当选中时，`picked` 为字符串 "a" -->
-        <input type="radio" v-model="picked" value="a">
+        Vue 提供了 transition 的封装组件，在使用v-if、v-show或者动态组件的时候，可以给任何元素和组件添加 entering/leaving 过渡
+            <textarea style="height:376px;">
+                .fade-enter-active, .fade-leave-active {
+                  transition: opacity .5s
+                }
+                .fade-enter, .fade-leave-active {
+                  opacity: 0
+                }
+                <transition name="fade" appear mode="out-in">
+                    <div v-if="show" key="one">
+                        <p>hello</p>
+                        <p>hello</p>
+                    </div>
+                    <div v-else key="two">
+                       <p>no</p>
+                       <p>no</p>
+                    </div>
+                </transition>
+            </textarea>
+        1.正如上面所示，transition标签只能对单个元素或者组件做动画，上面无论是用v-if还是v-show都会触发动画但是要注意使用v-show的时候
+        只能有这一个节点里面不可以再写其他v-show了，但是v-else，v-if却可以写多个，其中动画的出现我们可以根据name名字来加上相应类
+        名以实现动画
+        2.当然我们也可以使用js钩子来完成相应动画，注意当只用 JavaScript 过渡的时候， 在 enter 和 leave 中，回调函数 done 是必须
+        的.否则，它们会被同步调用，过渡会立即完成。对于仅使用 JavaScript 过渡的元素添加 v-bind:css="false"，Vue 会跳过CSS的检测
+        这也可以避免过渡过程中 CSS 的影响
+        3.添加appear属性可以使其在页面一进来的时候就运行一次上面设置的动画，这就是所谓的初始渲染
+        4.当使用多个v-if时，一定要加上不同的key值，否则vue为了效率只是把里面的内容换了所以就没了动画，但是加上之后的话就是切换两
+        组内容节点了，就可以设置动画了，可以加上mode属性,默认情况下是两个节点动画同时开始
+        5.多个组件的过渡很简单很多 - 我们不需要使用 key 特性。相反，我们只需要使用动态组件就是使用component标签和is特性去绑定不同
+        的组件
+        
 
-        <!-- `toggle` 为 true 或 false -->
-        <input type="checkbox" v-model="toggle">
+        对于列表的位移过度，就是通过v-for循环出来时候节点的动画的设置，transition-group 组件还有一个特殊之处。不仅可以进入和离
+        开动画，还可以改变定位。要使用这个新功能只需了解新增的 v-move 特性，它会在元素的改变定位的过程中应用。像之前的类名一样
+        可以通过 name 属性来自定义前缀，也可以通过 move-class 属性手动设置其内部的实现，Vue 使用了一个叫 FLIP 简单的动画队列。
+        注意v-mode是用来设置定位变化时候的动画的如.list-complete-move{transition: transform 2s;}你不设置他也有默认的效果，
+        动画的效果还是通过上面那些属性名加样式来设置，有时候如果没动画的话。例如离开的时候没有就可以在其离开的样式上面加上position
+        ：absolute;或者其他改变其定位方式的属性，就会也有动画了
 
-        <!-- 当选中时，`selected` 为字符串 "abc" -->
-        <select v-model="selected">
-          <option value="abc">ABC</option>
-        </select>	
-        </textarea>
-        但是有时我们想绑定 value 到 Vue 实例的一个动态属性上，这时可以用 v-bind 实现，并且这个属性的值可以不是字符串
-        <textarea style="height:316px;">
-        	<input
-        	  type="checkbox"
-        	  v-model="toggle"
-        	  v-bind:true-value="a"
-        	  v-bind:false-value="b">
-        	// 当选中时
-        	vm.toggle === vm.a
-        	// 当没有选中时
-        	vm.toggle === vm.b
 
-        	<input type="radio" v-model="pick" v-bind:value="a">
-        	// 当选中时
-        	vm.pick === vm.a
+        无论是单节点的动画还是多节点动画还是列表动画还是js动画只要在其动画上加上appear属性，就可以实现页面一打开就运行一次动画的效果
+           
+        一下是使用zepto动画写的一个渐进过度的效果总是感觉好生硬，使用velocity动画框架会好很多：
+        <textarea style="height:400px;">
+          <div id="staggered-list-demo">
+            <input v-model="query">
+            <transition-group appear
+              name="staggered-fade"
+              tag="ul"
+              v-bind:css="false"
+              v-on:before-enter="beforeEnter"
+              v-on:enter="enter"
+              v-on:leave="leave"
+            >
+              <li
+                v-for="(item, index) in computedList"
+                v-bind:key="item.msg"
+                v-bind:data-index="index"
+              >{{ item.msg }}</li>
+            </transition-group>
+          </div>
         </textarea>
+        new Vue({
+          el: '#staggered-list-demo',
+          data: {
+            query: '',
+            list: [
+              { msg: 'Bruce Lee' },
+              { msg: 'Jackie Chan' },
+              { msg: 'Chuck Norris' },
+              { msg: 'Jet Li' },
+              { msg: 'Kung Fury' }
+            ]
+          },
+          computed: {
+            computedList: function () {
+              var vm = this
+              return this.list.filter(function (item) {
+                return item.msg.toLowerCase().indexOf(vm.query.toLowerCase()) !== -1
+              })
+            }
+          },
+          methods: {
+            beforeEnter: function (el) {
+              el.style.opacity = 0
+              el.style.height = 0
+            },
+            enter: function (el, done) {
+              var delay = el.dataset.index * 150;
+              var self=this;
+              setTimeout(function () {
+                $(el).animate({
+                    opacity: 1, 
+                    height: '1.6em'
+                },{ duration: 200, complete: done });
+              }, delay)
+            },
+            leave: function (el, done) {
+              var delay = el.dataset.index * 150
+              setTimeout(function () {
+                $(el).animate({
+                    opacity: 0, 
+                    height: 0
+                },{ duration: 100, complete: done });
 
-        在默认情况下，v-model 在input 事件中同步输入框值与数据，可以添加一个特性 lazy，从而改到在 change 事件中同步：
-        <textarea style="height:66px;">
-        	<!-- 在 "change" 而不是 "input" 事件中更新 -->
-			<input v-model.lazy="msg">
-        </textarea>
-        如果想自动将用户的输入转为 Number 类型（如果原值的转换结果为 NaN 则返回原值），可以添加一个特性 number：
-        <textarea>
-        <input v-model.number="age">
-        </textarea>
-        debounce 设置一个最小的延时，在每次敲击之后延时同步输入框的值与数据。如果每次更新都要进行高耗操作（例如在输入提示中 Ajax 请求）
-        注意 debounce 参数不会延迟 input 事件：它延迟“写入”底层数据。因此在使用 debounce 时应当用 vm.$watch() 响应数据的变化。
-        若想延迟 DOM 事件，应当使用 debounce 过滤器。
-        <textarea>
-        	<input v-model="msg" debounce="500">
-        </textarea>
-           </pre>
-
-           <div class="title">过渡动画</div>
-           <pre>
-        通过 Vue.js 的过渡系统，可以在元素从 DOM 中插入或移除时自动应用过渡效果。Vue.js 会在适当的时机为你触发 CSS 过渡或动画，你也
-        可以提供相应的 JavaScript 钩子函数在过渡过程中执行自定义的 DOM 操作。为了应用过渡效果，需要在目标元素上使用 transition 特性：
-        <textarea>
-        	<div v-if="show" transition="my-transition"></div>
-        </textarea>
-        transition 特性可以与下面资源一起用：
-           v-if
-           v-show
-           v-for （只在插入和删除时触发，使用 vue-animated-list 插件）
-           动态组件 （介绍见组件）
-           在组件的根节点上，并且被 Vue 实例 DOM 方法（如 vm.$appendTo(el)）触发。
-        当插入或删除带有过渡的元素时，Vue 将：
-           1.尝试以 ID "my-transition" 查找 JavaScript 过渡钩子对象——通过 Vue.transition(id, hooks) 或 transitions 选项注册。
-           如果找到了，将在过渡的不同阶段调用相应的钩子。
-           2.自动嗅探目标元素是否有 CSS 过渡或动画，并在合适时添加/删除 CSS 类名。
-           3.如果没有找到 JavaScript 钩子并且也没有检测到 CSS 过渡/动画，DOM 操作（插入/删除）在下一帧中立即执行。
+              }, delay)
+            }
+          }
+        })
            </pre>
 
            <div class="title">模板解析</div>
@@ -254,62 +216,7 @@
         </textarea>	
            </pre>
 
-           <div class="title">prop验证</div>
-           <pre>
-        组件可以为 props 指定验证要求。当组件给其他人使用时这很有用，因为这些验证要求构成了组件的 API，确保其他人正确地使用组件。
-        此时 props 的值是一个对象，包含验证要求：
-            Vue.component('example', {
-              props: {
-                // 基础类型检测 （`null` 意思是任何类型都可以）
-                propA: Number,
-                // 多种类型 (1.0.21+)
-                propM: [String, Number],
-                // 必需且是字符串
-                propB: {
-                  type: String,
-                  required: true
-                },
-                // 数字，有默认值
-                propC: {
-                  type: Number,
-                  default: 100
-                },
-                // 对象/数组的默认值应当由一个函数返回
-                propD: {
-                  type: Object,
-                  default: function () {
-                    return { msg: 'hello' }
-                  }
-                },
-                // 指定这个 prop 为双向绑定
-                // 如果绑定类型不对将抛出一条警告
-                propE: {
-                  twoWay: true
-                },
-                // 自定义验证函数
-                propF: {
-                  validator: function (value) {
-                    return value > 10
-                  }
-                },
-                // 转换函数（1.0.12 新增）
-                // 在设置值之前转换值
-                propG: {
-                  coerce: function (val) {
-                    return val + '' // 将值转换为字符串
-                  }
-                },
-                propH: {
-                  coerce: function (val) {
-                    return JSON.parse(val) // 将 JSON 字符串转换为对象
-                  }
-                }
-              }
-            })
-           </pre>
-           <div class="explain">当 prop 验证失败了，Vue 将拒绝在子组件上设置此值，如果使用的是开发版本会抛出一条警告</div>
-
-           <div class="title">自定义事件</div>
+           <div class="title">自定义事件也就是子组件向父组件通讯的方法</div>
            <pre>
         Vue 实例实现了一个自定义事件接口，用于在组件树中通信。这个事件系统独立于原生 DOM 事件，用法也不同。
         不同于 DOM 事件，Vue 事件在冒泡过程中第一次触发回调之后自动停止冒泡，除非回调明确返回 true
@@ -318,86 +225,8 @@
 	        使用 $emit() 在它上面触发事件；
 	        使用 $dispatch() 派发事件，事件沿着父链冒泡；
 	        使用 $broadcast() 广播事件，事件向下传导给所有的后代。
-
-	    简单例子：
-	    <textarea style="height:270px;">
-	    	<!-- 子组件模板 -->
-	    	<template id="child-template">
-	    	  <input v-model="msg">
-	    	  <button v-on:click="notify">Dispatch Event</button>
-	    	</template>
-
-	    	<!-- 父组件模板 -->
-	    	<div id="events-example">
-	    	  <p>Messages: {{ messages | json }}</p>
-	    	  <child></child>第二个方法这里改为<child v-on:child-msg="handle"></child>
-	    	</div>
-	    </textarea>
-	    // 注册子组件
-	    // 将当前消息派发出去
-	    Vue.component('child', {
-	      template: '#child-template',
-	      data: function () {
-	        return { msg: 'hello' }
-	      },
-	      methods: {
-	        notify: function () {
-	          if (this.msg.trim()) {
-	            this.$dispatch('child-msg', this.msg)
-	            this.msg = ''
-	          }
-	        }
-	      }
-	    })
-	    // 初始化父组件
-	    // 将收到消息时将事件推入一个数组
-	    var parent = new Vue({
-	      el: '#events-example',
-	      data: {
-	        messages: []
-	      },
-	      // 在创建实例时 `events` 选项简单地调用 `$on`
-	      events: {
-	        'child-msg': function (msg) {
-	          // 事件回调内的 `this` 自动绑定到注册它的实例上
-	          this.messages.push(msg)
-	        }
-	      }
-	    })
-	    或者下面这个更加合理：
-	    // 注册子组件
-	    // 将当前消息派发出去
-	    Vue.component('child', {
-	      template: '#child-template',
-	      data: function () {
-	        return { msg: 'hello' }
-	      },
-	      methods: {
-	        notify: function () {
-	          if (this.msg.trim()) {
-	            this.$dispatch('child-msg', this.msg)
-	            this.msg = ''
-	          }
-	        }
-	      }
-	    })
-	    // 初始化父组件
-	    // 将收到消息时将事件推入一个数组
-	    var parent = new Vue({
-	      el: '#events-example',
-	      data: {
-	        messages: []
-	      },
-	      // 在创建实例时 `events` 选项简单地调用 `$on`
-	      methods: {
-	        'handle': function (msg) {
-	          // 事件回调内的 `this` 自动绑定到注册它的实例上
-	          this.messages.push(msg)
-	        }
-	      }
-	    })
+        注意events和methods的区别，当你用events选项的时候实际上是在监听里面的事件，一旦有人分发了这个事件就会触发该函数
            </pre>
-           <div class="explain">注意events和methods的区别，当你用events选项的时候实际上是在监听里面的事件，一旦有人分发了这个事件就会触发该函数</div>
 
            <div class="title">编写可复用的组件</div>
            <pre>

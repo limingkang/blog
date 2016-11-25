@@ -29,7 +29,7 @@
     	    },
     	    output: {
     	       // 当使用多入口文件时候，要确保在output.filename使用[name]或者[id]
-               filename: "[name].bundle.js",
+               filename: "[name].bundle.js",       //这里的name值就是入口文件的文件名，例如入口文件为main.js则name的值为main
     	       chunkFilename: "[id].bundle.js"，
                path: "/home/public/assets",
                publicPath: "/assets/"

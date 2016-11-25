@@ -93,6 +93,24 @@
                 border-style:100px solid;
                 border-style:red green black yellow;
              }
+
+          12.实现两列布局左右高度自动相同对齐
+             .box {overflow: hidden;}
+             .right{float:left;background-color: black;margin-bottom: -600px;padding-bottom: 600px;color: white;}
+             .left{float:left;background-color: green;margin-bottom: -600px;padding-bottom: 600px;color: white;}
+          注意这里父元素必须有overflow:hidden属性，而且左右两列只能使浮动元素，所以对于padding只是改背景色填充并不会改其高度
+          margin和padding必须是超过内容高度，是很大的数值才行，当然你也可以给两列中较小的那个列一个高度也可以
+
+          13.连接地址显示你链接的那个网站的图标
+              element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
+              element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
+              第一个使用的是谷歌的api不过后一个好像更好用些，实例：
+          <textarea style="width:90%;">
+    <img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
+    <img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
+          </textarea>
+          </pre>
+
           </pre>
 
           <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
@@ -229,6 +247,9 @@
                          font-size: 414*50/320=64.6875px;
                      }
                  }
+
+                 这里说一下em的布局，对于em先受到当前字体大小的影响，没有设置的话一层一层的向上找，当然有人说当你进行媒体查询
+                 的时候，最好使用em因为只有他在不同浏览器的表现基本一致，注意这时它是根据根元素的字体大小决定的
           </pre>
 
           <div class="title">reset屏幕的样式</div>
@@ -334,28 +355,21 @@
           </pre>
           <div class="explain">貌似这种后代选择器情形，祖先选择器对应DOM无论多深多浅都是同一级别的，而最终起作用的是选择器声明在CSS样式中的顺序，即优先显示后面的CSS声明</div>
 
-          <div class="title">h5实现表单上传想法</div>
+          <div class="title">对于pc上和web上dialog的一些想法</div>
           <pre>
-               先将Input中type类型指定为file之后将其放在form表单中，不过传统的form表单提交会导致页面刷新，但是在有些情况下，我们
-               不希望页面被刷新，这种时候我们都是使用Ajax的方式进行请求的data : $( '选中的form表单').serialize()该方法可以对form
-               表单进行序列化，从而将form表单中的所有参数传递到服务端。XMLHttpRequest Level 2添加了一个新的接口FormData.利用
-               FormData对象,我们可以通过JavaScript用一些键值对来模拟一系列表单控件
-               var oData = new FormData(document.forms.namedItem("选择的form表单的name值" )); 这样oData就可以获得表单所有值，
-               当数据直接上传就行了
-          </pre>
-
-          <div class="title">媒体查询的一些用法</div>
-          <pre>
-定义屏幕时候的样式，以及打印时候的样式
-<textarea>
-  <link media="screen" rel="stylesheet" href="example.css" />
-  <link media="print" rel="stylesheet" href="example.css" />
-</textarea>
-下面第一个针对设备的物理宽度，自己手动缩浏览器大小不会改变，第二个可以
-<textarea style="width:100%;">
-<link media="only screen and (min-device-width:300px) and (max-device-width:900px)" rel="stylesheet" href="a.css"/>
-<link rel="stylesheet" media="(min-width:701px) and (max-width:900px)" href="mediu.css" />
-</textarea>
+               首先属性rgba的兼容性是非常好的，但是有一个ie8不支持，所以对于pc端的话还是得用两个div来做，一个是遮罩一个是内容
+               但是对于移动端的话只要一个就行了，可以这样布局：
+                    .mask {
+                       position: fixed;right:0;left:0;top:0;bottom: 0;
+                       background-color: rgba(0,0,0,0.6);       //注意用rgba不要用opacity
+                       display: -webkit-flex;-webkit-justify-content:center;-webkit-align-items:center;
+                       display: -webkit-box;-webkit-box-pack:center;-webkit-box-align:center;
+                    }
+                    .mask_content {
+                       width: 30%;
+                       background-color: black;
+                       color: white;
+                    }
           </pre>
 
           <div class="title">flex布局新旧混合写法详解（兼容微信）</div>
@@ -481,83 +495,65 @@
                      }
           </pre>
 
-          <div class="title">对于px,rem,em的理解</div>
-          <pre>
-              h1 {
-                font-size: 2em; /* 1em = 16px */
-                margin-bottom: 1em; /* 1em = 32px */
-              }
-
-              p {
-                font-size: 1em; /* 1em = 16px */
-                margin-bottom: 1em; /* 1em = 16px */
-              }对于em先受到当前字体大小的影响，没有设置的话一层一层的向上找
-              对于rem它只受到根元素即html的字体大小的影响，默认1rem=16px;
-              .header {
-                font-size: 1rem;
-                padding: 0.5em 0.75em;
-                background: #7F7CFF;
-              }
-              当有属性需要用它的字体大小(font-size)进行大小声明时，这时em就相当有用,没有的时候用rem比较好
-              当你进行媒体查询的时候，最好使用em因为只有他在不同浏览器的表现基本一致，注意这是它是根据根元素的字体大小决定的
-          </pre>
-
           <div class="title">相关meta设置汇总</div>
           <pre>
-          <textarea style="height:800px;">
-              <meta charset="UTF-8">
-              <meta http-equiv="refresh" content="5;url=" />
-              <link rel="copyright" href="copyright.html" 　/>
-              <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <meta name="description" content="150 words" />
-              <meta name="keywords" content="your tags" />
-              <!--
-                  all：文件将被检索，且页面上的链接可以被查询；
-                  none：文件将不被检索，且页面上的链接不可以被查询；
-                  index：文件将被检索；
-                  follow：页面上的链接可以被查询；
-                  noindex：文件将不被检索；
-                  nofollow：页面上的链接不可以被查询。
-               -->
-              <meta name="robots" content="index,follow" />
-              <meta name="author" content="author name" />
-              <meta name="google" content="index,follow" />
-              <meta name="googlebot" content="index,follow" />
-              <meta name="verify" content="index,follow" />
-              <!-- 启用 WebApp 全屏模式 -->
-              <meta name="apple-mobile-web-app-capable" content="yes" />
-              <!-- 隐藏状态栏/设置状态栏颜色：只有在开启WebApp全屏模式时才生效。
-              content的值为default | black | black-translucent 。 -->
-              <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-              <!-- 添加到主屏后的标题 -->
-              <meta name="apple-mobile-web-app-title" content="标题">
-              <!-- 忽略数字自动识别为电话号码 -->
-              <meta content="telephone=no" name="format-detection" />
-              <!-- 忽略识别邮箱 -->
-              <meta content="email=no" name="format-detection" />
-              <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
-              <meta name="HandheldFriendly" content="true">
-              <!-- 微软的老式浏览器 -->
-              <meta name="MobileOptimized" content="320">
-              <!-- uc强制竖屏 -->
-              <meta name="screen-orientation" content="portrait">
-              <!-- QQ强制竖屏 -->
-              <meta name="x5-orientation" content="portrait">
-              <!-- UC强制全屏 -->
-              <meta name="full-screen" content="yes">
-              <!-- QQ强制全屏 -->
-              <meta name="x5-fullscreen" content="true">
-              <!-- UC应用模式 -->
-              <meta name="browsermode" content="application">
-              <!-- QQ应用模式 -->
-              <meta name="x5-page-mode" content="app">
-              <!-- windows phone 点击无高光 -->
-              <meta name="msapplication-tap-highlight" content="no">
-              <!-- 百度移动端搜索为了迎合日益发展的移动设备，对其搜索结果进行自认为很赞的转码，
-              说白了就是改改css样式当然是通过分析后改的，于是乎找到了几个结果可以有效防止百度移
-              动搜索转码，其中最简单的就是在全站头部加个meta： -->
-              <meta http-equiv="Cache-Control" content="no-siteapp">
+          <textarea style="height:1000px;">
+          <meta charset="UTF-8">
+          <!-- 控制缩放比例设备宽度等 -->
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+          <!-- 启用 WebApp 全屏模式，即删除苹果默认的工具栏和菜单栏 -->
+          <meta name="apple-mobile-web-app-capable" content="yes">
+           <!-- 隐藏状态栏/设置状态栏颜色：只有在开启WebApp全屏模式时才生效。
+          content的值为default | black | black-translucent 。 -->
+          <!-- 设置苹果工具栏为黑色 -->
+          <meta name="apple-mobile-web-app-status-bar-style" content="black">
+          <!-- 忽略电话和邮箱的识别功能 -->
+          <meta content="telephone=no,email=no" name="format-detection">
+          <meta name="description" content="150 words" />
+          <meta name="keywords" content="your tags" />
+          
+
+          <!-- 上面是开发时候常用的，以下是其他的补充知识 -->
+          <meta http-equiv="refresh" content="5;url=" />
+          <link rel="copyright" href="copyright.html" 　/>
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <!--
+              all：文件将被检索，且页面上的链接可以被查询；
+              none：文件将不被检索，且页面上的链接不可以被查询；
+              index：文件将被检索；
+              follow：页面上的链接可以被查询；
+              noindex：文件将不被检索；
+              nofollow：页面上的链接不可以被查询。
+           -->
+          <meta name="robots" content="index,follow" />
+          <meta name="author" content="author name" />
+          <meta name="google" content="index,follow" />
+          <meta name="googlebot" content="index,follow" />
+          <meta name="verify" content="index,follow" />
+          <!-- 添加到主屏后的标题 -->
+          <meta name="apple-mobile-web-app-title" content="标题">
+          <!-- 针对手持设备优化，主要是针对一些老的不识别viewport的浏览器，比如黑莓 -->
+          <meta name="HandheldFriendly" content="true">
+          <!-- 微软的老式浏览器 -->
+          <meta name="MobileOptimized" content="320">
+          <!-- uc强制竖屏 -->
+          <meta name="screen-orientation" content="portrait">
+          <!-- QQ强制竖屏 -->
+          <meta name="x5-orientation" content="portrait">
+          <!-- UC强制全屏 -->
+          <meta name="full-screen" content="yes">
+          <!-- QQ强制全屏 -->
+          <meta name="x5-fullscreen" content="true">
+          <!-- UC应用模式 -->
+          <meta name="browsermode" content="application">
+          <!-- QQ应用模式 -->
+          <meta name="x5-page-mode" content="app">
+          <!-- windows phone 点击无高光 -->
+          <meta name="msapplication-tap-highlight" content="no">
+          <!-- 百度移动端搜索为了迎合日益发展的移动设备，对其搜索结果进行自认为很赞的转码，
+          说白了就是改改css样式当然是通过分析后改的，于是乎找到了几个结果可以有效防止百度移
+          动搜索转码，其中最简单的就是在全站头部加个meta： -->
+          <meta http-equiv="Cache-Control" content="no-siteapp">
           </textarea>
           </pre>
 
