@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>人机大战五子棋</title>
+    <style type="text/css">
+        #chess {display: block;margin:50px auto;box-shadow: -2px -2px 2px  #efefef,5px 5px 5px #b9b9b9;}
+    </style>
+</head>
+<body>
+    <canvas id="chess" width="450px" height="450px"></canvas>
+    <script type="text/javascript">
+        var chess=document.getElementById("chess");
+        var context=chess.getContext('2d');
+
+        context.strokeStyle="#bfbfbf";
+
+        //画棋盘 
+        for(var i=0;i<15;i++){
+            context.moveTo(15+i*30,15);
+            context.lineTo(15+i*30,435);
+            context.stroke();
+            context.moveTo(15,15+i*30);
+            context.lineTo(435,15+i*30);
+            context.stroke();
+        } 
+        var me=true;                 //控制黑子还是白子
+        var over=false;              //控制游戏是否结束
+        var chessBoard=[];           //存储页面的已下点数的数组,二维数组0表示可以落子
+        var wins=[];                 //赢法数组，是一个三维数组
+        var myWin=[];                //我方赢法数组是一维数组
+        var computerWin=[];          //电脑的赢法数组是一维数组
+        //初始化二维数组
+        for(var i=0;i<15;i++){
+            chessBoard[i]=[];
+            for (var j = 0; j < 15; j++) {
+                chessBoard[i][j]=0;
+            };
+        }
+        // 初始化三维数组
+        for(var i=0;i<15;i++){
+            wins[i]=[];
+            for(var j=0;j<15;j++){
+                wins[i][j]=[];
+            }
+        }
+        // 每一种赢法的算法
+        var count=0;     //表示第几种赢法
+        // 横线的赢法
+        for(var i=0;i<15;i++){
+            for(var j=0;j<11;j++){
+                for (var k = 0; k < 5; k++) {
+                    wins[i][j+k][count]=true;     //横着的5个为true那就是赢了
+                }
+                count++;
+            }
+        }
+        // 竖线的赢法
+        for(var i=0;i<15;i++){
+            for(var j=0;j<11;j++){
+                for (var k = 0; k < 5; k++) {
+                    wins[j+k][i][count]=true;
+                }
+                count++;
+            }
+        }
+        // 斜线的赢法
+        for(var i=0;i<11;i++){
+            for(var j=0;j<11;j++){
+                for (var k = 0; k < 5; k++) {
+                    wins[i+k][j+k][count]=true;
+                }
+                count++;
+            }
+        }
+        // 返斜线的赢法
+        for(var i=0;i<11;i++){
+            for(var j=14;j>3;j--){
+                for (var k = 0; k < 5; k++) {
+                    wins[i+k][j-k][count]=true;
+                }
+                count++;
+            }
+        }
+        // 初始化各自的赢法
+        for(var i=0;i<count;i++){
+            myWin[i]=0;
+            computerWin[i]=0;
+        }
+
+        //画棋子的函数
+        function oneStep(i,j,me) {
+            context.beginPath();
+            context.arc(15+i*30,15+j*30,13,0,2*Math.PI);
+            context.closePath();
+            var gradient=context.createRadialGradient(15+i*30+2,15+j*30-2,13,15+i*30+2,15+j*30-2,10);
+            if (me) {
+               gradient.addColorStop(0,"#0a0a0a"); 
+               gradient.addColorStop(1,"#636766"); 
+            }else {
+               gradient.addColorStop(0,"#d1d1d1"); 
+               gradient.addColorStop(1,"#f9f9f9"); 
+            }
+            context.fillStyle=gradient;
+            context.fill();
+        } 
+        chess.onclick=function(e){
+            if (over) {
+                return;
+            };
+            if (!me) {
+                return;
+            };
+            var x = e.offsetX;
+            var y = e.offsetY;
+            var i = Math.floor(x/30);
+            var j = Math.floor(y/30);
+            if (chessBoard[i][j]==0) {
+                oneStep(i,j,me);
+                chessBoard[i][j]=1;
+            }
+            //我方的赢法
+            for(var k=0;k<count;k++){
+                if (wins[i][j][k]) {    //每落一子就在该种赢法上自己数组中加1，当为5时候就表示赢了
+                    myWin[k]++;
+                    computerWin[k]=6;
+                    if (myWin[k]==5) {
+                        alert("you win");
+                        over=true;
+                    }
+                }
+            }
+            // 电脑赢法
+            if (!over) {
+                me=!me;
+                computerAI();
+            }
+        }
+        // 电脑赢法的计算
+        function computerAI(){
+            var myScore=[];             //通过计算权重分数来断定落子位置   
+            var computerScore=[];
+
+            var max=0;
+            var u=0,v=0;
+            // 初始化二维数组
+            for(var i=0;i<15;i++){
+                myScore[i]=[];
+                computerScore[i]=[];
+                for(var j=0;j<15;j++){
+                    myScore[i][j]=0;
+                    computerScore[i][j]=0;
+                }
+            }
+
+            for (var i = 0; i < 15; i++) {
+                for (var j = 0; j < 15; j++) {
+                    if (chessBoard[i][j]==0) {
+                        for (var k = 0; k < count; k++) {
+                            if (wins[i][j][k]) {
+                                // 我方权重计算
+                                if (myWin[k]==1) {
+                                    myScore[i][j]+=200;    
+                                }else if (myWin[k]==2) {
+                                     myScore[i][j]+=400; 
+                                }else if (myWin[k]==3) {
+                                     myScore[i][j]+=2000; 
+                                }else if (myWin[k]==4) {
+                                     myScore[i][j]+=10000; 
+                                }
+                                //电脑方权重计算
+                                if (computerWin[k]==1) {
+                                    computerScore[i][j]+=220;    
+                                }else if (computerWin[k]==2) {
+                                     computerScore[i][j]+=420; 
+                                }else if (computerWin[k]==3) {
+                                     computerScore[i][j]+=2100; 
+                                }else if (computerWin[k]==4) {
+                                     computerScore[i][j]+=20000; 
+                                }
+                            }
+                        }
+                        if (myScore[i][j]>max) {
+                            max=myScore[i][j];
+                            u=i;
+                            v=j;
+                        }else if (myScore[i][j]==max) {
+                            if (computerScore[i][j]>computerScore[u][v]) {
+                                u=i;
+                                v=j;
+                            }
+                        }
+                        if (computerScore[i][j]>max) {
+                            max=computerScore[i][j];
+                            u=i;
+                            v=j;
+                        }else if (computerScore[i][j]==max) {
+                            if (myScore[i][j]>myScore[u][v]) {
+                                u=i;
+                                v=j;
+                            }
+                        }
+                    }
+                }
+            }
+            oneStep(u,v,false);
+            chessBoard[u][v]=2;
+            for(var k=0;k<count;k++){
+                if (wins[u][v][k]) {    //每落一子就在该种赢法上自己数组中加1，当为5时候就表示赢了
+                    computerWin[k]++;
+                    myWin[k]=6;
+                    if (computerWin[k]==5) {
+                        alert("computer win");
+                        over=true;
+                    }
+                }
+            }
+            // 电脑赢法
+            if (!over) {
+                me=!me;
+            }
+        }
+    </script>
+</body>
+</html>

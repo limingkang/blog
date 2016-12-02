@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>抽奖</title>
+		<meta charset="utf-8">
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<script type="text/javascript" src="../javascripts/jquery.min.js"></script>
+		<script type="text/javascript" src="../javascripts/jquery.rotate.min.js"></script>
+		<style>
+			*{margin:0;padding: 0;}		
+			.g-lottery-box {
+				width: 560px;
+				height: 560px;
+				margin:0 auto;
+				position: relative;
+				background: url(../images/pc_rotate1.png) no-repeat;
+			}			
+			.g-lottery-box .g-lottery-img {
+				width: 494px;
+				height: 494px;
+				position: relative;
+				background: url(../images/pc_rotate2.png) no-repeat;
+				left: 33px;
+				top: 33px;
+			}			
+			.g-lottery-box .playbtn {
+				width: 148px;
+				height: 186px;
+				position: absolute;
+				top: 178px;
+				left: 202px;
+				background: url(../images/pc_rotate3.png) no-repeat;
+			}
+		</style>
+	</head>
+	<body>		
+		<div class="g-lottery-box">
+			<div class="g-lottery-img"></div>
+			<a class="playbtn" href="javascript:;" title="开始抽奖"></a>
+		</div>
+		<div style="text-align:center;font-size:20px;">数据可以从后台传过来也可以前端按概率算，这里抽到的奖已经写死了</div>		
+		<script>
+		    // 转盘样式，a：旋转角度，p：后台接到的抽到的奖的类型标示，t：需要显示的其它信息（文案or分享）
+		    var result_angle = [
+		         {a:0,p:'one',t:'100个成长值'},
+		         {a:45,p:'two',t:'1.2倍翻倍卡'},
+		         {a:90,p:'three',t:'200个成长值'},
+		         {a:135,p:'four',t:'50个钱帮币'},
+		         {a:180,p:'five',t:'100个钱帮币'},
+		         {a:225,p:'six',t:'1.5倍翻倍卡'},
+		         {a:270,p:'seven',t:'小米手环'},
+		         {a:315,p:'eight',t:'两倍翻倍卡'}
+		    ];
+		    var rotate = {
+		      rotate_angle : 0, //起始位置为0
+		      flag_click : true, //转盘转动过程中不可再次触发
+		      calculate_result:function(sword,callback,during_time){//during_time:持续时间(ms)
+		        var self = this;
+		        var number=0;          //标示第几个抽到奖了
+		        during_time = during_time || 4000; // 默认为1000ms
+		        var rand_circle = Math.ceil(Math.random() * 2) + 1; // 附加多转几圈，2-3
+
+		        for (var i = 0; i < 8; i++) {
+		          if(result_angle[i].p==sword){
+		            number=i;
+		            self.rotate_angle =  rand_circle * 360 + result_angle[i].a;
+		            continue;
+		          }
+		        };
+		        // 旋转结束前，不允许再次触发
+		        self.flag_click = false; 
+		        $('.g-lottery-img').stopRotate();
+		        $('.g-lottery-img').rotate({
+		        	angle: 0,
+		        	duration: during_time, //旋转时间
+		        	animateTo: self.rotate_angle, //让它根据得出来的结果加上1440度旋转
+		        	callback: function() {
+		        		self.flag_click = true; // 标志为 执行完毕
+		        		callback(result_angle[number].t);
+		        	}
+		        });
+		      }
+		    }
+		    $('.playbtn').click(function() {
+		    	rotate.calculate_result('one',function(data){
+		    		alert(data);
+		    	});
+		    });
+		</script>
+	</body>
+
+</html>
