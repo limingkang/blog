@@ -26,24 +26,16 @@
            没有这个问题，因为它使用基于依赖追踪的观察系统并且异步列队更新，所有的数据变化都是独立地触发，除非它们之间有明确的依赖关系
 
         vue和react的比较：
-           1.React 的渲染建立在 Virtual DOM 上——一种在内存中描述 DOM 树状态的数据结构。当状态发生变化时，React 重新渲染 Virtual DOM
-           比较计算之后给真实 DOM 打补丁。Virtual DOM 提供了一个函数式的方法描述视图，这真的很棒。因为它不使用数据观察机制，每次
-           更新都会重新渲染整个应用，因此从定义上保证了视图与数据的同步。它也开辟了 JavaScript 同构应用的可能性
-           2.Vue.js 不使用 Virtual DOM 而是使用真实 DOM 作为模板，数据绑定到真实节点。Vue.js 的应用环境必须提供 DOM。但是，相对于常
-           见的误解——Virtual DOM 让 React 比其它的都快， Vue.js 实际上性能比 React 好，而且几乎不用手工优化。而 React，为了最优化的
-           渲染需要处处实现 shouldComponentUpdate 和使用不可变数据结构
-           3.在 API 方面，React（或 JSX）的一个问题是，渲染函数常常包含大量的逻辑，最终看着更像是程序片断（实际上就是）而不是界面的
-           视觉呈现。对于部分开发者来说，他们可能觉得这是个优点，但对那些像我一样兼顾设计和开发的人来说，模板能让我们更好地在视觉上
-           思考设计和 CSS。JSX 和 JavaScript 逻辑的混合干扰了我将代码映射到设计的思维过程。相反，Vue.js 通过在模板中加入一个轻量级
-           的 DSL (指令系统)，换来一个依旧直观的模板，且能将逻辑封装进指令和过滤器中
-           4.React 的另一个问题是：由于 DOM 更新完全交给 Virtual DOM 管理，当想要自己控制 DOM 时就有点棘手了（虽然理论上可以做到，但
-           这样做就本质上违背了 React 的设计思想）。如果应用需要特别的自定义 DOM 操作，特别是复杂时间控制的动画，这个限制就很讨厌。
-           在这方面，Vue.js 更灵活
-           5.对于大型应用，React 社区已经创造了大量的状态管理方案，例如 Flux/Redux。Vue 本身不解决这个问题（React 内核也是）,但是可以
-           轻松地修改状态管理模式，实现一个类似的架构。Vue 有自己的状态管理方案 Vuex，而且 Vue 也可以与 Redux 一起用
-           6.React 的开发趋势是将所有东西都放在 JavaScript 中，包括 CSS。已经有许多 CSS-in-JS 方案，但是所有的方案多多少少都有问题
-           而且更重要的是，这么做脱离了标准的 CSS 开发经验，并且很难和 CSS 社区的已有工作配合。Vue 的 单文件组件 在把 CSS 封装到组件
-           模块的同时仍然允许你使用你喜欢的预处理器
+          1.React 和 Vue 有许多相似之处，它们都有：
+              使用 Virtual DOM
+              提供了响应式（Reactive）和组件化（Composable）的视图组件。
+              将注意力集中保持在核心库，伴随于此，有配套的路由和负责处理全局状态管理的库。
+              vuex也是完全借鉴redux的思想
+          2.相比于jsx语法，vue的模板编写语法不仅开发人员更容易编写代码，设计人员和开发人员也可以更容易的分析代码和贡献代码，虽然vue也
+          支持jsx语法渲染但是并不推荐使用，而且Vue拥抱HTML，而不是用JavaScript去重塑它。在模板内，Vue 也允许你用预处理器比如Jade等
+          3.ReactNative 能使你用相同的组件模型编写有本地渲染能力的 APP（IOS 和 Android）。能同时跨多平台开发，对开发者是非常棒的。
+          相应地，Vue 和 Weex 会进行官方合作，Weex 是阿里的跨平台用户界面开发框架，Weex 的 JavaScript 框架运行时用的就是 Vue。这意
+          味着在 Weex 的帮助下，你使用 Vue 语法开发的组件不仅仅可以运行在浏览器端，还能被用于开发 IOS 和 Android 上的原生应用
 
         vue和ember的比较：
            1.Ember 是一个全能框架。它提供大量的约定，一旦你熟悉了它们，开发会很高效。不过，这也意味着学习曲线较高，而且不灵活。在框架
@@ -65,26 +57,10 @@
            <div class="explain">vuex中文文档<a href="http://vuex.vuejs.org/zh-cn/index.html">http://vuex.vuejs.org/zh-cn/index.html</a></div>
        	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看vue-vue_router-vuex这个小应用</div>
 
-           <div class="title">事件处理</div>
-           <pre>
-        1.事件处理器限制为一个语句，有时也需要在内联语句处理器中访问原生 DOM 事件。可以用特殊变量 $event 把它传入方法：
-        <textarea>
-        	<button v-on:click="say('hello!', $event)">Submit</button>
-        </textarea> 
-        methods: {
-          say: function (msg, event) {
-            // 现在我们可以访问原生事件对象
-            event.preventDefault()
-          }
-        }
-        2.在事件处理器中经常需要调用 event.preventDefault() 或 event.stopPropagation()。尽管我们在方法内可以轻松做到，不过让方法
-        是纯粹的数据逻辑而不处理 DOM 事件细节会更好。为了解决这个问题，Vue.js 为 v-on 提供两个 事件修饰符：.prevent 与 .stop 
-           </pre>
-
            <div class="title">过渡效果的理解</div>
            <pre>
         Vue 提供了 transition 的封装组件，在使用v-if、v-show或者动态组件的时候，可以给任何元素和组件添加 entering/leaving 过渡
-            <textarea style="height:376px;">
+            <textarea style="height:376px;" readonly='readonly'>
                 .fade-enter-active, .fade-leave-active {
                   transition: opacity .5s
                 }
@@ -206,7 +182,7 @@
         在实际中，这些限制会导致意外的结果。尽管在简单的情况下它可能可以工作，但是你不能依赖自定义组件在浏览器验证之前的展开结果 
         另一个结果是，自定义标签 不能用在 ul, select, table 等对内部元素有限制的标签内。放在这些元素内部的自定义标签将被提到元素的外面
         因而渲染不正确。例如：template标签 不能用在 table 内，这时应使用 tbody标签，table 可以有多个 tbody，从而可以循环了
-        <textarea style="height:160px;">
+        <textarea style="height:160px;" readonly='readonly'>
         	<table>
         	  <tbody v-for="item in items">
         	    <tr>Even row</tr>
@@ -216,18 +192,23 @@
         </textarea>	
            </pre>
 
-           <div class="title">自定义事件也就是子组件向父组件通讯的方法</div>
+           <div class="title">对特殊元素key的理解</div>
            <pre>
-        Vue 实例实现了一个自定义事件接口，用于在组件树中通信。这个事件系统独立于原生 DOM 事件，用法也不同。
-        不同于 DOM 事件，Vue 事件在冒泡过程中第一次触发回调之后自动停止冒泡，除非回调明确返回 true
-        每个 Vue 实例都是一个事件触发器：
-	        使用 $on() 监听事件；
-	        使用 $emit() 在它上面触发事件；
-	        使用 $dispatch() 派发事件，事件沿着父链冒泡；
-	        使用 $broadcast() 广播事件，事件向下传导给所有的后代。
-        注意events和methods的区别，当你用events选项的时候实际上是在监听里面的事件，一旦有人分发了这个事件就会触发该函数
+        1.key 的特殊属性主要用在 Vue的虚拟DOM算法，在新旧nodes对比时辨识VNodes。如果不使用key，Vue会使用一种最大限度减少动态元素并且
+        尽可能的尝试修复/再利用相同类型元素的算法。使用key，它会基于key的变化重新排列元素顺序，并且会移除key不存在的元素。
+        2.有相同父元素的子元素必须有独特的key。重复的key会造成渲染错误。 尤其是在使用v-for的时候如果不给key属性的话不仅页面渲染不出
+        来连动画都显示不出来了
+        3.它也可以用于强制替换元素/组件而不是重复使用它。当你遇到如下场景时它可能会很有用:
+           完整地触发组件的生命周期钩子
+           触发过渡
+           <textarea style="height:110px;" readonly='readonly'>
+             <transition>
+               <span :key="text">{{ text }}</span>
+             </transition>
+             当 text 发生改变时，<span> 会随时被更新，因此会触发过渡。
+           </textarea>
            </pre>
-
+ 
            <div class="title">编写可复用的组件</div>
            <pre>
         不能传递数据给组件，因为组件的作用域是孤立的。为了传递数据给组件，应当使用 props，在编写组件时，记住是否要复用组件有好处。一次
@@ -236,7 +217,7 @@
         	prop 允许外部环境传递数据给组件；
         	事件 允许组件触发外部环境的 action；
         	slot 允许外部环境插入内容到组件的视图结构内。
-        <textarea style="height:220px;">
+        <textarea style="height:220px;" readonly='readonly'>
         	<my-component
         	  :foo="baz"
         	  :bar="qux"

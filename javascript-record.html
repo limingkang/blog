@@ -142,6 +142,13 @@
                 var clients=$(window).height();
                 var scrollTop=$(window).scrollTop();
                 var wholeHeight=$(document).height();
+            在移动端用zepto的时候可以这样写：
+                var windowHeight = document.documentElement.clientHeight;
+                var documentHeight = $(document).height();              
+                var bodyScrollTop = document.body.scrollTop;
+                if(windowHeight+bodyScrollTop>=documentHeight){
+                    //dosomething
+                }
 
             9.getBoundingClientRect()
             这个方法返回一个矩形对象，包含四个属性：left、top、right和bottom。分别表示元素各边与页面上边和左边的距离。
@@ -600,6 +607,20 @@
                  Object.prototype.toString.call(undefined)
                  // => "[object Undefined]"
                  注意对象的toString方法和数组和字符串的toString方法是不一样的一个检测的一个用来转换为字符串
+
+                 10.图片预先加载的想法
+                 var imgurl=['1.png','2.png','3.png']
+                 var imgs_onload=function(){
+                    imgurl.pop();
+                    if(imgurl.length==0){
+                       //dosomething
+                    }
+                 }
+                 for(s in imgurl){
+                     var img=new Image;
+                     img.onload=imgs_onload;
+                     img.src=imgurl[s];
+                 }
             </pre>
 
             <div class="title">数组去重的方法</div>
