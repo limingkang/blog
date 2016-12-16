@@ -11,42 +11,31 @@
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
   </head>
   <body>
-       <div class="big_container">
-           <div class="title">mocha测试的使用</div>
-           <pre>
-        module.parent来确定调用关系
-        a.js:
-
-        	if (!module.parent) {
-        	    console.log("I'm parent");
-        	} else {
-        	    console.log("I'm child");
-        	}
-
-        b.js:
-
-        	require('./a')
-
-        run node a.js will output:
-        I'm parent
-
-        run node.b.js will output:
-        I'm child
+        <div class="big_container">
+            <div class="title">mocha测试的使用</div>
+            <pre>
+        1.module.parent来确定调用关系小技巧
+            a.js:
+            	if (!module.parent) {
+            	    console.log("I'm parent");
+            	} else {
+            	    console.log("I'm child");
+            	}
+            b.js:
+            	require('./a')
+            run node a.js will output:
+            I'm parent
+            run node.b.js will output:
+            I'm child
 
 
-        require一个模块实际上就是运行了这个模块，不管其在导出函数的后面还是哪里
-
-
-
-
-        当然使用之前请全局下载mocha，最后用mocha来启动test文件,mocha中还要是用chai模块的断言功能,记住describe和it里面的值都会打印出来
+        2.当然使用之前请全局下载mocha，最后用mocha来启动文件,mocha中还要是用chai模块的断言功能,记住describe和it里面的值都会打印出来
         mocha的使用方法十分简单，就是两个语句describe和it
         describe('req.get',function(){
             describe('res.json',function(){
             });
         });
         被describe的回调所包裹的是一个测试流程，使用describe可以很好地为测试表明目的和区分层次，就是随便写的一些描述
-
         describe('Array.index',function(){
             it('should return -1 when not found',function(){
                 var tmp=[1,2,3];
@@ -67,13 +56,7 @@
         done是链的最后一个步骤，调用done即不会往下执行，done(err)则说明失败。
 
 
-
-
-
-
-
-
-        对后端测试的时候难免会发起请求，supertest为我们提供了这样的功能。
+        3.对后端测试的时候难免会发起请求，supertest为我们提供了这样的功能。
         	var request=require('supertest');
         	request(app).
         	    get('/foo').
@@ -99,7 +82,6 @@
                 post('/foo').
                 attach('field','filepath').
                 ....
-
         describe('test async function', function(){ 
             it('supertest example', function(done){ 
                 request.post('/') 
@@ -111,15 +93,9 @@
         在request请求执行完毕end()之后，一定要调用done()，否则测试用例超时，那么这个用例就失败了
 
 
-
-
-
-
-
-
-        Mocha的Hooks主要是用来设置前置条件和后置处理。比如说一个业务请求之前必须先登录，那个登录操作就在before()里面完成。
+        4.Mocha的Hooks主要是用来设置前置条件和后置处理。比如说一个业务请求之前必须先登录，那个登录操作就在before()里面完成。
         Mocha提供了before,after,beforeEach,afterEach四个钩子。
-           describe('hooks', function() {
+            describe('hooks', function() {
               before(function() { 
                 // runs before all tests in this block
               }); 
@@ -135,90 +111,60 @@
                it('test',function(done){ 
                //test here 
                }) 
-           });
+            });
         如果说某个测试需要跳过，使用it.skip()，Mocha跳过这个用例而不影响其他it块；只测试某个测试用例，使用it.only()，
-        Mocha只执行.only用例，无视其他it块。
+        Mocha只执行.only用例，无视其他it块 
+
+        5.karma和mocha的理解
+            mocha是一个js的测试框架，Karma是一个驱动测试的Runner。也就是说，karma为测试框架准备运行环境，可以让这些测试在真正的浏览器
+            里运行。而且，karma运行测试的过程是自动化的。自动化并非理所当然的事。想起之前用Jasmine的时候，需要在一个html文件里引入各
+            种js文件，然后用某个浏览器来打开这个html文件，使js在浏览器中运行起来。当测试内容发生变化时，需要刷新页面，并时不时地清空
+            缓存，有了karma就省事多啦而且不需要额外的配置，karma就会自己找到系统已经装好的浏览器并启动。
+            karma支持的测试框架还有Jasmine和Qunit    
+            </pre>
+            <div class="explain"><a href="http://mochajs.org/">mocha官网</a>&emsp;<a href="http://www.jianshu.com/p/f200a75a15d2">chai断言文档</a></div>
+
+            <div class="title">chai断言模块的使用</div>
+            <pre>
+        // BDD: should
+        var should = require('chai').should() //actually call the function
+          , foo = 'bar'
+          , beverages = { tea: [ 'chai', 'matcha', 'oolong' ] };
+
+        foo.should.be.a('string');
+        foo.should.equal('bar');
+        foo.should.have.length(3);
+        beverages.should.have.property('tea').with.length(3); 
 
 
-
-
-
-
-
-        检查给定的 type(s) 是否 acceptable, 如果是, 则返回最佳的匹配, 否则 false, 这时应该响应 406 "Not Acceptable".
-
-        type 值应该是一个或多个 mime 字符串, 例如 "application/json", 扩展名如 "json", 或数组 ["json", "html", "text/plain"]. 
-        如果给定一个 list 或 array, 会返回最佳(best)匹配项.
-
-        如果请求 client 没有发送 Accept header, 会返回第一个 type.
-        // Accept: text/html
-        this.accepts('html');
-        // => "html"
-
-        // Accept: text/*, application/json
-        this.accepts('html');
-        // => "html"
-        this.accepts('text/html');
-        // => "text/html"
-        this.accepts('json', 'text');
-        // => "json"
-        this.accepts('application/json');
-        // => "application/json"
-
-        // Accept: text/*, application/json
-        this.accepts('image/png');
-        this.accepts('png');
-        // => false
-
-        // Accept: text/*;q=.5, application/json
-        this.accepts(['html', 'json']);
-        this.accepts('html', 'json');
-        // => "json"
-
-        // No Accept header
-        this.accepts('html', 'json');
-        // => "html"
-        this.accepts('json', 'html');
-        // => "json"
-        this.accepts() 可以被多次调用, 或使用在 switch.
-
-        switch (this.accepts('json', 'html', 'text')) {
-          case 'json': break;
-          case 'html': break;
-          case 'text': break;
-          default: this.throw(406, 'json, html, or text only');
-        }
-
-
-
+        // BDD: expect 推荐使用
         var expect = require('chai').expect;
         // 相等或不相等
         expect(4 + 5).to.be.equal(9);
         expect(4 + 5).to.be.not.equal(10);
         expect(foo).to.be.deep.equal({ bar: 'baz' });
-
         // 布尔值为true
         expect('everthing').to.be.ok;
         expect(false).to.not.be.ok;
-
         // typeof
         expect('test').to.be.a('string');
         expect({ foo: 'bar' }).to.be.an('object');
         expect(foo).to.be.an.instanceof(Foo);
-
         // include
         expect([1,2,3]).to.include(2);
         expect('foobar').to.contain('foo');
         expect({ foo: 'bar', hello: 'universe' }).to.include.keys('foo');
-
         // empty
         expect([]).to.be.empty;
         expect('').to.be.empty;
         expect({}).to.be.empty;
-
         // match
-        expect('foobar').to.match(/^foo/);
-           </pre>
-       </div>
+        expect('foobar').to.match(/^foo/);   
+            </pre>
+            <div class="explain">
+                Chai是一个BDD/TDD模式的断言库，也可以同时运行在node和浏览器环境，能够高效的和绝大多数JavaScript测试框架搭配使用。
+                 BDD，行为驱动开发（注重测试逻辑），TDD是测试驱动开发（注重输出结果）。上面的例子主要使用的BDD
+            </div>
+        </div>
   </body>
 </html>

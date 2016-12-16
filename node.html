@@ -5,86 +5,306 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Blog by limingkang</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="前端开发记录">
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
   </head>
   <body>
       <div class="big_container">
-           <div class="title">fs模块读取文件的同步与异步</div>
+           <div class="title">对exports和module.exports的理解</div>
            <pre>
-          fs.readFile('itxxz.txt','utf-8',function(err,data){  
-              if(err){  
-                  console.log(data);  
-              }else{  
-                  console.log(data);    
-              }  
-          })  
-          对于fs模块中readFile是异步的读取方式，而且接了三个参数，以回调函数的形式来得到数据
-          var data = fs.readFileSync('itxxz.txt','utf-8');  
-          console.log(data); 
-          对于fs模块中readFileSync是同步的读取方式，而且接了两个参数，以返回值的形式来得到数据
-           </pre>
-           <div class="explain">学习Node的社区地址<a href="https://cnodejs.org/">https://cnodejs.org/</a></div>
+          1.每一个node.js执行文件，都自动创建一个module对象，同时，module对象会创建一个叫exports的属性，初始化的值是 {}
+                module.exports = {};
+          exports和module.exports指向同一块内存，但require()返回的是module.exports而不是exports,也就是说给 exports 赋值
+          如当你用exports.show="任何类型",实际上是给 module.exports 这个空对象添加了属性而已
+          
+          2.module.exports可以替代exports而反过来不可以
+                module.exports="one";
+                module.exports="two";
+                //每一次都是在重写module.exports，所以就只能返回"two"
+                module.exports.name="li";
+                module.exports.sex="men";
+                exports.show = function(){};
+                //实际上是在给module.exports对象加属性所以上面的都可以访问
+                module.exports="boss"
+                module.exports.name="li"
+                //因为返回的对象被重写为字符串了，所以后一句没用了，只能返回"boss" 
 
-           <div class="title">exports和module.exports的区别</div>
-           <pre>
-          所有的exports返回的属性和方法，最终都是通过module.exports返回的
-          module.exports直接执行时候，其他通过exports返回的属性和方法豆浆被忽略
-          module.exports不仅可以传递对象还可以传递数组字符串等而exports只可以传递对象所有module.exports包含exports,
-          也就是它可以替代exports而反过来不可以
-          module.exports="one";
-          module.exports="two";
-          如果是这样导出的话那只有后一段语句有效就是只能得到two但是如果指定了键就可以了
-          module.exports.name="dsfd";
-          module.exports.woshi="sdfds";
-          exports.show = function(){};
-          那就输出了一个对象.而且还可以得到show函数
-          如果第一个是module.exports="dfds"那就是直接导出了除非后面也有module.exports="dffsdfds"那就可以盖掉前一个，
-          否则即使出现module.exports.name="dfdsdfdsf",有键值也只能得到最前的那个字符串了    
+          3.改变exports指向的内存
+                exports = function (str) {
+                    console.log(str);
+                }
+                //exports指向了一块新的内存，这样exports和module.exports指向的内存并不是同一块,exports和module.exports并无
+                任何关系。exports指向的内存变化了,而module.exports指向的内存无变化,仍为空对象{}。require得到的会是一个空对象
+
+          4.module.exports对象不为空的时候exports对象就自动忽略
+                module.exports = {a: 2}
+                exports.a = 1   
+                //module.exports通过赋值方式已经和exports对象指向的变量不同了，exports对象怎么改和module.exports对象没关系了
+                //但是如果是module.exports.a=2那么指向的就是同一个内存块，require的值为1否则上面那个require的值为仍为2
            </pre> 
+           <div class="explain"><a href="https://cnodejs.org/">cnode社区</a>&emsp;<a href="http://www.nodeclass.com/api/cnkoa.html#request">koa的中文API文档地址</a>&emsp;<a href="http://www.expressjs.com.cn/">express开发文档</a>&emsp;<a href="http://nodejs.cn/">node.js的api文档</a></div>
 
-           <div class="title">node对post数据解析</div>
+           <div class="title">对node模块加载机制的理解</div>
            <pre>
-          var postdata="";
-          req.addListener("data",function(data){
-            postdata+=data;
-          })
-          req.addListener("end",function(){})    
-           </pre>
-           <div class="explain">node.js对post数据的解析其实是异步的，它自己做了内存上的优化，将post传来的数据拆分成许多个数据块非阻塞的传过来，传结束之后会触发end事件</div>
+          1 . 如果X是一个内建核心模块，  
+                a. 返回该模块  
+                b. 停止执行  
+          2. 如果X使用`./`或者`/`或者`../`开头  
+                a. 作为文件路径来加载(LOAD_AS_FILE)      
+                b. 作为目录路径来加载(LOAD_AS_DIRECTORY)    
+          3. 加载node_modules文件夹下面模块(LOAD_NODE_MODULES)    
+          4. 抛出`not found`异常 
 
-           <div class="title">node创建https服务器</div>
+          LOAD_AS_FILE(x)
+                A. 如果x是一个文件则把x作为javascript文本文件加载。 停止
+                B. 如果x.js是一个文件则把x.js作为javascript文本文件加载。 停止
+                C. 如果x.json是一个文件则把x.json作为一个javascript对象来解析。 停止
+                D. 如果x.node是一个文件则把x.node作为一个二进制插件。停止
+          LOAD_AS_DIRECTORY(x)
+                A. 如果x/package.json是一个文件 
+                    a. 解析package.json读取main字段. 
+                    b. let m = x + main字段值 
+                    c. LOAD_AS_FILE(m)
+                B. 如果x/index.js是一个文件，则把x/index.js作为javascript文本文件加载。 停止
+                C. 如果x/index.json是一个文件，则把x/index.json作为js对象来解析。停止
+                D. 如果x/index.node是一个文件， 则把x/index.node作为二进制插件加载。停止
+           </pre>
+           <div class="explain">如果在同一个文件中require一个模块两次，那么在首次加载完毕之后会被缓存， 这意味着第二次require('foo.js')不会导致foo.js被执行两次</div>
+
+           <div class="title">node常用模块的介绍</div>
            <pre>
-          //node创建https服务器，他需要多传一个参数，为对象形式，键必须为key和cert，这里读取的证书信息数通过openssl生成的key和cert
-          //目前有很多免费创建签名文件的开源项目如，OpenSSL和StartSSL，但是openssl目前已经推迟更新了，说是有安全漏洞
-          var https = require('https'),  
-              url = require('url'),  
-              fs = require('fs');    
-          var options = {  
-              key:  fs.readFileSync('./privatekey.pem'),  //带路径的文件名，注意两个文件不要写反了  
-              cert:fs.readFileSync('./certificate.pem')  
-          };    
-          https.createServer(options, function(req, res) {  
-              res.writeHead(200);  
-              res.end('hello world\n');  
-          }).listen(8080);  
-          打开网站之后可以看到https上画了斜线，表示网站未经过身份认证，服务器证书和ip不符合
-          生成的key和cert也可以使用openssl来合并成server.pfx证书，并将options参数改为pfx，如下：
-          var options = {  
-            pfx:fs.readFileSync("server.pfx");
-          };    
+          1.日志模块log4js
+                对于日志的记录来说，可以将日志分日期、分模块、分类型来记录，类型可以分为
+                error(错误类型)、info(流水类型)、debug(调试类型)、warn(提示类型)这四个。
+                以日期作为文件夹里面放.log文件，如curl_error.log那么这就表示是curl模块的错误类型日志
+                在单条日志信息里应包含日志记录的时间、日志类型、日志操作用户、错误码、错误信息，以及相关json数据信息。实例如下：
+                [2016-07-23 10:19:23] [ERROR] liming - [code -3] [msg parse configure file error]{"filename":"test.xml"} 
+          2.events 模块只提供了一个对象： events.EventEmitter，EventEmitter 的核心就是事件触发与事件监听器功能的封装
+                var EventEmitter = require('events').EventEmitter; 
+                var event = new EventEmitter(); 
+                event.on('some_event', function() { 
+                  console.log('some_event 事件触发'); 
+                }); 
+                setTimeout(function() { 
+                  event.emit('some_event'); 
+                }, 1000); 
+          3.解析xml用的xml2.js模块 
+          4.nodejs中的邮件发送模块nodemailer模块，遵循的是SMTP协议也就是简单邮件传输协议
+          5.util模块
+                格式化输出字符串：util.format(format[, ...])
+                在控制台标准输出：util.log(string)
+                将对象序列化为字符串：util.inspect(object[, options])
+                自定义 util.inspect 颜色
+                自定义对象的 inspect() 方法
+                检查对象是否是数组：util.isArray(object)
+                检查对象是否是RegExp类型：util.isRegExp(object)
+                检查对象是否是Date类型：util.isDate(object)
+                检查对象是否是Error类型：util.isError(object)
+                实现对象间原型继承：util.inherits(constructor, superConstructor)
+          6.querystring模块用于实现URL参数字符串与参数对象的互相转换   
+                querystring.parse('foo=bar&baz=qux&baz=quux&corge');
+                //{ foo: 'bar', baz: ['qux', 'quux'], corge: '' }                 
+                querystring.stringify({ foo: 'bar', baz: ['qux', 'quux'], corge: '' });
+                //'foo=bar&baz=qux&baz=quux&corge=' 
+          7.url模块
+                url.parse('http://user:pass@host.com:8080/p/a/t/h?query=string#hash');
+                /* =>
+                { protocol: 'http:',
+                  auth: 'user:pass',
+                  host: 'host.com:8080',
+                  port: '8080',
+                  hostname: 'host.com',
+                  hash: '#hash',
+                  search: '?query=string',
+                  query: 'query=string',
+                  pathname: '/p/a/t/h',
+                  path: '/p/a/t/h?query=string',
+                  href: 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash' }
+                  .parse方法还支持第二个和第三个布尔类型可选参数。第二个参数等于true时，该方法返回的URL对象中，query字段
+                  不再是一个字符串，而是一个经过querystring模块转换后的参数对象。第三个参数等于true时，该方法可以正确解析
+                  不带协议头的URL，例如//www.example.com/foo/bar
+                */ 
+                .format方法允许将一个URL对象转换为URL字符串
+                .resolve方法可以用于拼接URL 
+          8.path模块用于获取当前路径，或者格式化路径
+          9.fs模块用于读取文件有同步和异步两种读取方法
+          10.操作mysql的mysql模块
+               对于mysql来说先下载安装之后再配置文件  启动：mysql -h '域名' -u '用户名' -p '密码'
+          11.操作mongodb的mongoose模块
+                对于mongodb来说直接下载放入就行，不需要安装编译，注意指定存放的数据位置建文件/data/db/
+                启动的时候进入bin目录mongod --dbpath e:/mongodb/data/db/一定要写全路径
+                也可以让其读配置文件，在配置文件中#号表示注释，启动方法为mongod -f e:/mongodb/conf/mongodb.conf
+                这些配置文件都是自己建位置写的,任何的启动命令都是cd到bin目录下进行的，只有它下面有各种.exe文件，所以才会有命令
+          12.node内置的assert断言模块用来测试，但是结合mocha的时候我们一般用chai断言模块来测试
+          13.异步流程模块控制一般使用async模块，来避免回调黑洞,或者使用co模块但是要用es6来编程函数了
+           </pre>
+           <div class="explain">
+             JavaScript 语言自身只有字符串数据类型，没有二进制数据类型。但在处理像TCP流或文件流时，必须使用到二进制数据。因此
+             在 Node.js中，定义了一个 Buffer 类，该类用来创建一个专门存放二进制数据的缓存区
+           </div>
+
+           <div class="title">使用node创建和控制外部进程</div>
+           <pre>
+          1.使用exec执行外部系统命令如shell命令
+              var exec=require('child_process').exec;
+              var cmdStr='curl http://www.weather.com.cn/data/sk/10.html';
+              exec(cmdStr,function(err,stdout,stderr){
+                  //err是错误信息，stdout是执行命令之后要输出的信息,stderr是执行命令之后错误的话输出错误信息
+                  if(err){
+                      console.log(err);
+                  }else{
+                      dosomething();
+                  }
+              })
+              child_process.exec方法会从子进程中返回一个完整的buffer。默认情况下，这个buffer的大小应该是200k。如果子进程返回
+              的数据大小超过了200k，程序将会崩溃，同时显示错误信息“Error：maxBuffer exceeded”。你可以通过在exec的可选项中设
+              置一个更大的buffer体积来解决这个问题，但是你不应该这样做，因为exec本来就不是用来返回很多数据的方法。我们可以使
+              用它来运行程序然后返回结果的状态，而不是结果的数据。他还不支持子进程向父进程通信
+              它是“同步中的异步”，尽管exec是异步的，它要等到子进程运行结束以后然后一次性返回所有的buffer数据
+
+          2.使用spawn开辟子进程
+              // 使用curl下载文件的函数
+              var download_file_curl = function(file_url) {
+                // 提取文件名
+                var file_name = url.parse(file_url).pathname.split('/').pop();
+                // 创建一个可写流的实例
+                var file = fs.createWriteStream(DOWNLOAD_DIR + file_name);
+                // 使用spawn运行curl
+                var curl = spawn('curl', [file_url]);
+                // 为spawn实例添加了一个data事件
+                curl.stdout.on('data', function(data) { file.write(data); });
+                // 添加一个end监听器来关闭文件流
+                curl.stdout.on('end', function(data) {
+                  file.end();
+                  console.log(file_name + ' downloaded to ' + DOWNLOAD_DIR);
+                });
+                // 当子进程退出时，检查是否有错误，同时关闭文件流
+                curl.on('exit', function(code) {
+                  if (code != 0) {
+                    console.log('Failed: ' + code);
+                  }
+                });
+              };
+              child_process.spaen会返回一个带有stdout和stderr流的对象。你可以通过stdout流来读取子进程返回给Node.js的数据
+              stdout拥有’data’,’end’以及一般流所具有的事件。当你想要子进程返回大量数据给Node时，比如说图像处理，读取二进制
+              数据等等，你最好使用spawn方法。它是“异步中的异步”，意思是在子进程开始执行时，它就开始从一个流总将数据从子进程
+              返回给Node,还可以通过父进程向子进程通信
            </pre>
 
-           <div class="title">数据库的使用</div>
+           <div class="title">node的可读流和可写流的理解</div>
            <pre>
-          对于mysql来说先下载安装之后再配置文件  启动：mysql -h localhost -u root -p 123456
-          对于mongodb来说直接下载放入就行，不需要安装编译，注意指定存放的数据位置建文件/data/db/启动的时候
-          进入bin目录mongod --dbpath e:/mongodb/data/db/一定要写全路径
-          也可以让其读配置文件，在配置文件中#号表示注释，启动方法为mongod -f e:/mongodb/conf/mongodb.conf
-          这些配置文件都是自己建位置写的,任何的启动命令都是cd到bin目录下进行的，只有它下面有各种.exe文件，所以才会有命令
+          var fs=require("fs");
+          var rs = fs.createReadStream("./Koala.jpg");//默认64KB
+          var ws = fs.createWriteStream("./Copy.jpg");//默认16KB，写入速度小于读取速度
+          rs.on("data",function(data){
+             var flag = ws.write(data);
+              if (!flag){ //缓冲区已满
+                  rs.pause();//停止触发data事件
+              }
+          });
+          ws.on("drain",function(){
+              rs.resume();//如果当前的缓冲区写入完毕，就重新触发data事件
+          });
+          rs.on("end",function(){
+              ws.end();//将剩下的数据全部写入，并且关闭写入的文件
+          }) 
+          比如有一个100KB的文件，设置highWaterMark为10KB,那么系统会先从资源文件中读取出10KB的数据，再触发data事件;然后再读取
+          10KB的数据，触发data事件，不断执行，直到读出了所有的数据，触发end事件。highWaterMark不能设置的过小，过小就会频繁的
+          操作文件，影响性能  
            </pre>
+           <div class="explain">由于读流比写入流的速度快，所以要控制可读流的数据流动。通过控制data事件的触发时机，就解决读写速度不匹配的问题</div>
+
+           <div class="title">node的三种debug模式</div>
+           <pre>
+          1.node debug app.js
+              程序会进入debug模式，并运行到启动文件的第1行就停止，等待开发者下发往下走的命令
+              直接在当前cmd中进入调试模式
+
+          2.node --debug app.js
+              程序会进入debug模式，并运行完所有代码。这种启动方式往往用于程序启动的过程中不需要调试，通过触发时间进入回调函数的情况，比
+              如在某个http请求中打上断点，等待客户端访问后进入断点
+              会开启一个TCP的端口监听，在本cmd中不进入调试模式，需要另外开启终端用node debug 命令连接调试端口
+                  命令为 node debug localhost debug端口
+                  或者   node debug p node进程id
+
+          3.node --debug-brk app.js
+              程序会进入debug模式，但是不会运行代码，直到有一个终端连接到了debug端口，才开始执行代码，并在第1行进入断点
+              会开启一个TCP的端口监听，在本cmd中不进入调试模式，需要另外开启终端用node debug 命令连接调试端口
+
+          4.进入debug模式后，可以通过一些命令来设置断点、取消断点以及控制程序执行流程,具体流程控制的命令有cont,next,step,out,pause等
+          可以去文档中查找详细介绍  
+
+          5.还可以使用我们熟悉的chrome调试工具来调试node代码，不过需要安装一个node模块——node-inspector 
+           </pre>
+
+           <div class="tilte">node的async模块的简单介绍</div>
+           <pre>
+          var async=require('async');
+          
+          1.series方法的作用就是按照顺序依次执行
+              async.series({
+                one: function(callback){
+                  callback(null, 1);
+                },
+                two: function(callback){
+                  callback(null, 2);
+                }
+              },function(err, results) {
+                console.log(results);
+              });
+              输出：{one: 1, two: 2}
+          series函数的第一个参数可以是一个数组也可以是一个JSON对象，参数类型不同，影响的是返回数据的格式
+
+          2.waterfall和series函数有很多相似之处，都是按照顺序执行
+              async.waterfall([
+                function(callback){
+                  callback(null, 'one', 'two');
+                },
+                function(arg1, arg2, callback){
+                  // arg1 now equals 'one' and arg2 now equals 'two'
+                  callback(null, 'three');
+                },
+                function(arg1, callback){
+                  // arg1 now equals 'three'
+                  callback(null, 'done');
+                }
+              ], function (err, result) {
+                 // result now equals 'done'
+                 console.log(result);
+              });
+              注意waterfall的tasks参数只能是数组类型。当中途有函数出错，其err直接传给最终callback，结果被丢弃，后面的函数不再执行。
+           
+          3.parallel函数是并行执行多个函数，每个函数都是立即执行，不需要等待其它函数先执行。传给最终callback的数组中的数据按照tasks中
+          声明的顺序，而不是执行完成的顺序。tasks参数可以是一个数组或是json对象，和series函数一样，tasks参数类型不同，返回的results格
+          式会不一样
+              async.parallel([
+                function(callback){
+                  callback(null, 'one');
+                },
+                function(callback){
+                  callback(null, 'two');
+                }
+              ],
+              function(err, results){
+
+              });
+
+          4.parallelLimit函数和parallel类似，但是它多了一个参数limit。limit参数限制任务只能同时并发一定数量，而不是无限制并发
+              async.parallelLimit([
+                function(callback){
+                  callback(null, 'one');
+                },
+                function(callback){
+                  callback(null, 'two');
+                }
+              ],
+              2,
+              function(err, results){
+                console.log(results);
+              });
+           </pre>
+           <div class="explain">去汇智网学习相关async模块课程<a href="http://www.hubwiz.com/course/543e1a4f032c7816c0d5dfa1/" target="_blank">http://www.hubwiz.com/course/543e1a4f032c7816c0d5dfa1/</a></div>
 
            <div class="title">express框架处理上传文件的方式</div>
            <pre>
@@ -131,287 +351,23 @@
           };
            </pre>
 
-           <div class="title">node的日志模块使用，或者用log4js模块</div>
+           <div class="title">koa和express</div>
            <pre>
-          对于日志的记录来说，可以将日志分日期、分模块、分类型来记录，类型可以分为
-          error(错误类型)、info(流水类型)、debug(调试类型)、warn(提示类型)这四个。
-          以日期作为文件夹里面放.log文件，如curl_error.log那么这就表示是curl模块的错误类型日志
-          在单条日志信息里应包含日志记录的时间、日志类型、日志操作用户、错误码、错误信息，以及相关json数据信息。实例如下：
-          [2016-07-23 10:19:23] [ERROR] limingkang - [code -3] [msg parse configure file error]{"filename":"test.xml"}   
-           </pre>
-           <div class="explain">在require模块的时候可以省略文件后缀名，但是如果有同名文件夹就不好了，他会找其下的index.js文件加载</div>
-
-           <div class="title">node怎么实现单例模式（singleton模式）</div>
-           <pre>
-          对于 Node 来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
-          很容易想到，可以把实例放到顶层对象global。
-
-          // mod.js
-          function A() {
-            this.foo = 'hello';
-          }
-
-          if (!global._foo) {
-            global._foo = new A();
-          }
-
-          module.exports = global._foo;
-          然后，加载上面的mod.js。
-
-          var a = require('./mod.js');
-          console.log(a.foo);
-          上面代码中，变量a任何时候加载的都是A的同一个实例。
-
-          但是，这里有一个问题，全局变量global._foo是可写的，任何文件都可以修改。
-
-          var a = require('./mod.js');
-          global._foo = 123;
-          上面的代码，会使得别的脚本加载mod.js都失真。
-
-          为了防止这种情况出现，我们就可以使用Symbol。
-          // mod.js
-          const FOO_KEY = Symbol.for('foo');
-          function A() {
-            this.foo = 'hello';
-          }
-          if (!global[FOO_KEY]) {
-            global[FOO_KEY] = new A();
-          }
-          module.exports = global[FOO_KEY];
-          上面代码中，可以保证global[FOO_KEY]不会被其他脚本改写   
-           </pre>
-
-           <div class="title">koa基础知识了解1</div>
-           <pre>
-          Koa提供的一些关键特性能够让你尽可能避免回调函数的情况下简单快捷地编写Web应用。Koa使用了ES6中的一些新的语言特性来让Node应用
+          1.Koa提供的一些关键特性能够让你尽可能避免回调函数的情况下简单快捷地编写Web应用。Koa使用了ES6中的一些新的语言特性来让Node应用
           的控制流管理变简单，Koa本身非常的小。与当下其他流行的Web框架（例如Express）不同的是，Koa从一出生开始就采用了一种极致模块化
           的方案， 意味着每个模块做且只做一件事情
 
-          Koa 目前需要 >=0.11.x版本的 node 环境。并需要在执行 node 的时候附带 --harmony 来引入 generators
+          2.Koa 目前需要 >=0.11.x版本的 node 环境。并需要在执行 node 的时候附带 --harmony 来引入 generators
           运行：node --harmony my-koa-app.js
 
-          Koa 的核心设计思路是为中间件层提供高级语法糖封装，以增强其互用性和健壮性
-          Koa包含了像content-negotiation（内容协商）、cache freshness（缓存刷新）、proxy support（代理支持）和 
+          3.Koa 的核心设计思路是为中间件层提供高级语法糖封装，以增强其互用性和健壮性
+
+          4.Koa包含了像content-negotiation（内容协商）、cache freshness（缓存刷新）、proxy support（代理支持）和 
           redirection（重定向）等常用任务方法,与提供庞大的函数支持不同，Koa只包含很小的一部分，因为Koa并不绑定任何中间件。
-
-          正如你从下面的例子中看到的那样，使用Koa来编写一个Web服务器并没有什么特别的地方，除了那个奇怪的跟在function关键字后的*符号。
-          好吧，如果你了解ES6的话，我想你应该知道这个符号意味着该函数现在是生成器函数了
-          // 生成器函数
-          function *foo(arg) {
-
-          }
-          var bar = foo(123); // bar为迭代器对象
-          使用这个返回对象bar，我们可以用来遍历函数中的中断点。可以通过调用迭代器对象bar的next()方法来完成遍历操作。
-          当next()被调用的时候，函数会从之前暂停的地方执行到下一个暂停点
-
-          Koa并非是一个 1-to-1 表征关系的 HTTP 服务器。 一个或多个Koa应用可以被挂载到一起组成一个包含单一 HTTP 服务器的大型应用群。
-          如下为一个绑定3000端口的简单 Koa 应用，其创建并返回了一个 HTTP 服务器，为 Server#listen() 传递指定参数
-          var koa = require('koa');
-          var app = koa();
-          app.listen(3000);
-          app.listen(...) 实际上是以下代码的语法糖:
-            var http = require('http');
-            var koa = require('koa');
-            var app = koa();
-            http.createServer(app.callback()).listen(3000);
-          这意味着您可以同时支持 HTTPS 和 HTTPS，或者在多个端口监听同一个应用:
-            var http = require('http');
-            var koa = require('koa');
-            var app = koa();
-            http.createServer(app.callback()).listen(3000);
-            http.createServer(app.callback()).listen(3001);   
-           </pre>
-           <div class="explain">koa的中文API文档地址<a href="http://www.nodeclass.com/api/cnkoa.html#request">http://www.nodeclass.com/api/cnkoa.html#request</a></div>
-
-           <div class="title">koa基础知识了解2</div>
-           <pre>
-          设置签名Cookie密钥，该密钥会被传递给 KeyGrip。
-          当然，您也可以自己生成 KeyGrip 实例：(当然用之前先得require('keygrip'))
-          app.keys = ['im a newer secret', 'i like turtle'];
-          app.keys = new KeyGrip(['im a newer secret', 'i like turtle'], 'sha256');
-          在进行cookie签名时，只有设置 signed 为 true 的时候，才会使用密钥进行加密：
-          this.cookies.set('name', 'tobi', { signed: true });
-
-          默认情况下Koa会将所有错误信息输出到 stderr，除非 NODE_ENV 是 "test"。为了自定义错误处理逻辑（比如 centralized logging），
-          您可以添加 "error" 事件监听器。
-          app.on('error', function(err){
-            log.error('server error', err);
-          });
-          如果错误发生在 请求/响应 环节，并且其不能够响应客户端时，Contenxt 实例也会被传递到 error 事件监听器的回调函数里。
-          app.on('error', function(err, ctx){
-            log.error('server error', err, ctx);
-          });
-          当发生错误但仍能够响应客户端时（比如没有数据写到socket中），Koa会返回一个500错误(Internal Server Error)。
-          无论哪种情况，Koa都会生成一个应用级别的错误信息，以便实现日志记录等目的。
-
-          Koa Context 将 node 的 request 和 response 对象封装在一个单独的对象里面，其为编写 web 应用和 API 提供了很多有用的方法。
-          context 在每个 request 请求中被创建，在中间件中作为接收器(receiver)来引用，或者通过 this 标识符来引用
-          ctx.req:Node 的 request 对象。
-          ctx.res:Node 的 response 对象。
-          Koa 不支持 直接调用底层 res 进行响应处理。请避免使用以下 node 属性：
-              res.statusCode
-              res.writeHead()
-              res.write()
-              res.end()
-          ctx.request:Koa 的 Request 对象。
-          ctx.response:Koa 的 Response 对象
-
-          ctx.cookies.get(name, [options])
-          获得 cookie 中名为 name 的值，options 为可选参数：
-              'signed': 如果为 true，表示请求时 cookie 需要进行签名。
-          注意：Koa 使用了 Express 的 cookies 模块，options 参数只是简单地直接进行传递。
-          ctx.cookies.set(name, value, [options])
-          设置 cookie 中名为 name 的值，options 为可选参数：
-              signed: 是否要做签名
-              expires: cookie 有效期时间
-              path: cookie 的路径，默认为 '/'
-              domain: cookie 的域
-              secure: false 表示 cookie 通过 HTTP 协议发送，true 表示 cookie 通过 HTTPS 发送。
-              httpOnly: true 表示 cookie 只能通过 HTTP 协议发送
-          注意：Koa 使用了 Express 的 cookies 模块，options 参数只是简单地直接进行传递。
-          ctx.throw(msg, [status])
-          抛出包含 .status 属性的错误，默认为 500。该方法可以让 Koa 准确的响应处理状态。 Koa支持以下组合：
-              this.throw(403)
-              this.throw('name required', 400)
-              this.throw(400, 'name required')
-              this.throw('something exploded')
-              this.throw('name required', 400) 等价于：
-          var err = new Error('name required');
-          err.status = 400;
-          throw err;
-          注意：这些用户级错误被标记为 err.expose，其意味着这些消息被准确描述为对客户端的响应，而并非使用在您不想泄露失败细节的场景中。
-          ctx.respond
-          为了避免使用 Koa 的内置响应处理功能，您可以直接赋值 this.repond = false;。如果您不想让 Koa 来帮助您处理 reponse，
-          而是直接操作原生 res 对象，那么请使用这种方法。
-          注意： 这种方式是不被 Koa 支持的。其可能会破坏 Koa 中间件和 Koa 本身的一些功能。其只作为一种 hack 的方式，并只对那些想要在
-           Koa 方法和中间件中使用传统 fn(req, res) 方法的人来说会带来便利。   
-           </pre>
-
-           <div class="title">搭建一个koa的服务器需要注意的方面</div>
-           <pre>
-          个人认为不管任何框架，Web项目搭建必需的几个方面，页面、中间件、路由、会话和存储、日志、静态文件指定，以及错误的处理。
-          当然，网站开发不止这些东西，还有许多主题，比如实时通讯，搜索引擎架构，权限控制，邮件优先队列，日志记录分析
-          但是目前类似express-generator的Koa部署工具Koa-generator（非官方）并不完善并且个人测试存在些许错误。其实Koa-generator也是
-          仿造上述express-generator生成的目录，既然这样还不如手动创建目录来的爽快（generator-k是另一款生成器，用上去感觉还行）
-          可以自己手动建造这样的目录：
-              |——app.js
-                |——node_modules
-                |——public
-                |    |——img
-                |    |——css
-                |    |——js
-                |
-                |——routes
-                |    |——index.js
-                |    |——user.Js
-                |
-                |——views
-                |    |——_layout.html
-                |    |——index.html
-                |
-                |——package.json
-                Koa项目运行：node --harmony app.js
-                必须加 --harmony ，这样才会支持 ES6 语法。
-
-          koa的日志：
-              日志是项目error调试和日常维护的基本手段，Koa有日志模块Koa-logger，npm install Koa-logger后使用app.use(logger());
-              命令程序就会在控制台自动打印日志，当然如果你对Koa-logger的风格不满意或者想要看到更多得信息也可以自己编辑代码实现有自己
-              风格的日志打印
-
-          koa的错误处理:
-              var Koa = require('koa');
-              var app = Koa();
-              app.on('error', function(err,ctx){
-                console.log(err);
-              });   
-              app.listen(3000);
-
-          koa的静态文件指定：
-            Koa静态文件指定中间件Koa-static，npm install Koa-static之后就可以使用Koa-static负责托管 Koa 应用内的静态资源。
-            映射了静态文件目录，引用的时候直接去该目录下寻找资源，会减少一些消耗
-            var staticServer = require('koa-static');
-            var path = require('path');
-            app.use(staticServer(path.join(__dirname,'public')));
-
-          ejs模板的使用：
-              var Koa = require('koa');
-              var app = Koa();
-              var render = require('koa-ejs');
-                render(app, {
-                    root: path.join(__dirname, 'views'),
-                    layout: '__layout',
-                    viewExt: 'html',
-                   cache: false,
-                    debug: true
-                });
-                app.use(function *(){
-                    yield this.render('index',{layout:false});
-                });  
-           </pre>
-
-           <div class="title">koa路由设置</div>
-           <pre>
-          原生的写法：
-              app.use(function *(){
-                  //我是首页
-                  if(this.path==='/'){
-                  }
-              });
-          可以使用路由中间件，koa中设置路由一般先安装koa-router,他支持五种方法
-            router.get()
-            router.post()
-            router.put()
-            router.del()
-            router.patch()
-          GET方法举例:
-            var app = require('koa')();
-            var Router = require('koa-router');
-            var myRouter = new Router();
-            myRouter.get('/', function *(next) {
-             yield this.render('index',{layout:false});
-            });
-            app.use(myRouter.routes());
-            app.listen(3000);
-          Koa-router 拥有丰富的 api 细节，用好这些 api ，可以让页面代码更为优雅与可维护:
-            http://localhost:3000/?a=1(条件)
-            var router = require('koa-router')();
-                router.get('/',function *(next){
-                    console.log(this.query);
-                    yield this.render('index',{layout:false});
-                     })
-                  .get('/home',function *(ctx,next){
-                    ctx.render('home');
-                  });
-              接收params参数 
-              http://localhost:3000/users/123（参数）
-              router.get('/user/:id', function *(next) {
-              console.log(this.params.id);                      //123
-             });
-          param() 用于封装参数处理中间件，当访问 /detail/:id 路由时，会先执行 param() 定义的 generator function 逻辑。
-          函数的第一个是路由参数的值，next 是中间件流程关键标识变量。yield next;
-             app.param('id',function *(id,next){
-                  this.id = Number(id);
-                  if ( typeof this.id != 'number') return this.status = 404;
-                 yield next;
-               }).get('/detail/:id', function *(next) {
-                 //我是详情页面
-                 var id = this.id; //123
-                  this.body = id;
-               });   
-           </pre>
-
-           <div class="title">koa中间件</div>
-           <pre>
-          Koa的中间件很像Express的中间件，也是对HTTP请求进行处理的函数，但是必须是一个Generator函数即 function *(){} 语法,不然会报错
-          可以这么说，Nodejs的Web程序中任何请求和响应都是中间件在操作
-            app
-              .use(logger())               //日志中间件
-              .use(serve(__dirname + '/public'))        //静态文件指定中间件
-              .use(router.routes())          //路由中间件
-              .use(router.allowedMethods());             //路由中间件
-          app.use 加载用于处理http请求的middleware（中间件）,当一个请求来的时候,会依次被这些middlewares处理.执行的顺序是你定义的顺序
-          中间件的执行顺序规则是类似“栈”的结构，所有需要执行的中间件都被一个一个放入“栈”中，当没有遇到next()的时候，
-          “栈”里边的这些中间件被逆序执行   
+ 
+          5.Express是在同一线程上完成当前进程的所有 HTTP 请求，而Koa利用co作为底层运行框架，利用 Generator 的特性，实现“协程响应”
+          （并不能将 Generator 等价于协程，在 V8 的邮件列表中对Generator的定义基本是 `coroutine-like`）,然而co这个库对Generator 
+          的使用方法并非当初 Generator 的设计初衷
            </pre>
 
            <div class="title">异步编程的思考</div>
@@ -462,49 +418,6 @@
        　　co 函数库其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个库。使用 co 的前提条件是，
            Generator 函数的 yield 命令后面，只能是 Thunk 函数或 Promise 对象。   
            </pre>
-
-           <div class="title">koa组合中间件的使用</div>
-           <pre>
-          var compose = require('koa-compose');
-          var koa = require('koa');
-          var app = module.exports = koa();
-
-          // x-response-time
-          function *responseTime(next){
-          var start = new Date;
-          yield next;
-          var ms = new Date - start;
-          this.set('X-Response-Time', ms + 'ms');
-          }
-
-          // logger
-          function* logger(next){
-          var start = new Date;
-          yield next;
-          var ms = new Date - start;
-          if ('test' != process.env.NODE_ENV) {
-           console.log('%s %s - %s', this.method, this.url, ms); //输出的时候第二个参数和第三个参数之间有一横
-          }
-          }
-
-          // response
-          function* respond(next){
-          yield next;
-          if ('/' != this.url) return;
-          this.body = 'Hello World';
-          }
-
-          // composed middleware
-          var all = compose([
-          responseTime,
-          logger,
-          respond
-          ]);
-
-          app.use(all);
-
-          if (!module.parent) app.listen(3000);   
-           </pre>       
       </div>
   </body>
 </html>
