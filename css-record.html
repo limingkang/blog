@@ -38,14 +38,14 @@
             那么就找其父级元素字体颜色，一层一层往上找
 
           4.progress属性:
-            <textarea>
+            <textarea readonly>
                  <progress value="22" max="100"></progress>
             </textarea>
             progress是h5的新属性，可设置border和background-color，这表示总共100份，前22个等分有颜色，如果想做成进度条来回动的样子
             就写这个标签然后里面什么属性都不加就行，不过不同浏览器默认颜色不一，请自己加入控制
 
           5.这个可以支持浏览器的语音输入，不过兼容性很差：
-            <textarea>
+            <textarea readonly>
                  <input x-webkit-speech lang="zh-CN" />
             </textarea>
 
@@ -105,12 +105,28 @@
               element.style.backgroundImage = "url(http://www.google.com/s2/u/0/favicons?domain="+ element.hostname +")";
               element.style.backgroundImage = "url(http://g.etfv.co/"+ element.href +")";
               第一个使用的是谷歌的api不过后一个好像更好用些，实例：
-          <textarea style="width:90%;">
+          <textarea style="width:90%;" readonly>
     <img src="http://www.google.com/s2/u/0/favicons?domain=www.zhangxinxu.com" />
     <img src="http://g.etfv.co/http://www.zhangxinxu.com/wordpress/?p=2445" />
           </textarea>
-          </pre>
 
+          14.onselectstart几乎可以用于所有对象，其触发时间为目标对象被开始选中时（即选中动作刚开始，尚未实质性被选中）
+              onselectstart该属性常用于禁止选中网页上的内容，IE及Chrome下的方法一样。使用onselectstart，例如 IE:
+                <textarea>                    
+                <body onselectstart="return false">
+                </textarea readonly>
+                  Firefox下，控制css: body { -moz-user-select: none; }
+              onselectstart事件不被input和textarea标签支持,所以在BODY用onSelectStart=return false 不让选择,但是页面上的文字输
+              入框怎样可以设置到可选择
+
+          15.内容较少的时候底部栏显示在页面底部，内容多的时候导航条显示在内容后面
+              <textarea style="height:134px;" readonly>
+                 <div class="container" style="min-height:100%;">
+                   <div class="content"></div>
+                   <div style="margin-bottom:-50px;"></div>
+                 </div>
+                 <div class="footer" style="height:50px;"></div>
+              </textarea>
           </pre>
 
           <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
@@ -139,7 +155,7 @@
                   50% { border-right-color: transparent; background-color: transparent; }
                   75% { border-right-color: transparent; }
               }
-              <textarea>
+              <textarea readonly>
                 <a href="javascript:" class="grebtn">订单提交中<span class="dotting"></span></a>
               </textarea>
           </pre>
@@ -297,7 +313,11 @@
               button { outline:none;}
               a { text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
               input { outline: medium;} /*解决input聚焦时候有边框的问题*/
-              body { font-family:Arial,'Microsoft YaHei','SimHei'; -webkit-overflow-scrolling: touch;}
+              body { 
+                  font-family:Arial,'Microsoft YaHei','SimHei'; 
+                  -webkit-overflow-scrolling: touch;
+                  -webkit-font-smoothing: antialiased;
+              }
           </pre>
           <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
 
@@ -342,7 +362,7 @@
 
           <div class="title">关于选择器的奇怪现象</div>
           <pre>
-              <textarea>
+              <textarea readonly>
                   <div class="red"><div class="green"><p>1. 颜色是？</p></div></div>
                   <div class="green"><div class="red"><p>2. 颜色是？</p></div></div>
               </textarea>
@@ -370,8 +390,8 @@
                        background-color: black;
                        color: white;
                     }
-               注意这时候在样式上设置display:none来隐藏已经没用了，因为用了display属性了，可以内嵌一个display:none来隐藏,显示的时候去除
-               该内嵌属性即可
+               注意这时候在样式上设置display:none来隐藏已经没用了，因为用了display属性了，可以内嵌一个display:none来隐藏,显示的时候
+               去除该内嵌属性即可
           </pre>
 
           <div class="title">flex布局新旧混合写法详解（兼容微信）</div>
@@ -499,7 +519,7 @@
 
           <div class="title">相关meta设置汇总</div>
           <pre>
-          <textarea style="height:1000px;">
+          <textarea style="height:1000px;" readonly>
           <meta charset="UTF-8">
           <!-- 控制缩放比例设备宽度等 -->
           <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
@@ -576,7 +596,7 @@
                   top: 0;bottom: 0;background-color: red;margin: auto; 
              }
              div {background-color: black;height: 500px;width: 500px;position: relative;}
-             <textarea style="height:140px;">
+             <textarea style="height:140px;" readonly>
                   <div>
                     <p class="button">
                        按钮
@@ -646,7 +666,7 @@
              }
            } 
           <!-- html结构 -->
-          <textarea style="height:140px;">
+          <textarea style="height:140px;" readonly>
               <div class="loader">
                   <span></span>
                   <span></span>
