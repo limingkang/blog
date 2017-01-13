@@ -39,7 +39,11 @@
    				});
    				console.log(10);         //10 13 2 3
    			</pre>
-       		<div class="explain">先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了</div>
+       		<div class="explain">
+                先用jq构造一个deferred对象，这个对象就是对原生promise对象的封装，将其以参数的形式传进去之后，可以
+                读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了，当然也可以
+                直接使用rxjs
+            </div>
        		
             <div class="title">js相等==运算符的比较规则小结</div>
             <pre>
@@ -502,7 +506,7 @@
             </pre>
             <div class="explain">以上就是所谓的继承，只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
-            <div class="title">js实现二分法排序代码</div>
+            <div class="title">js实现二分法排序代码以及千分位处理</div>
             <pre>
                 var quicksort = function(arr){
                     if(arr.length <= 1){
@@ -524,6 +528,32 @@
 
                 var array = [8,7,0,7,5,2,5,3,1];
                 quicksort(array); //[0,1,2,3,5,5,7,7,8]
+
+                function formatNum(str,digit){
+                    var newStr = "";
+                    var count = 0;
+                    // 要保留的小数位数默认两位
+                    var digit_number=digit||2;
+                    //对字符串或者数字进行保留两位四舍五入处理
+                    str=parseFloat(str).toFixed(digit_number).toString();  
+                    var iffloat=str.indexOf(".")==-1;
+                    var start=iffloat?str.length-1:str.indexOf(".")-1;
+                    // 处理整数部分
+                    for(var i=start;i>=0;i--){
+                        if(count % 3 == 0 && count != 0){
+                            newStr = str.charAt(i) + "," + newStr;
+                        }else{
+                            newStr = str.charAt(i) + newStr;
+                        }
+                        count++;
+                    }
+                    // 是否是小数
+                    if (iffloat) {
+                        return newStr;
+                    } else {
+                        return newStr + str.substr(str.indexOf("."));
+                    }
+                }
             </pre>
 
             <div class="title">js常用小技巧总结</div>

@@ -8,12 +8,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <script type="text/javascript" src="../../javascripts/zepto.min.js"></script>
     <script type="text/javascript" src="./lmkcircle.js"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        ul,li {list-style:none;}
+        .right_content {overflow: hidden;}
+        .lmktext_marqueen {white-space: nowrap;}
+        .lmktext_marqueen li {float: left;width: 260px;}
+    </style>
 </head>
 <body>
     <canvas id="canvas">您的浏览器不支持canvas</canvas>
+    <div class="right_content">
+       <ul class="lmktext_marqueen">
+          <li>182****5107已兑换iphone7元红包一个</li>
+          <li>182****5107已兑换15元红包一个</li>
+          <li>182****5107已兑换15元红包一个</li>
+          <li>182****5107已兑换15元红包一个</li>
+          <li>182****5107已兑换15元红包一个</li>
+       </ul>
+    </div>
     <script type="text/javascript">
         $(document).ready(function(){
-
+            $(".right_content").textMarqueen();
             var width=document.body.clientWidth;
             $("#canvas").attr("width",width*0.8);
             $("#canvas").attr("height",width*0.4);

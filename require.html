@@ -14,7 +14,6 @@
        <div class="big_container">
            <div class="title">require.js的使用</div>
            <pre>
-          先引到reuire.js和main.js
           <textarea>
     <script type="text/javascript" src="./require.min.js" data-main="./main" defer async="true"></script>
           </textarea>
@@ -63,7 +62,7 @@
               define(["require","a"],
                   function(require,a){
                     //”a”将是null,如果a/b间是循环依赖
-                      returnfunction(title){
+                      return function(title){
                           return require(“a”).doSomething();
                       }
                   }
@@ -103,6 +102,11 @@
                  |
                  |——build.js
            </pre>
+           <div class="explain">
+                <a href="http://www.requirejs.cn/">require.js中文网</a>&emsp;
+                <a href="https://github.com/limingkang/learning-data/blob/master/jquery-2.1.4%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%E8%AE%B0%E5%BD%95.js">个人jquery源码解析</a>
+                <a href="https://github.com/limingkang/learning-data/blob/master/require.js">个人requirejs源码解析</a>
+           </div>
        </div>
   </body>
 </html>

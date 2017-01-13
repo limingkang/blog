@@ -150,79 +150,45 @@
 	    })();	    
 	};
 
-	// $.fn.lmkrect=function(options){
-	// 	var option={
-	// 		bgcolor:"white",
-	// 		spbgcolor:"#fe9900",
-	// 		bordercolor:"#cccccc",
-	// 		height:"8px",
-	// 		scale:0,
-	// 		sum_scale:1,
-	// 		radius:"3px",
-	// 		time:240,
-	// 	};	
+	$.fn.textMarqueen=function(options){
+		var option={
+			delayTime:4000,          //一行字的动画时间
+			mainContainer:".lmktext_marqueen",
+			mainItem:"li",
+		};		
 
- //        // 初始化获得的数据
-	// 	var opts = $.extend({},option,options);
-	// 	var rect =$(this);
-	//     var bgcolor = opts.bgcolor;
-	// 	var spbgcolor = opts.spbgcolor;
-	// 	var bordercolor = opts.bordercolor;
-	// 	var time = opts.time;
-	//     var scale=opts.scale;
-	//     var sum_scale=opts.sum_scale;
-	//     var height=opts.height;
-	//    	var radius=opts.radius;
-	//    	var animate=scale/sum_scale*100+"%";
+		var opts = $.extend({},option,options);
+		var slider = $(this);  
 
-	//    	// 初始化ui层界面
- //        rect.css({
- //        	"height":height,
- //        	"backgroundColor":bgcolor,
- //        	"border":("1px solid "+bordercolor),
- //        	"borderRadius":radius,
- //        });
- //        rect.append("<div></div>");
- //        rect.find("div").css({
- //        	"height":height,
- //        	"backgroundColor":spbgcolor,
- //        	"width":0,
- //        	"borderRadius":radius,
- //        });
+		var conBox = $(opts.mainContainer , slider); //内容元素视口对象
+		var navObj = $(opts.mainItem, slider);       //滚动子元素结合
+		var navObjSize = navObj.size();              //滚动子元素个数
 
- //        //动画
- //        rect.find("div").animate({"width":animate},time);
-	// };
+		/*一次循环滚动时间*/
+		var delayTime=parseInt(opts.delayTime);
+		var animateTime=delayTime*navObjSize;
+		var imgWidth=navObj.width();
 
-	$.lmkscroll=function(url,callback){
-		var windowHeight = document.documentElement.clientHeight;
-        var send_data=2;
-      
-        (function scroll(){
-            $("body").bind('touchmove', function () {
-                var documentHeight = $(document).height();              
-                var bodyScrollTop = document.body.scrollTop;
-                if(windowHeight+bodyScrollTop>=documentHeight-20){
-                	$(this).unbind("touchmove");
-                    $.ajax({
-                        type:"get",
-                        url:url,
-                        data:{"send_data":send_data},
-                        success:function(data){
-                        	 var data=JSON.parse(data);
-                             callback(data.message);
-                             if(data.scroll&&data.scroll!="false"){
-                             	send_data++;
-                                scroll();
-                             }else {
-                                 $("body").unbind("touchmove");
-                             }
-                        }
-                    })
-                }
-            });
+		var boxwidth=imgWidth*(navObjSize+1);
+		var move=-(boxwidth-imgWidth);
 
-        })();
-	}
+        //为内容容器再增加一个父元素窗口来显示
+		conBox.wrap('<div style="position:relative;overflow:hidden;"></div>');
+		conBox.css({"position":"relative","left":0,"width":boxwidth,"overflow":"hidden"});
+        conBox.children().eq(0).clone().appendTo(conBox);	
+
+		//一帧动画结束的回调函数
+        var domhanddle=function(){
+        	conBox.css("left",'0');
+        	doplay();  	      	
+        }
+		//效果函数
+		function doplay(){			
+			conBox.animate({"left":move},{duration: animateTime,complete:domhanddle});			
+		};
+
+		// 自动播放
+		doplay();
+	};
 
 })($);
