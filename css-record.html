@@ -22,6 +22,11 @@
              line-clamp: 2; 
              -webkit-line-clamp: 2; 
              -webkit-box-orient: vertical;
+             上面那个是可以控制几行的有兼容问题ie8什么的会换行，如果是单行文本溢出的话用：
+             overflow: hidden; 
+             text-overflow: ellipsis; 
+             display: block;
+             white-space:nowrap; 
 
           2.让overflow:auto页面滚动条出现时不跳动:
              .wrap-outer {
