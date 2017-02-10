@@ -40,14 +40,7 @@
            传入个数组["./entry1", "./entry2"]，所有模块都是启动时加载，模块导出到最后一个里面。
            传入一个对象，就会创建多个输入包文件，对象键的值就是chunk的name，值可以是字符串或者是数组。
 
-        chunkFilename我的理解是未被列在entry中，却又需要被打包出来的文件命名配置。在按需加载（异步）模块的时候，这样的文件是
-        没有被列在entry中的，如使用CommonJS的方式异步加载模块：
-            require.ensure(["modules/tips.jsx"], function(require) {
-                var a = require("modules/tips.jsx");
-                // ...
-            }, 'tips');
-        异步加载的模块是要以文件形式加载，所以这时生成的文件名是以chunkname配置的，生成出的文件名就是tips.min.js
-
+        chunkFilename用于异步加载时候，详细用法见个人github中的vue-vue_router-vuex项目有详细介绍
         path代表文件输出到的路径
         publicPath指定了一个在浏览器中被引用的URL地址,对于使用script和link加载器,当文件路径不同于他们的本地磁盘路径时候用
       
