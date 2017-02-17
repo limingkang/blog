@@ -387,8 +387,15 @@
                     .mask {
                        position: fixed;right:0;left:0;top:0;bottom: 0;
                        background-color: rgba(0,0,0,0.6);       //注意用rgba不要用opacity
-                       display: -webkit-flex;-webkit-justify-content:center;-webkit-align-items:center;
-                       display: -webkit-box;-webkit-box-pack:center;-webkit-box-align:center;
+                       display: -webkit-flex;
+                       display: flex;
+                       display: -webkit-box;
+                       -webkit-justify-content:center;
+                       justify-content:center;
+                       -webkit-align-items:center;
+                       align-items:center;
+                       -webkit-box-pack:center;
+                       -webkit-box-align:center;
                     }
                     .mask_content {
                        width: 30%;
@@ -508,7 +515,6 @@
                      .box{
                          display: -webkit-box; /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
                          display: -moz-box; /* 老版本语法: Firefox (buggy) */
-                         display: -ms-flexbox; /* 混合版本语法: IE 10 */
                          display: -webkit-flex; /* 新版本语法: Chrome 21+ */
                          display: flex; /* 新版本语法: Opera 12.1, Firefox 22+ */
                      }

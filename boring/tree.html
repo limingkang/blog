@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>树格网络</title>
+    <script type="text/javascript" src="../javascripts/jquery.min.js"></script>
+    <style type="text/css">
+        *{margin: 0;padding: 0;}
+        #tree_lattice {width: 1000px;margin:30px auto;font-size: 16px;}
+        .first_context,.second_context,.third_context{border-left:1px solid #72a8cf;padding-top: 10px;display: none;}
+        .second_context,.third_context {margin-left: 60px;}
+        .pane_layout {color: white;width: 20px;height: 20px;background-color: #72a8cf;font-size: 20px;text-align: center;display: inline-block;cursor: pointer;}
+        .pane_layout:after{content: "+"}
+        .pane_close:after{ content: "-";}
+        .solid {display: inline-block;height: 0;border-top:1px solid #72a8cf;width: 50px;vertical-align: 8px;}
+        .bottom_level {cursor: pointer;}
+    </style>
+</head>
+<body>
+    <div id="tree_lattice">
+        <div class="click_container"><div class="pane_layout"></div><span>所有任务</span></div>
+       <!--  <div class="first_context show_menu">
+            <div class="click_container"><div class="solid"></div><div class="pane_layout"></div><span>每日任务</span></div>
+            <div class="second_context show_menu">
+               <div class="click_container"><div class="solid"></div><div class="pane_layout"></div><span>每日任务1</span></div>
+               <div class="third_context show_menu">
+                   <div class="click_container"><div class="solid"></div><span class="bottom_level" subval="0,2,3">每日任务11</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务12</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务13</span></div>
+               </div>
+               <div class="click_container"><div class="solid"></div><div class="pane_layout"></div><span>每日任务1</span></div>
+               <div class="third_context show_menu">
+                   <div class="click_container"><div class="solid"></div><span>每日任务11</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务12</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务13</span></div>
+               </div>
+               <div class="click_container"><div class="solid"></div><div class="pane_layout"></div><span>每日任务1</span></div>
+               <div class="third_context show_menu">
+                   <div class="click_container"><div class="solid"></div><span>每日任务11</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务12</span></div>
+                   <div class="click_container"><div class="solid"></div><span>每日任务13</span></div>
+               </div>
+            </div>
+        </div> -->
+    </div>
+    <script type="text/javascript">
+        // 菜单数据格式
+        var menu=[
+          {
+            "menu_title":"每日任务",
+            "menu_content":[
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":[]
+                },
+            ]
+          },
+          {
+            "menu_title":"每周任务",
+            "menu_content":[
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":[]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+            ]
+          },
+          {
+            "menu_title":"每日任务",
+            "menu_content":[
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":[]
+                },
+            ]
+          },
+          {
+            "menu_title":"每日任务",
+            "menu_content":[
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":["每日任务11","每日任务12","每日任务13"]
+                },
+                {
+                  "menu_title":"每日任务1",
+                  "menu_content":[]
+                },
+            ]
+          },
+        ];
+        // 动态生成公共树形布局
+        function tree_html(showvalue,subval) {
+            var str='<div class="click_container"><div class="solid"></div>'; 
+            if (!!subval) {
+              str+='<span class="bottom_level" subval='+subval+'><span>';                           
+            }else{
+               str+='<div class="pane_layout"></div><span>';  
+            }
+            str=str+showvalue+'</span></div>';
+            return str;
+        }
+        function first_html(array){
+            var str='<div class="first_context show_menu">'; 
+            var dom="";
+            for (var i = 0; i < array.length; i++) {
+              dom+=tree_html(array[i].menu_title)+second_html(array[i].menu_content,i+1);
+            };
+            return str+dom+'</div>';
+        }
+        function second_html(array,num){
+            var str='<div class="second_context show_menu">'; 
+            var dom="";
+            for (var i = 0; i < array.length; i++) {
+                var number=num+","+(i+1);
+                if (!array[i].menu_content.length) {
+                    dom+=tree_html(array[i].menu_title,number);
+                }else {
+                    dom+=tree_html(array[i].menu_title)+third_html(array[i].menu_content,number);
+                }
+            };
+            return str+dom+'</div>';
+        }
+        function third_html(array,num){
+            var str='<div class="third_context show_menu">'; 
+            var dom="";
+            for (var i = 0; i < array.length; i++) {
+              var number=num+","+(i+1);
+              dom+=tree_html(array[i],number);
+            };
+            return str+dom+'</div>';
+        }
+        // 循环数据生成所有节点
+        $("#tree_lattice").append(first_html(menu));
+        //禁止鼠标右键菜单出现 
+        // $(document).bind("contextmenu", function() { return false;})
+        // 点击加号的展开事件
+        $("#tree_lattice .pane_layout").click(function(){
+            var that=$(this);          
+            if (that.hasClass("pane_close")) {
+                that.removeClass("pane_close").parent().next().slideUp();
+            }else{
+                that.addClass("pane_close").parent().next().slideDown();
+            }
+        });
+        $("#tree_lattice .bottom_level").click(function(){
+            var value=$(this).attr("subval").split(",");
+            var one="0"+value[0];
+            var two="0"+value[1];
+            var three=value[2]?"000"+value[2]:"";
+            console.log(one);
+            console.log(two);
+            console.log(three);
+            // window.location.href="url?one="+one+"&two="+two+"&three="+three;
+        })
+    </script>
+</body>
+</html>
+
+

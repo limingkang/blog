@@ -28,9 +28,12 @@
     	       page2: ["./entry1", "./entry2"]
     	    },
     	    output: {
-    	       // 当使用多入口文件时候，要确保在output.filename使用[name]或者[id]
-               filename: "[name].bundle.js",       //这里的name值就是入口文件的文件名，例如入口文件为main.js则name的值为main
-    	       chunkFilename: "[id].bundle.js"，
+    	         // 当使用多入口文件时候，这里的name值就是入口文件的文件名这里是page1和page2
+               //hash值是每次打包的值，打包一次就生成一次大家都一样
+               //chunkhash是每个生成的包的hash值，大家都不一样而且只有相应文件改变的时候值才变否则不变
+               //id是内部每个包的特别标示id
+               filename: "[name]-[hash]-[chunkhash].bundle.js",       
+    	         chunkFilename: "[id].bundle.js"，
                path: "/home/public/assets",
                publicPath: "/assets/"
     	    }
@@ -47,6 +50,7 @@
 
 
         let ExtractTextPlugin = require('extract-text-webpack-plugin');
+        let htmlWebpackPlugin = require('html-webpack-plugin');
         let extractCSS = new ExtractTextPlugin('stylesheets/[name].css');
         let extractLESS = new ExtractTextPlugin('stylesheets/[name].less');
         module.exports = {
@@ -67,6 +71,14 @@
                    //使用ProvidePlugin加载使用频率高的模块
                    new webpack.ProvidePlugin({
                        $: "webpack-zepto"
+                   }),
+                   //如果我们生成的文件名是不断改变的如hash生成的什么的就得用模板自己引入才行，注意他的打包目录依据上面的path配置
+                   /多个页面new多次即可
+                   new htmlWebpackPlugin({
+                       filename:"index-[hash].html",
+                       template:"index.html",
+                       inject:"head",     //指定插入的link,script标签放入head标签中也可指定放入body中 
+                       data:new Date(),   //还可传参在模板中用<%= htmlWebpackPlugin.options.data %>就可以取到,现在支持ejs语法
                    }),
                   extractCSS,
                   extractLESS

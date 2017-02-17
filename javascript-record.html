@@ -850,48 +850,82 @@
             </pre>
             <div class="explain">大多数框架都是用这个来实现绑定例如vue.js。把一个普通对象传给 Vue 实例作为它的 data 选项，Vue.js 将遍历它的属性，用 Object.defineProperty 将它们转为 getter/setter。这是 ES5 特性，不能打补丁实现，这便是为什么 Vue.js 不支持 IE8 及更低版本</div>
 
-            <div class="title">递归调用的优化</div>
+            <div class="title">尾调用优化和尾递归优化</div>
             <pre>
-            它的原理非常简单。尾递归之所以需要优化，原因是调用栈太多，造成溢出，那么只要减少调用栈，就不会溢出。怎么做可以减少调用栈呢？
-            就是采用“循环”换掉“递归”。
+            1.首先得搞清楚apply,call,bind的区别：
+                对于bind方法来说首先它是es5的特性有兼容问题，它的参数和call方法一样，只是它返回的是一个函数并不执行该函数
+                对于apply方法就是第二个参数必须是数组，而call和bind是一个一个逗号隔开
+                对于上面三个方法来说，若果第一个参数没有写或者传的是null那么其内部的this就是指向window对象的
 
-            下面是一个正常的递归函数。
-            function sum(x, y) {
-              if (y > 0) {
-                return sum(x + 1, y - 1);
-              } else {
-                return x;
-              }
-            }
-            sum(1, 100000)
-            // Uncaught RangeError: Maximum call stack size exceeded(…)
-            上面代码中，sum是一个递归函数，参数x是需要累加的值，参数y控制递归次数。一旦指定sum递归100000次，就会报错，提示超出调用栈的
-            最大次数。
+            2.某个函数的最后一步是调用另一个函数就是尾调用
+                //没有尾调用                             // 改成尾调用
+                function f(x){                           function f(x){
+                  let y = g(x);                              return g(x);
+                  return y;                              }
+                }                                                   
+            上面就叫做"尾调用优化"（Tail call optimization），即只保留内层函数的调用记录。如果所有函数都是尾调用，那么完全可以做到每
+            次执行时，调用记录只有一项，这将大大节省内存。这就是"尾调用优化"的意义
+
+            3.函数调用自身，称为递归。如果尾调用自身，就称为尾递归
+                function factorial(n, total) {
+                  if (n === 1) return total;
+                  return factorial(n - 1, n + total);
+                }
+            上面就是尾递归,即使是向上面那样写还是调用栈太多，造成溢出，那么只要减少调用栈，就不会溢出只能采用“循环”换掉“递归”
             蹦床函数（trampoline）可以将递归执行转为循环执行。
-
-            function trampoline(f) {
-              while (f && f instanceof Function) {
-                f = f();
-              }
-              return f;
-            }
+                function trampoline(f) {
+                  while (f && f instanceof Function) {
+                    f = f();
+                  }
+                  return f;
+                }
             上面就是蹦床函数的一个实现，它接受一个函数f作为参数。只要f执行后返回一个函数，就继续执行。注意，这里是返回一个函数，然后执
-            行该函数，而不是函数里面调用函数，这样就避免了递归执行，从而就消除了调用栈过大的问题。
+            行该函数，而不是函数里面调用函数，这样就避免了递归执行，从而就消除了调用栈过大的问题。这里用bind方法改写了有兼容问题
+                function factorial(n, total) {
+                    if (n === 1) return total;
+                    return factorial.bind(null,n - 1, n + total);
+                }
+                trampoline(factorial(100000, 1));
 
-            然后，要做的就是将原来的递归函数，改写为每一步返回另一个函数。
+            4.上面尾递归优化有兼容问题,下面这个没兼容问题,而且没有改动很多源码，只是以直接量的形式使用tco函数包裹源码
+                function tco(f) {
+                    var value;
+                    var active = false;
+                    var accumulated = [];
 
-            function sum(x, y) {
-              if (y > 0) {
-                return sum.bind(null, x + 1, y - 1);
-              } else {
-                return x;
-              }
-            }
-            上面代码中，sum函数的每次执行，都会返回自身的另一个版本。
-
-            现在，使用蹦床函数执行sum，就不会发生调用栈溢出。
-
-            trampoline(sum(1, 100000))   
+                    return function accumulator() {
+                        accumulated.push(arguments);
+                        if (!active) {
+                            active = true;
+                            while (accumulated.length) {
+                                value = f.apply(this, accumulated.shift());
+                            }
+                            active = false;
+                            return value;
+                        }
+                    }
+                }
+                var sum = tco(function(x, y) {
+                    if (y > 0) {
+                      return sum(x + 1, y - 1)
+                    }else {
+                      return x
+                    }                   
+                });
+                console.log(sum(12, 100000)) // => 100012 没有造成栈溢出
+                上面函数自己的理解：
+                    一：首先以函数表达式的形式将tco函数的返回值赋给sum，tco函数的返回值是accumulator函数，也就是说所有的函数包括返回
+                    的函数当执行sum(1,10)的时候即是在执行accumulator(1,10)
+                    二：accumulator 将实参传入accumulated数组,比如执行sum(1,10)那么这里传入的就是类数组对象[1，10],accumulated现
+                    在就是一个length为1的二维数组
+                    三：匿名函数f判断y的值返回一个sum，sum的参数被改变了，前面提到执行sum相当于执行accumulator，于是新的参数被加入到
+                    了accumulator但是因为这时active的值依然是true（因为现在执行流还在while循环里），所以执行这个被返回的sum就会得到
+                    一个undefined的值，value被赋值为undefined
+                    四：可是因为执行了被返回的sum（也就是执行了accumulator）尽管没有进入if(!active),但是执行了第一条语句，所以
+                    accumulated被重新push进了在外包的匿名函数中被修改的实参，所以while循环继续
+                    五：while循环执行到accumulated中值为空,在value=f.apply(this, accumulated.shift());每次return一次sum后
+                    accumulated 都会被重新推入一个实参（accumulated的length始终为1），直到匿名的外包函数return出x，于是x的值被赋给
+                    value被返回出来
             </pre>
 
             <div class="title">正则表达式小结</div>
