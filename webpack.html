@@ -112,8 +112,7 @@
                     //注意less的解析时候配置顺序，是style!css!less，必须这个顺序，否则报错，从右到左解析的
                     { test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192'}    
                     //url-loader 来说，它会将样式中引用到的图片转为模块来处理配置信息的参数“?limit=8192”表示将所有小于8kb的图片
-                    //都转为base64形式（其实应该说超过8kb的才使用 url-loader 来映射到文件，否则转为data url形式）。也可以
-                    //使用file-loader来加载资源文件
+                    //都转为base64形式,也可以再写一个相同的匹配使用file-loader来加载，此时优先使用url如果超过限制才使用file
                 ]
             },
             resolve定义了解析模块路径时的配置,常用的就是extensions;用来指定模块的后缀,这样引入模块时不需要写后缀,会自动补全
@@ -173,7 +172,7 @@
             例如：
                 var compiler = Webpack(webpackConfig)
                 var server = new WebpackDevServer(compiler, {
-                    publicPath: config.publicPath,
+                    publicPath: config.publicPath,    //所有生成的图片也好引入的js也好都是以这个路径去写进标签的
                     stats: {
                         colors: true //显示不同的颜色区分打包的文件
                     },

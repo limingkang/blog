@@ -52,25 +52,35 @@
             如果Type(x)与Type(y)相同，执行严格相等运算x === y。
             如果x是null，y是undefined，返回true。
             如果x是undefined，y是null，返回true。
-            如果Type(x)是数值，Type(y)是字符串，返回x == ToNumber(y)的结果。
+            如果Type(x)是数值，Type(y)是字符串，返回x == ToNumber(y)的结果,空字符串和"0"转化为数字时候都是0。
             如果Type(x)是字符串，Type(y)是数值，返回ToNumber(x) == y的结果。
             如果Type(x)是布尔值，返回ToNumber(x) == y的结果。
             如果Type(y)是布尔值，返回x == ToNumber(y)的结果。
-            如果Type(x)是字符串或数值或Symbol值，Type(y)是对象，返回x == ToPrimitive(y)的结果。
+            如果Type(x)是字符串或数值或Symbol值，Type(y)是对象，返回x == ToPrimitive(y)就是将y转化为原始值的结果。
             如果Type(x)是对象，Type(y)是字符串或数值或Symbol值，返回ToPrimitive(x) == y的结果。
             上面都不满足返回false。
+            两边都是引用类型的时候则比较引用地址,估计是都不相同
 
             {}==null  //false
+            {}==0  //false       只要你使用了对象比较的就是它的地址了，估计是存储在栈区的对堆区的引用地址，和谁都不相同了  
+            {}==1  //false
+            []==[]    //false
             0==null   //false    
+            false==[]   //true    
+            true==!![]   //true   碰到!是先将[]转化为布尔值为true   
 
+            0==[]     //true    原始值转化规则为调用toString方法对于数组[],[0]都是变为"0"而[1,2,3]变为"1,2,3"
+            0==[0]    //true
+            "0"==[0]    //true            "0"==[]    //true
+            "0"==[1]    //false
 
             比较奇怪的现象：
-                alert(typeof NaN); //弹出 'Number'
-                alert(NaN === NaN); //为 false
+0.              alert(typeof NaN);   //弹出 'Number'
+                alert(NaN === NaN);  //为 false
             </pre>
             <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
 
-            <div class="title">js/jquery宽高的理解和应用</div>
+            <div class="title">js/jquery/zepto宽高的理解和应用</div>
             <pre>
             1.window对象是一种全局对象，而document是一个html文档对象，其实document对象只是window对象的一部分，例如：
                 window.location.href===document.location.href=loaction.href 注意window对象是可以省略的
@@ -93,7 +103,7 @@
                 window.screen.availWidth      整个电脑屏幕可视区域的宽度就是去掉电脑上的左右导航剩下的宽度
                 window.screenTop              浏览器距离屏幕上边顶的距离
                 window.screenLeft             浏览器距离屏幕左边边顶的距离
-            注意：innnerWidth,innerWidth,outHeight,outWidth不兼容ie9以下的浏览器，但是screen对象全部兼容而且其是不变的
+            注意：innerHeight,innerWidth,outHeight,outWidth不兼容ie9以下的浏览器，但是screen对象全部兼容而且其是不变的
             
             3.与document相关的宽高，clientHeight和clientWidth所有浏览器处理都一样
                 clientHeight               元素padding上下值加上内容高度值之和减去滚动条的高度不用加上border的高度
@@ -102,7 +112,7 @@
                 clientLeft                 为border-left的宽度，如果没写就为0
             可以使用document.body.clientWidth得body的宽度也可以使用任何一个节点点clientWidth来获取该节点的宽度,
             同样节点点clientTop也可访问该节点border-top的宽度
-            当我们想获取可视区域高度：document.body.clientHeight||docuemnt.documentElement.clientHeight
+            当我们想获取可视区域高度：document.body.clientHeight||document.documentElement.clientHeight
 
             4.与document相关的宽高，offsetHeight和offsetWidth
                 offsetHeight               元素padding上下值加上内容高度值之和的高度再加上border的高度不用管滚动条
@@ -130,6 +140,10 @@
                 offsetX和offsetY            相对于事件源左上角（0,0）的坐标
                 pageX和pageY            相对于整个网页左上角（0,0）的坐标，一般用在有滚动轴的时候
             可以先定义一个事件传入event对象，之后通过event.clientX这样的方法访问,上面的位置都是相对于鼠标指针点的位置来算距离的
+            注意tuoch事件也会有上面的对象，而且event对象里额外包括以下三个触摸列表
+            touches:     //当前屏幕上所有手指的列表通过touches[0]以数组的方式来找第几个
+            targetTouches:      //当前dom元素上手指的列表，尽量使用这个代替touches
+            changedTouches:     //涉及当前事件的手指的列表，尽量使用这个代替touches
             
             8.判断页面滑动到底部还是顶部：
                 var clients=window.innerHeight||document.documentElement.cilentHeight||document.body.clientHeight
@@ -176,7 +190,7 @@
             $(document).height()            文档的高度
             对于window和document对象来说他们的height,innerHeight,outerHeight是一样的width同理，而其他节点对象是按上面那个规则的
              </pre>
-            <div class="explain"></div>
+            <div class="explain">document.body.contentEditable='true';利用这个h5的属性可以使得浏览器变得可以编辑</div>
 
             <div class="title">js判断浏览器方法以及监听横竖屏</div>
             <pre>
@@ -223,6 +237,15 @@
                     window.addEventListener("orientationonchange",function(){})
                     window.orientation为0则它是纵向的，横向的则是90或者-90
                     但是这个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
+                    //竖屏时使用的样式
+                    @media all and (orientation:portrait) {
+                        .css{}
+                    }
+
+                    //横屏时使用的样式
+                    @media all and (orientation:landscape) {
+                        .css{}
+                    }
             </pre>
 
             <div class="title">关于存储方式的小结</div>
@@ -421,79 +444,55 @@
             </pre>
             <div class="explain">先自定义tap事件然后触发他，在tap事件当中先绑定touchstart,touchend事件，判断事件间隔之后给个回调就行</div>
 
-            <div class="title">对于transform使用matrix矩阵2D详解</div>
+            <div class="title">对js继承和原型链的理解</div>
             <pre>
-                 首先单位矩阵是这样的,也就是你不写的时候的样子：
-                        -webkit-transform:matrix(1,0,0,1,0,0);
-                        transform:matrix(1,0,0,1,0,0);
-                 例如：向右移动10像素向下移动20像素可以这样写：
-                         -webkit-transform:matrix(1,0,0,1,10,20);
-                        transform:matrix(1,0,0,1,10,20);
-                 例如：横纵扩2倍可以这样写：
-                         -webkit-transform:matrix(2,0,0,2,0,0);
-                        transform:matrix(2,0,0,2,0,0);
-                 对于旋转scale和扭曲skew则该中间那两个0第一个表示x轴方向第二个表示y轴方向，而且他们在改动的时候，
-                 还要根据三角函数算出第一个和第四个参数的值，因为页面呈现是大小会改动
-            </pre>
-            <div class="explain">当使用3d做gpu渲染的时候，并不能触发重绘，他只能使元素变大小或者旋转等，不能改颜色</div>
+                除了函数对象，还有很多内部对象，比如：Object、Array、Date、RegExp、Math、Error。这些名称实际上表示一个类型，可以通
+                过new操作符返回一个对象。然而函数对象和其他对象不同，当用typeof得到一个函数对象的类型时，它仍然会返回字符串“function”
+                而typeof一个数组对象或其他的对象时，它会返回字符串“object”。下面的代码示例了typeof不同类型的情况：
+                        alert(typeof(Function)));              //function
+                        alert(typeof(new Function()));         //function
+                        alert(typeof(test_function));          //function
+                        alert(typeof(Array));                  //function
+                        alert(typeof(Object));                 //function
+                        alert(typeof(new Array()));            //object
+                        alert(typeof(new Date()));             //object
+                        alert(typeof(new Object()));           //object
+                由上可见声明一个函数等同于new一个Function，这与其他的对象有很大的不同。其他的类型Array、Object等都会通过new操作符
+                返回一个普通对象。可以new一个函数来返回一个对象，那么它就是是函数对象。也称为构造器（constructor）
+                        Function.prototype.method1=function(){
+                              alert("function");
+                        }
+                        function func1(a,b,c){
+                              return a+b+c;
+                        }
+                        func1.method1();
+                        func1.method1.method1();
+                        func1.name="test"                //console.log(func1.name) >>  func1
+                        func1.namenew="test"             //console.log(func1.namenew) >>  test
+                        console.log(func1.constructor)   //Function(){}
+                本身你声明的一个函数就已经有了一些原型上的属性了如name,length,prototype等，当然你还可以添加一些属性只是当你new这个函
+                数的时候并不会继承你添加的这个属性，特别是原型属性不会被覆盖
 
-            <div class="title">触摸对象</div>
-            <pre>
-                每个触摸事件被触发后，会生成一个event对象，event对象里额外包括以下三个触摸列表
-                touches:     //当前屏幕上所有手指的列表通过touches[0]以数组的方式来找第几个
-                targetTouches:      //当前dom元素上手指的列表，尽量使用这个代替touches
-                changedTouches:     //涉及当前事件的手指的列表，尽量使用这个代替touches
 
-                这些列表里的每次触摸由touch对象组成，touch对象里包含着触摸信息，主要属性如下：
-                clientX / clientY:      //触摸点相对浏览器窗口的位置
-                pageX / pageY:       //触摸点相对于页面的位置
-                screenX  /  screenY:    //触摸点相对于屏幕的位置
-                identifier:        //touch对象的ID
-                target:       //当前的DOM元素
-            </pre>
-            <div class="explain">document.body.contentEditable='true';利用这个h5的属性可以使得浏览器变得可以编辑</div>
-
-            <div class="title">对js继承的理解</div>
-            <pre>
                 function定义的对象有一个prototype属性，使用new生成的对象没有这个属性，
-                prototype属性又指向了一个prototype对象，这是两个不同的东西，在prototype对象中有一个constructor属性，这个constructor
-                属性同样指向了一个constructor对象，而这个对象指向了function函数本身
+                prototype属性又指向了一个prototype对象，这是两个不同的东西，在prototype对象中有一个constructor属性，这个
+                constructor属性同样指向了一个constructor对象，而这个对象指向了function函数本身
                 function Person(name){
                     this.name=name;
                     this.showMe=function(){
                         console.log(this.name);
                     }
                 };
+                Person.prototype.form=function(){
+                  console.log(123)
+                }
                 var one =new Person('js');
                 console.log(one.prototype);     //undefined
                 console.log(typeof Person.prototype);   //object   该对向包含两个属性，一个是constructor一个是_proto_
+                console.log(Person.prototype==one.__proto__);  //true
                 console.log(Person.prototype.constructor);  //打印出函数本身
-
-
-                function Person(name){
-                    this.name=name;
-                    this.showMe=function(){
-                        console.log(this.name);
-                    }
-                };
-                Person.prototype.form=function(){
-                  console.log(123)
-                }
-                var one =new Person('js');   //一旦实例化之后就是创建相应的内存区块了，会在堆内存中存储三个属性
-                {name:js,showMe:function(),_proto_},注意_proto_属性指向的就是Person的prototype对象，所以在给其prototype对象加
-                属性之后可以访问到了
-                one.showMe();     //js      
                 one.form();   //123 
 
-                function Person(name){
-                    this.name=name;
-                    this.showMe=function(){
-                        console.log(this.name);
-                    }
-                };
-                Person.prototype.form=function(){
-                  console.log(123)
-                }
                 function sub(){}
                 sub.prototype=new Person();
                 //sub.prototype.constructor=sub;  //加了这句话之后其实就是在sub的原型对象中加入一个constructor属性，使其构造者
@@ -504,7 +503,7 @@
                 console.log(subone.constructor); //function Person(){}
                 console.log(sub.prototype.constructor); //function Person(){}  
             </pre>
-            <div class="explain">以上就是所谓的继承，只需要把子类的prototype设置为父类的一个实例化对象即可</div>
+            <div class="explain">所谓的继承只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
             <div class="title">js实现二分法排序代码以及千分位处理</div>
             <pre>
@@ -691,65 +690,7 @@
                 但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
             </pre>
 
-            <div class="title">h5api实现全屏效果</div>
-            <pre>
-            全屏: 
-                var docElm = document.documentElement;                
-                //FireFox 
-                else if (docElm.mozRequestFullScreen) {                  
-                  docElm.mozRequestFullScreen();                  
-                }                 
-                //Chrome等                  
-                else if (docElm.webkitRequestFullScreen) {                  
-                  docElm.webkitRequestFullScreen();                  
-                }                
-                //IE11                
-                else if (elem.msRequestFullscreen) {                 
-                 elem.msRequestFullscreen();                
-                }
-            退出全屏: 
-                if (document.exitFullscreen) { 
-                document.exitFullscreen(); 
-                } 
-                else if (document.mozCancelFullScreen) { 
-                document.mozCancelFullScreen(); 
-                } 
-                else if (document.webkitCancelFullScreen) { 
-                document.webkitCancelFullScreen(); 
-                } 
-                else if (document.msExitFullscreen) { 
-                document.msExitFullscreen(); 
-                }
-            事件监听:
-                document.addEventListener("fullscreenchange", function () { 
-                fullscreenState.innerHTML = (document.fullscreen)? "" : "not ";}, false); 
-                 
-                document.addEventListener("mozfullscreenchange", function () { 
-                fullscreenState.innerHTML = (document.mozFullScreen)? "" : "not ";}, false); 
-                 
-                document.addEventListener("webkitfullscreenchange", function () { 
-                fullscreenState.innerHTML = (document.webkitIsFullScreen)? "" : "not ";}, false); 
-                document.addEventListener("msfullscreenchange", function () { 
-                fullscreenState.innerHTML = (document.msFullscreenElement)? "" : "not ";}, false);
-            样式控制：
-                html:-moz-full-screen { 
-                background: red; 
-                } 
-                 
-                html:-webkit-full-screen { 
-                background: red; 
-                } 
-                 
-                html:fullscreen { 
-                background: red; 
-                }
-            </pre>
-            <div class="explain">
-                项目中需要将后台浏览器的窗口全屏，也就是我们点击一个按钮要实现按F11全屏的效果。 在HTML5中,W3C制定了关于全屏的API，
-                就可以实现全屏幕的效果，也可以让页面中的图片，视频等全屏目前只有google chrome 15 +, safri5.1+,firfox10+,IE11支持
-            </div>
-
-            <div class="title">h5使用formdata实现文件上传</div>
+            <div class="title">h5使用formdata实现文件上传，主流使用flash开发的swfupload插件</div>
             <pre>
             表单中enctype="multipart/form-data"的意思是设置表单的MIME编码,默认编码格式是application/x-www-form-urlencoded
             不能用于文件上传；只有使用了multipart/form-data，才能完整的传递文件数据，进行下面的操作.
@@ -1023,7 +964,7 @@
                 console.log(match);
                 return group1+group3;
             })
-            match代表匹配到的项，所以依次输出"1b2"  "3d4",最终返回的字符串是"a12c34e5"
+            match代表匹配到的项，所以依次输出"1b2"  "3d4",最终返回的字符串是"a12c345e"
             group1,group2,group3代表匹配下的分组，没有分组的时候就没有几个分组值的参数
             index代表匹配到的开始位置，origin代表原始字符串
             </pre>

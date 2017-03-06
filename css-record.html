@@ -132,7 +132,48 @@
                  </div>
                  <div class="footer" style="height:50px;"></div>
               </textarea>
+
+          16.对于transform使用matrix矩阵2D详解
+          首先单位矩阵是这样的,也就是你不写的时候的样子：
+                 -webkit-transform:matrix(1,0,0,1,0,0);
+                 transform:matrix(1,0,0,1,0,0);
+          例如：向右移动10像素向下移动20像素可以这样写：
+                  -webkit-transform:matrix(1,0,0,1,10,20);
+                 transform:matrix(1,0,0,1,10,20);
+          例如：横纵扩2倍可以这样写：
+                  -webkit-transform:matrix(2,0,0,2,0,0);
+                 transform:matrix(2,0,0,2,0,0);
+          对于旋转scale和扭曲skew则该中间那两个0第一个表示x轴方向第二个表示y轴方向，而且他们在改动的时候，
+          还要根据三角函数算出第一个和第四个参数的值，因为页面呈现是大小会改动
+
+          17.webkit表单输入框placeholder的颜色值
+               input::-webkit-input-placeholder{color:#AAAAAA;}
+               input:focus::-webkit-input-placeholder{color:#EEEEEE;}
+
+          18.禁止保存或拷贝图像（IOS）
+               img { -webkit-touch-callout: none; }
+
+          19.手机拍照和上传图片
+            <textarea style="height:110px;" readonly>
+                  <!-- 选择照片 -->
+                  <input type=file accept="image/*">
+                  <!-- 选择视频 -->
+                  <input type=file accept="video/*">
+            </textarea> 
+            ios 有拍照、录像、选取本地图片功能
+            部分android只有选取本地图片功能
+            winphone不支持
+            input控件默认外观丑陋 
+
+          20.消除transition闪屏
+               .css{
+                   /*设置内嵌的元素在 3D 空间如何呈现：保留 3D*/
+                   -webkit-transform-style: preserve-3d;
+                   /*（设置进行转换的元素的背面在面对用户时是否可见：隐藏）*/
+                   -webkit-backface-visibility: hidden;
+               }
           </pre>
+          <div class="explain">当使用3d做gpu渲染的时候，并不能触发重绘，他只能使元素变大小或者旋转等，不能改颜色</div>
 
           <div class="title">实现订单提交中点点点一个一个出现的效果，附上css和html代码</div>
           <pre>
@@ -315,14 +356,16 @@
                 border-collapse: collapse;
                 border-spacing: 0;
               }
-              button { outline:none;}
-              a { text-decoration:none; -webkit-tap-highlight-color:rgba(255,0,0,0);}
-              input { outline: medium;} /*解决input聚焦时候有边框的问题*/
+              a { text-decoration:none;}
+              input,button { outline: none;} /*解决input聚焦时候有边框的问题*/
+              a,button,input,textarea {-webkit-tap-highlight-color:rgba(255,0,0,0);}  //解决元素触摸时候半透明遮罩
               body { 
                   font-family:Arial,'Microsoft YaHei','SimHei'; 
-                  -webkit-overflow-scrolling: touch;
-                  -webkit-font-smoothing: antialiased;
+                  -webkit-overflow-scrolling: touch;          //弹性滚动
+                  -webkit-font-smoothing: antialiased;        //字体光滑
               }
+              各个手机系统有自己的默认字体，且都不支持微软雅黑 如无特殊需求，手机端无需定义中文字体，使用系统默认 英文字体和数字字体可使
+              用 Helvetica ，三种系统都支持body{font-family:Helvetica;}
           </pre>
           <div class="explain">在reset屏幕的时候最好用input, textarea, select { font-size: 100%; }，这个就是说继承来自body的字体大小，布局的时候也最好使用rem来布局</div>
 
@@ -596,7 +639,7 @@
              img {vertical-align: middle;}
              p {vertical-align: middle;display:inline-block;}
              i {display: inline-block;height: 100%;vertical-align: middle;}
-             <textarea>
+             <textarea readonly>
                   <div><img src="#"><i></i></div>
                   <div><p>测试</p><i></i></div>
              </textarea>
