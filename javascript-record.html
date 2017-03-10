@@ -75,7 +75,7 @@
             "0"==[1]    //false
 
             比较奇怪的现象：
-0.              alert(typeof NaN);   //弹出 'Number'
+                alert(typeof NaN);   //弹出 'Number'
                 alert(NaN === NaN);  //为 false
             </pre>
             <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
@@ -250,137 +250,59 @@
 
             <div class="title">关于存储方式的小结</div>
             <pre>
-                1.http缓存也就是cookies的应用
-                2.web storage网络存储就是讲localstorage sessionstorage
-                    网络存储为每个域提供5MB简单的键值形式的存储空间，在ios上网络存储可以存储utf-16格式的字符串文本，这就意味着每个字符需要两倍多的字节，所以在
-                    ios上存储的实际上是2.5MB,从localStorage获取数据比内存中慢得多，还不包括对json字符串的解码增加的成本(localStorage只能存储字符串,而且它最终的值也是存储在本地内存)
-            	3.application storage就是应用缓存，也就是h5的离线缓存,在html标签中写上manifest="clock.manifest"，
-            	并在同级目录下面建立clock.manifest文件，理论上随便什么后缀名都可以，但是一般写manifest
-            		下面说明书写 cache manifest 文件需要遵循的格式。
-            		      首行必须是 CACHE MANIFEST。
-            		      其后，每一行列出一个需要缓存的资源文件名。
-            		      可根据需要列出在线访问的白名单。白名单中的所有资源不会被缓存，在使用时将直接在线访问。声明白名单使用 NETWORK：标识符。
-            		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
-            		      如果要声明某 URI 不能访问时的替补 URI，可以使用 FALLBACK：标识符。其后的每一行包含两个 URI，当第一个 URI 
-            		      不可访问时，浏览器将尝试使用第二个 URI。
-            		      注释要另起一行，以 # 号开头。
-            		示例：
-            		      CACHE MANIFEST 
-            		       # 上一行是必须书写的。
+            1.http缓存也就是cookies的应用
+            2.web storage网络存储就是讲localstorage sessionstorage
+                网络存储为每个域提供5MB简单的键值形式的存储空间，在ios上网络存储可以存储utf-16格式的字符串文本，这意味着每个字符需要
+                两倍多的字节，所以在ios上存储的实际上是2.5MB,从localStorage获取数据比内存中慢得多，还不包括对json字符串解码增加的成
+                本(localStorage只能存储字符串,而且它最终的值也是存储在本地内存)
+        	3.application storage就是应用缓存，也就是h5的离线缓存,在html标签中写上manifest="clock.manifest"，
+        	并在同级目录下面建立clock.manifest文件，理论上随便什么后缀名都可以，但是一般写manifest
+        		下面说明书写 cache manifest 文件需要遵循的格式。
+        		      首行必须是 CACHE MANIFEST。
+        		      其后，每一行列出一个需要缓存的资源文件名。
+        		      可根据需要列出在线访问的白名单。单中所有资源不会被缓存，使用时直接在线访问。声明白名单用NETWORK：标识符
+        		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
+        		      如果要声明某URI不能访问时的替补URI，可使用FALLBACK：标识符。其后的每一行包含两个 URI，当第一个URI 
+        		      不可访问时，浏览器将尝试使用第二个 URI。
+        		      注释要另起一行，以 # 号开头。
+        		示例：
+        		      CACHE MANIFEST 
+        		       # 上一行是必须书写的。
 
-            		      CACHE: 
-            		      style/default.css 
+        		      CACHE: 
+        		      style/default.css 
 
-            		      FALLBACK: 
-            		      /files/projects /projects 
+        		      FALLBACK: 
+        		      /files/projects /projects 
 
-            		      NETWORK: 
-            		      comm.cgi
-            		文件的更新是它最大的难点，也是现在慎重使用的原因
-            		自动更新 
-            		    浏览器除了在第一次访问 Web 应用时缓存资源外，只会在 cache manifest 文件本身发生变化时更新缓存。而 cache manifest 
-            		    中的资源文件发生变化并不会触发更新。
-            		手动更新 
-            		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
-            		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
-            		    更新缓存。示范代码如下：
-            		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
-            		            ｛
-            		             window.applicationCache.update(); 
-            		            ｝
-            		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 
-            		表示离线。当网络状态发生变化时，navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
-            		online/offline 事件 
-            		当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者还需要在网络状态发生变化时立刻得到通知，因此 HTML5 
-            		还提供了 online/offline 事件。当在线 / 离线状态切换时，online/offline 事件将触发在 body 元素上，并且沿着 
-            		document.body、document 和 window 的顺序冒泡。因此，开发者可以通过监听它们的 online/offline 事件来获悉网络状态。
-            	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
-				    先介绍三个核心方法
-				        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
-				        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
-				        3、executeSql：这个方法用于执行真实的SQL查询。
+        		      NETWORK: 
+        		      comm.cgi
+        		文件的更新是它最大的难点，也是现在慎重使用的原因
+        		自动更新 
+        		    浏览器除了在第一次访问Web应用时缓存资源外,只会在cache manifest文件本身发生变化时更新缓存。而
+                            cache manifest 中的资源文件发生变化并不会触发更新。
+        		手动更新 
+        		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
+        		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
+        		    更新缓存。示范代码如下：
+        		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
+        		            ｛
+        		             window.applicationCache.update(); 
+        		            ｝
+        		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 表示离线。当网络状态发生变化时
+                        navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
+
+        		online/offline 事件 
+                        当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者要在网络状态变化时立刻得到通知，
+                        因此HTML5提供了online/offline事件。当在线 / 离线状态切换时，online/offline 事件将触发在body元素上，并且
+                        沿着document.body、document 和 window的顺序冒泡。因此,开发者可以通过监听online/offline事件来获悉网络状态
+        	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
+    		    先介绍三个核心方法
+    		        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
+    		        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
+    		        3、executeSql：这个方法用于执行真实的SQL查询。
             </pre>
-            <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>
-
-            <div class="title">手动实现观察者模式</div>
-            <pre>
-                var Observer = (function(slice) {
-                    //订阅函数，可以传入多个任务名，会将其做为events的键相应值为一个数组里面放的是对应任务函数
-                    function bind(event, fn) {
-                        var events = this.events = this.events || {},
-                            parts = event.split(/\s+/),
-                            i = 0,
-                            num = parts.length,
-                            part;
-                        //如果事件已经注册并且有对应函数事件则返回
-                        if (events[event] && events[event].length) return this;
-                        //注册事件，一个任务名只能对应一个任务函数
-                        for (; i < num; i++) {
-                            events[(part = parts[i])] = events[part] || [];
-                            events[part].push(fn);
-                        }
-                        return this;
-                    }
-                    //只订阅一次
-                    function one(event, fn) {
-                        this.bind(event, function fnc() {
-                            fn.apply(this, slice.call(arguments));
-                            this.unbind(event, fnc);
-                        });
-                        return this;
-                    }
-                    //清空不需要的events中的事件
-                    function unbind(event, fn) {
-                        var events = this.events,
-                            eventName, i, parts, num;
-                        if (!events) return;
-                        parts = event.split(/\s+/);
-                        for (i = 0, num = parts.length; i < num; i++) {
-                            if ((eventName = parts[i]) in events !== false) {
-                                events[eventName].splice(events[eventName].indexOf(fn), 1);
-                                if (!events[eventName].length) { //修正没有事件直接删除空数组
-                                    delete events[eventName];
-                                }
-                            }
-                        }
-                        return this;
-                    }
-                    //触发函数
-                    function trigger(event) {
-                        var events = this.events,
-                            i, args, falg;
-                        //如果没有传入事件名或者事件并没有注册则返回
-                        if (!events || event in events === false) return;
-                        //第一个参数是事件名，以后的参数是要传入给该事件的参数，所以截取形参的第一个参数的后面的
-                        args = slice.call(arguments, 1);
-                        for (i = events[event].length - 1; i >= 0; i--) {
-                            falg = events[event][i].apply(this, args);
-                        }
-                        return falg; //修正带返回
-                    }
-                    //返回实际要调用的函数
-                    return function() {
-                        this.on =
-                            this.subscribe = bind;
-                        this.off =
-                            this.unsubscribe = unbind;
-                        this.trigger =
-                            this.publish = trigger;
-                        this.one = one;
-                        return this;
-                    };
-                    
-                })([].slice);
-
-                创建一个观察者对象
-                var observer = new Observer();
-                通过调用subscribe方法，实现一个事件的观察
-                observer.subscribe("任务名"，处理函数)
-                通过publish触发观察事件，在任意时刻触发了这个观察的任务名，将会触发这个事件订阅subscribe方法
-                observer.publish("任务名")
-                取消事件订阅，意味着就不会执行了
-                 observer.unsubscribe("任务名")
-            </pre>
+            <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>            
 
             <div class="title">无刷新改变url，还点击前进后退按钮，ajax只能改变页面内容，这里就得加上pushState,简称pjax</div>
             <pre>
@@ -439,7 +361,8 @@
                 HTMLEvents    HTMLEvent     initEvent()
                 MouseEvents   MouseEvent    initMouseEvent()
                 UIEvents      UIEvent       initUIEvent()
-                initEvent()方法用于初始化通过DocumentEvent接口创建的Event的值。支持三个参数：initEvent(eventName, canBubble, preventDefault). 
+                initEvent()方法用于初始化通过DocumentEvent接口创建的Event的值。
+                支持三个参数：initEvent(eventName, canBubble, preventDefault). 
                 分别表示事件名称，是否可以冒泡，是否阻止事件的默认操作。
             </pre>
             <div class="explain">先自定义tap事件然后触发他，在tap事件当中先绑定touchstart,touchend事件，判断事件间隔之后给个回调就行</div>

@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       	<div class="big_container">
+       		<div class="title" style="margin-top:0;">函数的柯里化与反柯里化</div>
+   			<pre>
+   	   柯里化就是把接受多个参数的函数变换成接受一个单一参数（最初函数的第一个参数）的函数，并且返回接受余下的参数而且返回结果
+   	   的新函数的技术:
+   	        var currying=function(fn){
+   	           var args=[];
+   	           return function(){
+   	              if (arguments.length==0) {
+   	                 return fn.apply(this,args);
+   	              }else{
+   	                 [].push.apply(args,arguments);
+   	                 return arguments.callee;
+   	              }
+   	           }
+   	        }
+   	        var cost=(function(){
+   	           var money=0;
+   	           return function(){
+   	              for (var i = 0; i < arguments.length; i++) {
+   	                money+=arguments[i];
+   	              };
+   	              return money;
+   	           }
+   	        })()
+   	        var cost=currying(cost);
+   	        cost(100);		//未真正求值
+   	        cost(200);		//未真正求值
+   	        cost(300);		//未真正求值
+   	        cost();        		//求和600
+
+   	    反柯里化,使得this指针泛化：
+   	    	Function.prototype.unCurrying = function() {
+   	    	    var that = this;
+   	    	    return function() {
+   	    	        return Function.prototype.call.apply(that, arguments);
+   	    	    }
+   	    	}
+   	    	Function.prototype.unCurrying = function () {
+   	    	    var f = this;
+   	    	    return function () {
+   	    	        var a = arguments;
+   	    	        return f.apply(a[0], [].slice.call(a, 1));
+   	    	    };
+   	    	};
+   	    	var push = Array.prototype.push.unCurrying(),
+   	    	obj = {};
+   	    	push(obj, 'first', 'two');
+   	    	console.log(obj);            /*obj {0 : "first",1 : "two"}*/
+   	    	(function(){
+   	    	    push(arguments,4);
+   	    	    console.log(arguments)     //[1,2,3,4]
+   	    	})(1,2,3)
+   			</pre>
+       		<div class="explain">
+              函数柯里化，是固定部分参数，返回一个接受剩余参数的函数，也称为部分计算函数，目的是为了缩小适用范围，创建一个针对性更强的函数。
+              那么反柯里化函数，从字面讲，意义和用法跟函数柯里化相比正好相反，扩大适用范围，创建一个应用范围更广的函数。使本来只有特定对象才适用的方法，扩展到更多的对象。
+            </div> 
+
+            <div class="title">单例模式</div>
+            <pre>
+        单例就是保证一个类只有一个实例，实现的方法一般是先判断实例存在与否，如果存在直接返回，如果不存在就创建了再返回，这就确保了一个
+        类只有一个实例对象,为了保证一定的可扩展性我们使用代理来实现单例模式会更好
+            var creatdiv=function(html){
+                this.html=html;
+                this.init();
+            }	
+            creatdiv.prototype.init=function(){
+                var div=document.createElement('div');
+                div.innerHTML=this.html;
+                document.body.appendChild(div);
+            }
+            var proxySingletonCreateDiv=(function(){
+               var instance;
+               return function(html){
+                  if(!instance){
+                     instance= new creatediv(html)
+                  }
+                  return instance;
+               }
+            })()
+            console.log( proxySingletonCreateDiv("test1")== proxySingletonCreateDiv("test2"))    //true
+
+            同时也可以把实现单例的函数分离出来
+            getsingle=function(fn){
+                var instance;
+                return function(){
+                    return instance||(fn.apply(this,arguments));
+                }
+            }
+            </pre>
+
+            <div class="title">策略模式</div>
+            <pre>
+        var strategies={
+            "S":function(salary){
+                return salary*4;
+            },
+            "A":function(salary){
+                return salary*3;
+            },
+            "B":function(salary){
+                return salary*2;
+            }
+        }
+        var calculateBouns=function(level,salary){
+            return strategies[level](salary);
+        }    	
+            </pre> 
+            <div class="explain">像上面那样分离之后就不用写那么多的if-else判断了，可扩展性也变强了,策略模式的目的就是：将算法的使用和算法的实现分离开来</div>          
+			
+			<div class="title">简单工厂模式</div>
+			<pre>
+		var BallFactory = {
+		    createBall:function(model){
+		　　　　var ball;
+		　　　　switch(model){
+		　　　　　　case "Tennis":
+		　　　　　　　　ball = new TennisBall();
+		　　　　　　　　break;
+		　　　　　　case "bask":
+		　　　　　　　　ball = new BaskBall();
+		　　　　　　　　break;
+		　　　　　　default:
+		　　　　　　　　ball = new FootBall();
+		　　　　　　　　break;
+		　　　　}
+		　　　　return ball;
+		　　}
+		}
+		BallFactory是一个脱离于BallShop的单体。能够降低耦合度。当需要新添加类型的时候，只要修改BallFactory工厂单体对象就行。
+		var BallShop = function(){};
+		BallShop.prototype = {
+		　　sellBall:function(model){
+		　　　　var ball = BallFactory.createBall(model);
+		　　　　return ball;
+		　　}
+		}		
+			</pre>
+			<div class="explain">所谓简单工厂模式就是将成员对象的创建工作交给一个外部对象实现，该外部对象可以是一个简单的命名空间，也可以是一个类的实例</div>
+
+			<div class="title">缓存代理</div>
+			<pre>
+	var mult=function(){
+	  //求和函数或者任何一个函数
+	}
+        var proxy=function(fn){
+           var cache={};
+           return function(){
+              var args=Array.prototype.join.call(arguments,",");
+              if (args in cache) {
+                return cache[args];
+              };
+              return cache[args]=fn.apply(null,arguments);
+           }
+        };
+        var add= proxy(mult);
+        console.log(add(1,2,3));
+        console.log(add(1,2,3));		
+			</pre>
+
+			<div class="title">手动实现观察者模式(发布，订阅)</div>
+			<pre>
+	    var Observer = (function(slice) {
+	        //订阅函数，可以传入多个任务名，会将其做为events的键相应值为一个数组里面放的是对应任务函数
+	        function bind(event, fn) {
+	            var events = this.events = this.events || {},
+	                parts = event.split(/\s+/),
+	                i = 0,
+	                num = parts.length,
+	                part;
+	            //如果事件已经注册并且有对应函数事件则返回
+	            if (events[event] && events[event].length) return this;
+	            //注册事件，一个任务名只能对应一个任务函数
+	            for (; i < num; i++) {
+	                events[(part = parts[i])] = events[part] || [];
+	                events[part].push(fn);
+	            }
+	            return this;
+	        }
+	        //只订阅一次
+	        function one(event, fn) {
+	            this.bind(event, function fnc() {
+	                fn.apply(this, slice.call(arguments));
+	                this.unbind(event, fnc);
+	            });
+	            return this;
+	        }
+	        //清空不需要的events中的事件
+	        function unbind(event, fn) {
+	            var events = this.events,
+	                eventName, i, parts, num;
+	            if (!events) return;
+	            parts = event.split(/\s+/);
+	            for (i = 0, num = parts.length; i < num; i++) {
+	                if ((eventName = parts[i]) in events !== false) {
+	                    events[eventName].splice(events[eventName].indexOf(fn), 1);
+	                    if (!events[eventName].length) { //修正没有事件直接删除空数组
+	                        delete events[eventName];
+	                    }
+	                }
+	            }
+	            return this;
+	        }
+	        //触发函数
+	        function trigger(event) {
+	            var events = this.events,
+	                i, args, falg;
+	            //如果没有传入事件名或者事件并没有注册则返回
+	            if (!events || event in events === false) return;
+	            //第一个参数是事件名，以后的参数是要传入给该事件的参数，所以截取形参的第一个参数的后面的
+	            args = slice.call(arguments, 1);
+	            for (i = events[event].length - 1; i >= 0; i--) {
+	                falg = events[event][i].apply(this, args);
+	            }
+	            return falg; //修正带返回
+	        }
+	        //返回实际要调用的函数
+	        return function() {
+	            this.on =
+	                this.subscribe = bind;
+	            this.off =
+	                this.unsubscribe = unbind;
+	            this.trigger =
+	                this.publish = trigger;
+	            this.one = one;
+	            return this;
+	        };
+	        
+	    })([].slice);
+
+	    创建一个观察者对象
+	    var observer = new Observer();
+	    通过调用subscribe方法，实现一个事件的观察
+	    observer.subscribe("任务名"，处理函数)
+	    通过publish触发观察事件，在任意时刻触发了这个观察的任务名，将会触发这个事件订阅subscribe方法
+	    observer.publish("任务名")
+	    取消事件订阅，意味着就不会执行了
+	     observer.unsubscribe("任务名")
+			</pre>
+
+       	</div>      
+  </body>
+</html>
