@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb,hbuilder">
+  </head>
+  <body>
+       <div class="big_container">
+            <div class="title">清除浮动</div>
+            <pre>
+        1.最直接的方式，直接给父级元素设置高度，缺点就是高度被写死了
+        2.IE8以上和非IE浏览器才支持:after，zoom(IE转有属性)可解决ie6,ie7浮动问题  
+        	.clearfloat:after{display:block;clear:both;content:"";visibility:hidden;height:0} 
+        	.clearfloat{zoom:1}    
+        3.给父元素设置overflow:hidden因为触发了BFC
+        	BFC 全称是块级排版上下文，用于对块级元素排版，默认情况下只有根元素（body)一个块级上下文，但是如果一个块级元素 设置了
+        	float:left，overflow:hidden或position:absolute样式，就会为这个块级元素生成一个独立的块圾上下文,像在window全局作用
+        	域内，声明了一个function就会生成 一个独立的作用域一样，新开僻的BFC像是开僻了一个新的小宇宙，使这个块圾元素内部的排版
+        	完全独立隔绝。
+        	独立的块级上下文可以包裹浮动流，全部浮动子元素也不会引起容器高度塌陷，也就是说包含块会把浮动元素的高度也计算在内，所
+        	以不用清除浮动来撑起高度。
+            </pre>
+
+            <div class="title">视网模屏幕下1px边框的实现</div>
+            <pre>
+        div{
+             border:1px solid #000;
+        }    
+        @media (-webkit-min-device-pixel-ratio: 2) {
+            div{
+                  border:0.5px solid #000;
+            }
+        }  
+        但在ios7以下，android等其他系统里，0.5px会被显示为0px，所以需要写hack来兼容旧版本的系统
+
+        如果只是画一条边框的话可以使用
+        	div{
+        	        height:1px;
+        	        -webkit-transform: scaleY(0.5);
+        	        -webkit-transform-origin:0 0;
+        	        overflow: hidden;
+        	        background: #000;
+        	} 	
+
+        使用 background-image 实现1px有两种方式: 渐变 linear-gradient 或直接使用图片(base64)
+            </pre>
+
+			<div class="title">es5中bind方法的底层实现</div>
+			<pre>
+		Function.prototype.testBind = function(that){
+		        var _this = this,
+		            slice = Array.prototype.slice,
+		            args = slice.apply(arguments,[1]),
+		            fNOP = function () {},
+		            bound = function(){
+		                //这里的this指的是调用时候的环境
+		                return _this.apply(this instanceof  fNOP ?　this : that||window,
+		                    args.concat(Array.prototype.slice.apply(arguments,[0]))
+		                )
+		            }    
+		        fNOP.prototype = _this.prototype;
+		      
+		        bound.prototype = new fNOP();
+		      
+		        return bound;
+		    }	
+
+		var test = function(a,b){    
+		console.log('作用域绑定 '+ this.value)    
+		console.log('testBind参数传递 '+ a.value2)    
+		console.log('调用参数传递 ' + b) }
+		var obj = {     value:'ok' }
+		var fun_new = test.testBind(obj,{value2:'also ok'}) 
+		fun_new ('hello bind')
+		// 作用域绑定 ok
+		// testBind参数传递 also ok
+		// 调用参数传递  hello bind
+
+		var new_test=new fun_new('hello')  
+		绑定过后的函数被new实例化之后，需要继承原函数的原型链方法，且绑定过程中提供的this被忽略(继承原函数的this对象)，
+		但是参数还是会可以传递使用
+			</pre>
+
+			<div class="title">移动端文件压缩上传使用FileReader,canvas,formData</div>
+			<pre>
+	<textarea>
+	html结构：<input type="file" id="photo" />
+	</textarea>	
+	var photo = $('#photo');
+	//检测是否支持canvas
+	function isCanvasSupported(){
+	    var elem = document.createElement('canvas');
+	    return !!(elem.getContext && elem.getContext('2d'));
+	}
+	//选择图片的时候触发的事件 
+	photo.on('change', function(event){
+	    if(!canvasSupported){
+	        return;
+	　　}
+	　　//上传的方法，还是用ajax　　　　
+	    compress(event, function(base64Img){
+	　　　　　　$.ajax({
+	　　　　　　'url' : '/?s=free/upload',
+	　　　　　　'type' : 'post',
+	　　　　　　'data' : {'base64Img' : base64Img},
+	　　        'success' : function(ret){
+	　　　　                 //拿到php传过来的图片地址
+	　　　　　   }
+	　　　　　});
+	　　　});
+	});	 
+	function compress(event, callback){
+	    var file = event.currentTarget.files[0];
+	    var reader = new FileReader();
+	 	//成功读取之后的回调
+	    reader.onload = function (e) {	 
+	        var image = $(<span>'<</span><span>img</span><span>/>'</span>);
+	        image.on('load', function () {
+	             var square = 700;
+	             var canvas = document.createElement('canvas');
+	 
+	             canvas.width = square;
+	             canvas.height = square;
+	 
+	             var context = canvas.getContext('2d');
+	             context.clearRect(0, 0, square, square);
+	             var imageWidth;
+	             var imageHeight;
+	             var offsetX = 0;
+	             var offsetY = 0;
+	 
+	            if (this.width > this.height) {
+	                  imageWidth = Math.round(square * this.width / this.height);
+	                  imageHeight = square;
+	                 offsetX = - Math.round((imageWidth - square) / 2);
+	           } else {
+	                 imageHeight = Math.round(square * this.height / this.width);
+	                 imageWidth = square; 
+	                 offsetY = - Math.round((imageHeight - square) / 2); 
+	           }
+	 			//用canvas绘制出数据
+	            context.drawImage(this, offsetX, offsetY, imageWidth, imageHeight);
+	            var data = canvas.toDataURL('image/jpeg');     //返回一个包含图片展示的 data URI
+	            callback(data);
+
+	            //datauri的格式如
+	            //var canvas = document.getElementById("canvas");
+	            //var dataURL = canvas.toDataURL();
+	            //console.log(dataURL);
+	            // "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNby
+	            // blAAAADElEQVQImWNgoBMAAABpAAFEI8ARAAAAAElFTkSuQmCC"
+	         });
+	 		//页面上显示图片
+	          image.attr('src', e.target.result);
+	       };
+	  	//以base64格式读取上传的文件数据
+	     reader.readAsDataURL(file);
+	}
+
+	在IOS中，canvas绘制图片是有两个限制的：
+	　　一：图片的大小，如果图片的大小超过两百万像素，图片也是无法绘制到canvas上的，调用drawImage的时候不会报错，但是你
+	    用toDataURL获取图片数据的时候获取到的是空的图片数据;
+	　　二：canvas的大小有限制，如果canvas的大小大于大概五百万像素（即宽高乘积）的时候，不仅图片画不出来，其他什么东西也
+	    都是画不出来的;
+	解决办法：
+	　　一：瓦片绘制:也就是将图片分割成多块绘制到canvas上，例如把图片分割成100万像素一块的大小，再绘制到canvas上
+	　　二：我的处理办法是对图片的宽高进行适当压缩，我代码里为了保险起见，设的上限是四百万像素，如果图片大于四百万像素就压
+	    缩到小于四百万像素。四百万像素的图片应该够了，算起来宽高都有2000X2000了。
+	除了上面所述的限制，还有两个坑：
+	    一：canvas的toDataURL只能压缩jpg,当用户上传图片是png的话,需要转成jpg,也就是统一用canvas.toDataURL("image/jpeg", 0.1)
+	    类型统一设成jpeg，而压缩比就自己控制了
+	    二：如果是png转jpg，绘制到canvas上的时候，canvas存在透明区域的话，当转成jpg的时候透明区域会变成黑色，因为 canvas的透明
+	    素默认为rgba(0,0,0,0)，所以转成jpg就变成rgba(0,0,0,1)，就是透明背景会变成了黑色。解决办法就 是绘制之前在canvas上铺一
+	    层白色的底色	
+			</pre>
+
+			<div class="title">css和js的相互阻塞关系</div>
+			<pre>
+	js的阻塞特性：
+		所有浏览器在下载JS的时候，会阻止一切其他活动，比如其他资源的下载，内容的呈现等等。直到JS下载、解析、执行完毕后才开始继续
+		并行下载其他资源并呈现内容。新一代浏览器都支持并行下载JS，但是JS下载仍然会阻塞其它资源的下载（例如.图片，css文件等）	
+	结论：
+		外部样式会阻塞后面内联脚本的执行	
+		外部样式不会阻塞外部脚本的加载，但会阻塞外部脚本的执行	
+		对于具有async属性的脚本，外部css不会阻塞
+	建议：
+		脚本应该放在外部css的前面，不论脚本是内联还是外部（最好是脚本放在body的最后面），可以的话，外部css最好直接内联到页面
+			</pre>
+			<div class="explain">
+				当CSS后面跟着嵌入的JS的时候，该CSS就会出现阻塞后面资源下载的情况。而当把嵌入JS放到CSS前面，就不会出现阻塞的情况了。
+				根本原因：因为浏览器会维持html中css和js的顺序，样式表必须在嵌入的JS执行前先加载、解析完。而嵌入的JS会阻塞后面的资源
+				加载，所以就会出现上面CSS阻塞下载的情况。
+			</div>
+
+       </div>
+  </body>
+</html>

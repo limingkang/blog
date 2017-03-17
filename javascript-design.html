@@ -252,6 +252,178 @@
 	     observer.unsubscribe("任务名")
 			</pre>
 
+			<div class="title">迭代器模式</div>
+			<pre>
+		var Iterator = function( obj ){
+		            var current = 0;
+		            var next = function(){
+		                current += 1;
+		            };
+		            var isDone = function(){
+		                return current >= obj.length;
+		            };
+		            var getCurrItem = function(){
+		                return obj[ current ];
+		            };
+		            return {
+		                next: next,
+		                isDone: isDone,
+		                getCurrItem: getCurrItem
+		            }
+		        };
+		//编写compare函数：
+		        var compare = function( iterator1, iterator2 ){
+		            while( !iterator1.isDone() && !iterator2.isDone() ){
+		                if ( iterator1.getCurrItem() !== iterator2.getCurrItem() ){
+		                    throw new Error ( 'iterator1 和 iti03.htmlerator2 不相等' );
+		                }
+		                iterator1.next();
+		                iterator2.next();
+		            }
+		            alert ( 'iterator1 和 iterator2 相等' );
+		        }
+		        var iterator1 = Iterator( [ 1, 2, 3 ] );
+		        var iterator2 = Iterator( [ 1, 2, 3 ] );
+		        compare( iterator1, iterator2 ); // 输出：iterator1 和 iterator2 相等		
+			</pre>
+			<div class="explain">
+				迭代器模式是指：提供一种方法顺序访问一个聚合对象中的各个元素，而又不需要暴露该对象的内部表示。迭代器模式可以把迭代的过程从业务
+				逻辑中分离出来，在使用迭代器模式之后，即使不关心对象的内部构造，也可以按顺序访问其中的每个元素
+			</div>
+
+			<div class="title">适配器模式</div>
+			<pre>
+		var getGuangdongCity = function(){
+		            var guangdongCity = [//旧的
+		                {
+		                    name: 'shenzhen',
+		                    id: 11,
+		                }, {
+		                    name: 'guangzhou',
+		                    id: 12,
+		                }
+		            ];
+		            return guangdongCity;
+		        };
+		        var render = function( fn ){
+		            console.log( '开始渲染广东省地图' );
+		            document.write( JSON.stringify( fn() ) );
+		        };
+		        var addressAdapter = function( oldAddressfn ){
+		            var address = {},
+		                oldAddress = oldAddressfn();
+		            for ( var i = 0, c; c = oldAddress[ i++ ]; ){
+		                address[ c.name ] = c.id;
+		            }
+		            return function(){
+		                return address;
+		            }
+		        };
+		        render( addressAdapter( getGuangdongCity ) );		
+			</pre>
+			<div class="explain">
+				适配器模式主要用来解决两个已有接口之间不匹配的问题，它不考虑这些接口是怎样实现的，也不考虑它们将来可能会如何演化。适
+				配器模式不需要改变已有的接口，就能够使它们协同作用
+			</div>
+
+			<div class="title">装饰者模式</div>
+			<pre>
+		var Plane = function () { };
+
+		        Plane.prototype.fire = function () {
+		            console.log("发射普通子弹");
+		        };
+
+		        var MissileDecorator = function (plane) {
+		            this.plane = plane;
+		        };
+		        MissileDecorator.prototype.fire = function () {
+		            this.plane.fire();
+		            console.log("发射导弹");
+		        };
+		        var AtomDecorator = function (plane) {
+		            this.plane = plane;
+		        };
+		        AtomDecorator.prototype.fire = function () {
+		            this.plane.fire();
+		            console.log("发射原子弹");
+		        };
+		        var plan = new Plane();
+		        plan = new MissileDecorator(plan);
+		        plan = new AtomDecorator(plan);
+
+		        plan.fire();		
+			</pre>
+			<div class="explain">
+				装饰者模式可以用来透明的把对象包装在具有同样接口的另一个对象中。这样一来，就可以给一个方法添加一些行为。
+				上面给对象动态增加职责的方式,没有改动对象自身,而是将对象放入另一个对象之中，这些对象以一条链的方式进行引用，形成一个聚合对象
+			</div>
+
+			<div class="title">状态模式</div>
+			<pre>
+		var Light = function(){
+		            this.button = null;
+		        };
+		        Light.prototype.init = function(){
+		            var button = document.createElement( 'button' ),
+		                self = this;
+		            button.innerHTML = '已关灯';
+		            this.currState = FSM.off; // 设置当前状态
+		            this.button = document.body.appendChild( button );
+		            this.button.onclick = function(){
+		                self.currState.buttonWasPressed.call( self ); // 把请求委托给 FSM 状态机
+		            }
+		        };
+		        var FSM = {
+		            off: {
+		                buttonWasPressed: function(){
+		                    console.log( '关灯' );
+		                    this.button.innerHTML = '下一次按我是开灯';
+		                    this.currState = FSM.on;
+		                }
+		            },
+		            on: {
+		                buttonWasPressed: function(){
+		                    console.log( '开灯' );
+		                    this.button.innerHTML = '下一次按我是关灯';
+		                    this.currState = FSM.off;
+		                }
+		            }
+		        };
+		        var light = new Light();
+		        light.init();
+			</pre>
+			<div class="explain">状态模式（State）允许一个对象在其内部状态改变的时候改变它的行为，对象看起来似乎修改了它的类</div>
+
+			<div class="title">其他模式</div>
+			<pre>
+	命令模式：有时候需要向某些对象发送请求，但是并不知道请求的接收者是谁，也不知道被请求的操作是什么，此时希望用一种松耦
+	合的方式来设计软件，使得请求发送者和请求接收者能够消除彼此之间的耦合关系	
+
+	组合模式：想表示对象的部分-整体层次结构时；希望用户忽略组合对象和单个对象的不同，用户将统一地使用组合结构中的所有对象（方法）
+
+	模板方法模式：这是一种使用继承就可以实现的简单的模式，该模式由两部分结构组成，第一部分是抽象父类，第二部分是具体的实现子类
+	通常在抽象父类中封装了子类的算法框架，包括实现一些公共方法以及封装子类中所有方法的执行顺序。子类通过继承这个抽象类，也继承了整
+	个算法结构并且可以选择重写父类的方法	
+
+	享元模式：用于解决因创建大量类似对象而累及性能的问题。这种模式在JavaScript中尤其有用，因为复杂的javascript代码可能很快就会用
+	光浏览的甩有可用内存。通过把大量独立的对象转化为少量其享对象，可以降低运行Web应用程序所需要的资源数量
+
+	职责链模式：使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。将这个对象连成一条链，并沿着这条链传递该
+	请求，直到有一个对象处理他为止
+
+	中介者模式：解除对象与对象之间的紧耦合关系。增加一个中介者对象后，所以的相关对象都通过中介者对象来通信，而不是互相引用，所以
+	当一个对象发生改变时，只需要通知中介者对象即可。中介者使各对象之间耦合松散，而且可以独立地改变它们之间的交互。中介者模式使网
+	状的多对多关系变成了相对简单的一对多关系
+			</pre>
+			<div class="explain">
+			     <a href="http://blog.csdn.net/linhongyong/article/details/53444008" target="_blank">命令模式博文</a>&emsp;&emsp;
+			     <a href="http://blog.csdn.net/linhongyong/article/details/53447459" target="_blank">组合模式博文</a>&emsp;&emsp;
+			     <a href="http://blog.csdn.net/linhongyong/article/details/53447862" target="_blank">模板方法模式博文</a>&emsp;&emsp;
+			     <a href="http://www.jianshu.com/p/78f1e3634d17" target="_blank">中介者模式博文</a>&emsp;&emsp;
+			     <a href="http://www.cnblogs.com/TomXu/archive/2012/04/10/2435381.html" target="_blank">职责链模式博文</a>&emsp;&emsp;
+			</div>
+
        	</div>      
   </body>
 </html>
