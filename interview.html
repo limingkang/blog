@@ -61,7 +61,7 @@
 		            bound = function(){
 		                //这里的this指的是调用时候的环境
 		                return _this.apply(this instanceof  fNOP ?　this : that||window,
-		                    args.concat(Array.prototype.slice.apply(arguments,[0]))
+		                    args.concat(slice.apply(arguments,[0]))
 		                )
 		            }    
 		        fNOP.prototype = _this.prototype;
@@ -197,6 +197,101 @@
 				根本原因：因为浏览器会维持html中css和js的顺序，样式表必须在嵌入的JS执行前先加载、解析完。而嵌入的JS会阻塞后面的资源
 				加载，所以就会出现上面CSS阻塞下载的情况。
 			</div>
+
+			<div class="title">赋值语句和加号的问题</div>
+			<pre>
+	var a = {n: 1}
+	var b = a;
+	a.x = a = {n: 2}
+	console.log(a.x);     //undefined
+	console.log(b.x);     // {n:2}	
+	首先连续赋值语句是遵从从右至左依次赋值的规则
+	我猜测：js内部为了保证赋值语句的正确，会在一条赋值语句执行前，先把所有要赋值的引用地址取出一个副本，再依次赋值	
+	那么可能执行的步骤：
+		1、在执行前，会先将a和a.x中的a的引用地址都取出来，此值他们都指向{n:1}
+		2、在内存中创建一个新对象{n:2}
+		3、执行a={n:2}，将a的引用从指向{n:1}改为指向新的{n:2}
+		4、执行a.x=a，此时a已经指向了新对象，而a.x因为在执行前保留了原引用，所以a.x的a依然指向原先的{n:1}对象，所以给原对象新
+		增一个属性x，内容为{n:2}也就是现在a
+		5、语句执行结束，原对象由{n:1}变成{n:1,x:{n:2}}	
+
+	var a=123;
+	a.obj="asdfadfs";
+	console.log(a+a.obj);       //NAN
+	var b="123";
+	b.obj="asdfadfs";
+	console.log(b+b.obj);      //123undefined
+	var c={};
+	c.obj="asdfadfs";
+	console.log(c+c.obj);      //[object Object]asdfadfs
+			</pre>
+
+			<div class="title">js中new操作符究竟干了什么</div>
+			<pre>
+	var obj  = {};
+	obj.__proto__ = Base.prototype;
+	Base.call(obj);		
+	第一步，我们创建了一个空对象obj
+	第二步，我们将这个空对象的__proto__成员指向了Base函数对象prototype成员对象
+	第三步，我们将Base函数对象的this指针替换成obj，然后再调用Base函数，于是我们就给obj对象赋值了一个id成员变量，这个成员变量的
+	值是”base”，关于call函数的用法	
+			</pre>
+
+			<div class="title">js作用域和作用域链的理解</div>
+			<pre>
+    var num="test";
+    function func() {
+        console.log(num);           //输出：undefined，而非报错，因为变量num在整个函数体内都是有定义的
+        var num = 1;                //声明num 在整个函数体func内都有定义
+        console.log(num);           //输出：1
+    }
+    func();
+	JS函数作用域是指在函数内声明的所有变量在函数体内始终是可见的，也就是说在函数体内变量声明之前就已经可用了,就是下面这样：
+    function func() {
+	    var num;
+        console.log(num);           
+        num = 1;                
+        console.log(num);         
+    }
+
+    注意条件判断中变量也会被提升，因为它不是一个作用域
+    console.log(a);      //undefined  
+    if ("a" in window) {
+      var a="test";
+    };
+    console.log(a);  //test
+
+    函数的变量提升、变量传值、变量声明之间的顺序：
+    function a(b){
+      console.log(b);
+      function b(){
+          console.log(3);
+      }
+      var b=function(){
+         console.log(4);
+      }
+      console.log(b);
+      var b="234";
+      console.log(b);
+    }
+    a(1);   //function b(){console.log(3);}   function(){console.log(4)}   234
+    其实上面的相当于,变量声明提上来之后由于b一开始有值所以直接为1了：
+    function a(b){
+      var b=1;
+      function b(){
+          console.log(3);
+      }
+      console.log(b);
+      b=function(){
+          console.log(4);
+      }
+      console.log(b);
+      b="234";
+      console.log(b);
+    }
+    a(1);
+			</pre>
+			<div class="explain">所谓函数的作用域链就是深层的函数作用域可以访问外层的函数作用域</div>
 
        </div>
   </body>
