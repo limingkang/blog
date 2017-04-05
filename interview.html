@@ -293,6 +293,116 @@
 			</pre>
 			<div class="explain">所谓函数的作用域链就是深层的函数作用域可以访问外层的函数作用域</div>
 
+			<div class="title">jsbridge的原理</div>
+			<pre style="overflow-x:hidden;">
+	Native调用Javascript语言:
+		android:webview.loadUrl("javascript:functionName(\"" + argument + "\")");
+		ios:是通过UIWebView组件的stringByEvaluatingJavaScriptFromString方法来实现的，该方法返回js脚本的执行结果	
+
+	Javascript调用Native:
+		1.没现成的API可以直接拿来用，需要间接地通过一些方法来实现。UIWebView有个特性：在UIWebView内发起的所有网络请求，都可通过
+		delegate函数在Native层得到通知。这样，我们就可以在UIWebView内发起一个自定义的网络请求，通常是这样的格式：
+			jsbridge://methodName?param1=value&param2=value2
+		于是在UIWebView的delegate函数中，我们只要发现是jsbridge://开头的地址，就不进行内容的加载，转而执行相应的调用逻辑.
+		2.Android实现js调用native方法一般是先编写供js调用的类，然后通过添加javascripteInterface的方法，如
+			webView.addJavascriptInterface(pandoInterface, "pando");
+		将java对象pandoInterface生成js对象pando，然后直接window.pando就可以调用pandoInterface对象里面的方法。需要注意的是供
+		js调用的pandoInterface对象里面的java方法需手动加上@JavascriptInterface注解，这个是Google为解决安全问题引入的
+	
+	使用注意事项：
+		1.通过修改window.location.href也可以达到发起网络请求的效果，但是有一个问题，如果连续多次修改window.location.href的
+		值，在Native层只能接收到最后一次请求，前面的请求都会被忽略掉。所以JS端发起网络请求的时候，需要使用动态创建iframe标
+		签插入即可，这样就可以避免这个问题
+		2.在项目的实践中，我们逐渐抽象出一些通用的方法，这些方法基本上都是可以满足项目的需求,如：
+			JSBridge.getData()	JSBridge.putData() JSBridge.gotoWebview()		
+			</pre>
+
+			<div class="title">http头中常用的参数的记录</div>
+			<pre>
+	HTTP Request Header:
+		Accept		指定客户端能够接收的内容类型	Accept: text/plain, text/html
+
+		Accept-Charset	浏览器可以接受的字符编码集。	Accept-Charset: iso-8859-5
+
+		Accept-Encoding	指定浏览器可以支持的web服务器返回内容压缩编码类型。	Accept-Encoding: compress, gzip	
+
+		Cache-Control	指定请求和响应遵循的缓存机制	Cache-Control: no-cache
+
+		Cookie		HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器。	
+					Cookie: $Version=1; Skin=new;
+
+		Content-Length	请求的内容长度	Content-Length: 348
+
+		Content-Type	请求的与实体对应的MIME信息		Content-Type: application/x-www-form-urlencoded	
+
+		Host		指定请求的服务器的域名和端口号	Host: www.zcmhi.com
+
+		If-Modified-Since	如果请求的部分在指定时间之后被修改则请求成功，未被修改则返回304代码	
+					If-Modified-Since: Sat, 29 Oct 2010 19:43:31 GMT
+
+		If-None-Match	如果内容未改变值为false并返回304代码，参数为服务器先前发送的Etag，与服务器的Etag比较判断是否改变
+					If-None-Match: “737060cd8c284d8af7ad3082f209582d”
+
+		User-Agent	User-Agent的内容包含发出请求的用户信息	User-Agent: Mozilla/5.0 (Linux; X11)
+
+	HTTP Responses Header:
+		Cache-Control		告诉所有的缓存机制是否可以缓存及哪种类型	Cache-Control: no-cache
+
+		Content-Encoding	web服务器支持的返回内容压缩编码类型	Content-Encoding: gzip
+
+		Content-Length		响应体的长度	Content-Length: 348
+
+		Content-Type		返回内容的MIME类型	Content-Type: text/html; charset=utf-8
+
+		ETag			请求变量的实体标签的当前值	ETag: “737060cd8c284d8af7ad3082f209582d”
+
+		Expires			响应过期的日期和时间	Expires: Thu, 01 Dec 2010 16:00:00 GMT
+
+		Last-Modified		请求资源的最后修改时间	Last-Modified: Tue, 15 Nov 2010 12:45:26 GMT
+
+		Set-Cookie		设置Http Cookie	Set-Cookie: UserID=JohnDoe; Max-Age=3600; Version=1
+			</pre>
+
+			<div class="title">http缓存使用的理解</div>
+			<pre>
+	http缓存的理解:
+		把Last-Modified和ETags请求的http报头一起使用，这样可利用客户端（例如浏览器）的缓存。因为服务器首先产生
+		Last-Modified/Etag标记，服务器可在稍后使用它来判断页面是否已经被修改。本质上，客户端通过将该记号传回服
+		务器要求服务器验证其（客户端）缓存。过程如下:
+		1.客户端请求一个页面（A）
+		2.服务器返回页面A，并在给A加上一个Last-Modified/ETag
+		3.客户端展现该页面，并将页面连同Last-Modified/ETag一起缓存
+		4.再请求A，将上次请求时服务器返回的Last-Modified/ETag的值传递给服务器，通过If-Modified-Since/If-None-Match
+		5.服务器检查该Last-Modified或ETag的值，并判断出该页面自上次客户端请求之后还未被修改，直接返回响应304和一个空的响应体
+
+	Etag的引入主要为了解决 Last-Modified 无法解决的一些问题:
+		1.一些文件会周期性的更改，但他的内容并不改变(仅仅改变的修改时间)，这时候并不希望客户端认为这个文件被修改了，而重新GET
+		2.某些文件修改非常频繁，比如在秒以下的时间内进行修改，(比方说1s内修改了N次)，If-Modified-Since能检查到的粒度是s级的
+		这种修改无法判断(或者说UNIX记录MTIME只能精确到秒)
+		3.某些服务器不能精确的得到文件的最后修改时间,为此，HTTP/1.1 引入了 Etag(Entity Tags).Etag仅仅是一个和文件相关的标记
+		可以是一个版本标记,比如说v1.0.0或者说"2e681a-6-5d044840"这么一串看起来很神秘的编码。但是HTTP/1.1标准并没有规定
+		Etag的内容是什么或者说要怎么实现，唯一规定的是Etag需要放在""内
+
+	网页的缓存是由HTTP消息头中的“Cache-control”来控制的，常见的取值有private、no-cache、max-age、must- revalidate等，
+	默认为private。其作用根据不同的重新浏览方式分为以下几种情况：
+		（1） 打开新窗口
+		值为private、no-cache、must-revalidate，那么打开新窗口访问时都会重新访问服务器。
+		而如果指定了max-age值，那么在此值内的时间里就不会重新访问服务器，例如：
+		Cache-control: max-age=5(表示当访问此网页后的5 秒 内再次访问不会去服务器)
+		（2） 在地址栏回车
+		值为private或must-revalidate则只有第一次访问时会访问服务器，以后就不再访问。
+		值为no-cache，那么每次都会访问。
+		值为max-age，则在过期之前不会重复访问。
+		（3） 按后退按扭
+		值为private、must-revalidate、max-age，则不会重访问，
+		值为no-cache，则每次都重复访问
+		（4） 按刷新按扭
+		　 无论为何值，都会重复访问
+		（5）Cache-control值为“no-cache”时，访问此页面不会在Internet临时文章夹留下页面备份
+		（6）http优化方面最好.去掉Date, Expires而只保留Cache-Control来控制本地缓存			
+			</pre>
+			<div class="explain">Expires 表示存在时间，允许客户端在这个时间之前不去检查（发请求），等同max-age的 效果。但是如果同时存在，则被Cache-Control的max-age覆盖</div>
+
        </div>
   </body>
 </html>

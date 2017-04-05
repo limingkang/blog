@@ -452,29 +452,15 @@
                 quicksort(array); //[0,1,2,3,5,5,7,7,8]
 
                 function formatNum(str,digit){
-                    var newStr = "";
-                    var count = 0;
                     // 要保留的小数位数默认两位
                     var digit_number=digit||2;
                     //对字符串或者数字进行保留两位四舍五入处理
                     str=parseFloat(str).toFixed(digit_number).toString();  
-                    var iffloat=str.indexOf(".")==-1;
-                    var start=iffloat?str.length-1:str.indexOf(".")-1;
-                    // 处理整数部分
-                    for(var i=start;i>=0;i--){
-                        if(count % 3 == 0 && count != 0){
-                            newStr = str.charAt(i) + "," + newStr;
-                        }else{
-                            newStr = str.charAt(i) + newStr;
-                        }
-                        count++;
-                    }
-                    // 是否是小数
-                    if (iffloat) {
-                        return newStr;
-                    } else {
-                        return newStr + str.substr(str.indexOf("."));
-                    }
+                    var iffloat=str.indexOf(".")+1;
+                    var right=str.substr(iffloat);
+                    var left=str.substring(0,iffloat);
+                    left=left.replace(/(\d{3}(?!\.))/g,'$1,');
+                    return left+right;
                 }
             </pre>
 
