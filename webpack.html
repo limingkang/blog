@@ -20,6 +20,7 @@
             $ webpack --watch   //监听变动并自动打包
             $ webpack -p    //压缩混淆脚本，这个非常重要！
             $ webpack -d    //生成map映射文件，告知哪些模块被最终打包到哪里了
+        对于webpack来说当你require同一个js的时候，只运行这个js一次但是加载还是会加载的
 
 
     	{
@@ -79,6 +80,7 @@
                        template:"index.html",
                        inject:"head",     //指定插入的link,script标签放入head标签中也可指定放入body中 
                        data:new Date(),   //还可传参在模板中用<%= htmlWebpackPlugin.options.data %>就可以取到,现在支持ejs语法
+                       chunks:['common.js']  //这里面的js和entry对应但是会以script标签形式打入模板
                    }),
                   extractCSS,
                   extractLESS
@@ -91,6 +93,7 @@
 
 
         var webpack = require('webpack');
+        //注意这个插件的作用是将多个入口的js文件中的公共部分进行打包
         var commonsPlugin = new webpack.optimize.CommonsChunkPlugin('common.js');
         module.exports = {
             context 用于解析entry选项的基础目录(绝对路径), 如果output.pathinfo设置了，就包含了缩短过的目录；
