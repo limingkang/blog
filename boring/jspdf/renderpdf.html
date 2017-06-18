@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="jspdf.min.js"></script>
+<script src="html2canvas.js"></script>
+</head>
+</head>  
+<body>  
+    <div id="html2canvasmask" style="background: black;height: 400px;">
+    	1.test content
+    	<div style="background: red;">two content</div>
+    </div>
+    <button onclick="myexport()">导出pdf</button>
+
+    <script type="text/javascript">
+    	var pdfFormat = {
+	        'a0': [2383.94, 3370.39],
+	        'a1': [1683.78, 2383.94],
+	        'a2': [1190.55, 1683.78],
+	        'a3': [841.89, 1190.55],
+	        'a4': [595.28, 841.89],
+	        'a5': [419.53, 595.28],
+	        'a6': [297.64, 419.53],
+	        'a7': [209.76, 297.64],
+	        'a8': [147.40, 209.76],
+	        'a9': [104.88, 147.40],
+	        'a10': [73.70, 104.88],
+	        'b0': [2834.65, 4008.19],
+	        'b1': [2004.09, 2834.65],
+	        'b2': [1417.32, 2004.09],
+	        'b3': [1000.63, 1417.32],
+	        'b4': [708.66, 1000.63],
+	        'b5': [498.90, 708.66],
+	        'b6': [354.33, 498.90],
+	        'b7': [249.45, 354.33],
+	        'b8': [175.75, 249.45],
+	        'b9': [124.72, 175.75],
+	        'b10': [87.87, 124.72],
+	        'c0': [2599.37, 3676.54],
+	        'c1': [1836.85, 2599.37],
+	        'c2': [1298.27, 1836.85],
+	        'c3': [918.43, 1298.27],
+	        'c4': [649.13, 918.43],
+	        'c5': [459.21, 649.13],
+	        'c6': [323.15, 459.21],
+	        'c7': [229.61, 323.15],
+	        'c8': [161.57, 229.61],
+	        'c9': [113.39, 161.57],
+	        'c10': [79.37, 113.39],
+	        'dl': [311.81, 623.62],
+	        'letter': [612, 792],
+	        'government-letter': [576, 756],
+	        'legal': [612, 1008],
+	        'junior-legal': [576, 360],
+	        'ledger': [1224, 792],
+	        'tabloid': [792, 1224]
+    	}
+
+       var renderPDF = function(content, pdfName, format, onSuccess){
+	        // 如果要分页的话要算比例
+	        var pdfProportion = pdfFormat[format][0] / pdfFormat[format][1];
+	        var contentHeight = content.offsetHeight;
+	        var contentWidth = content.offsetWidth;
+	        
+
+	        function renderPages(imgData){
+	            if (contentWidth<contentHeight) {
+	                var orition="p";
+	            }else{
+	                var orition="l";
+	            }
+	            var pdf = new jsPDF(orition, "pt",[contentWidth,contentHeight]); 
+	            pdf.addImage(imgData, 'JPEG', 0, 0,contentWidth,contentHeight);
+	            pdf.save(pdfName);
+	            onSuccess();
+	            //下面就是要分页时候的代码,可以选择性要不要
+	            return;
+
+	            //l:横向， p：纵向
+	            // 第二个是单位，第三个是大小格式
+	            var pageHeight = contentWidth / pdfProportion;          // 根据这个来判断是否要分页
+	            var pdf = new jsPDF("p", "pt", format); 
+	            //如果只要一页
+	            if(contentHeight < pageHeight){
+	                // 开始的0,0表示写入位置,后面两个表示结束位置，注意比例否则容易失真
+	                pdf.addImage(imgData, 'JPEG', 0, 0,pdfFormat[format][0],pdfFormat[format][0]/contentWidth*contentHeight);
+	                pdf.save(pdfName);
+	            }
+	            else{
+	                // 分页的情况
+	                var index = 0;
+	                var count = parseInt(contentHeight / pageHeight);  //页数
+	                // 先将图片以背景填入
+	                var page = document.createElement("div");               
+	                page.style.position = "absolute";
+	                page.style.width = contentWidth + "px";
+	                page.style.height = pageHeight + "px";
+	                page.style.backgroundImage = "url(" + imgData + ")";
+	                page.style.backgroundRepeat = "norepeat";
+	                document.body.appendChild(page);
+
+	                function addPage(i, onFinished){
+	                    // 每次调整背景图的位置来画图
+	                    page.style.backgroundPositionY = -pageHeight * i + "px";
+	                    // 画现在的背景图
+	                    html2canvas(page, {
+
+	                        onrendered: function(canvas) {
+
+	                            var pageData = canvas.toDataURL('image/jpeg');
+
+	                            pdf.addImage(pageData, 'JPEG', 0, 0,pdfFormat[format][0],pdfFormat[format][1]);
+
+	                            if(i + 1 < count){
+	                                pdf = pdf.addPage();
+	                                addPage(i + 1, onFinished);
+	                            }
+	                            else{
+	                                onFinished()
+	                            }
+
+	                        }
+	                    });
+
+	                }
+	                // 首次调用
+	                addPage(index, function(){
+	                    // 画最后的背景图
+	                    page.style.backgroundPositionY = -pageHeight * count + "px";
+	                    var lastPageHeight = contentHeight % pageHeight;
+	                    page.style.height = lastPageHeight + "px";
+	                    html2canvas(page, {
+	                        onrendered: function(canvas) {
+	                            var pageData = canvas.toDataURL('image/jpeg');
+	                            pdf = pdf.addPage();
+	                            pdf.addImage(pageData, 'JPEG', 0, 0,pdfFormat[format][0], pdfFormat[format][1]/pageHeight*lastPageHeight);
+	                            document.body.removeChild(page);
+	                            onSuccess && onSuccess();
+	                            pdf.save(pdfName);
+	                        }
+	                    });
+	                });
+	            }                                
+	        }
+	        // 先把整体画出来
+	        html2canvas(content, {
+	            // 渲染完成时调用，获得 canvas
+	            onrendered: function(canvas) {
+	                // 从 canvas 提取图片数据
+	                var imgData = canvas.toDataURL('image/jpeg');               
+	                renderPages(imgData);
+	            },
+	            background:"#fff", //这里给生成的图片默认背景，不然的话，如果你的html根节点没有设置背景的话，会用黑色填充。
+	            allowTaint: true  //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
+
+	        });
+       }
+       
+       function myexport(){
+       		renderPDF(document.getElementById("html2canvasmask"),"pdfname","a4", function(){
+       		    console.log("pdf success")
+       		});
+       }
+    </script>
+</body>  
+</html>
