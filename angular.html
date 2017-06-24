@@ -1,22 +1,376 @@
 <!doctype html>
 <html>
-  	<head>
-    	<meta charset="utf-8">
-    	<meta http-equiv="X-UA-Compatible" content="chrome=1">
-    	<title>Blog by limingkang</title>
-    	<link rel="stylesheet" href="stylesheets/styles.css">
-    	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    	<meta name="description" content="前端开发记录">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>Blog by limingkang</title>
+        <link rel="stylesheet" href="stylesheets/styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="description" content="前端开发记录">
         <meta name="keywords" content="angular">
     </head>
     <body>
         <div class="big_container">
-            <div class="title"></div>
+            <div class="title">对于angular的想法</div>
             <pre>
-        
+        1.由于angular1的问题非常多，所以本人并不看好其发展，但是新出来的angular可以说其设计上性能上都有了巨大的飞跃，还是值得
+        一学的。不得不说Angular相对于Vue的优势在Vue2.0之后已经削弱很多了。比如SSR（Vue2已经原生支持）和全栈式框架（官方推荐
+        Vuex+Vue-Router），native端也有阿里巴巴的weex
+        2. Angular2原生Form支持： Angular2原生的Form模块功能相当强大。除了双向绑定之类的基本功能，还能通过programatic API 控
+        制dom元素的表单行为。也有成型API提供自定义validator。这一点Vue只有v-model和第三方库。对于后台之类的重表单应用，还是
+        Ng2有优势。
+        3. 依赖注入无论你喜不喜欢DI，这就是Angular2的强大功能之一。有DI可以在不改变代码结构的情况下完成功能替换。（如，在
+        desktop和mobile有不同功能，可以通过注入不同service实现，而共用相同的template和directive）。Vue则需要程序员自己规划代
+        码组织，用来支持共享组件。比如，一个视频播放控件有几个子组件完成，子组件需要分享一个状态。这一点Angular2有原生的
+        service injection pattern。而Vue则没有官方推荐。
+        4. 对标准向后兼容Angular2在一些细节上对标准有更好的支持。比如list differ算法中Angular2 可以支持实现了Symbol.iterator
+        的对象，而Vue只能支持Array。对Observable和Promise，Angular2在应用的各个地方，甚至模板级别都有支持(async pipe)。而Vue
+        需要vue-rx等第三方库支持。Angular2的组件有shadow dom的实现可以选择，而Vue目前还没有。
+        5. 测试Angular2一开始就设计好了如何对组件进行测试，而Vue组件虽然也很好写测试，但是没有官方推荐的唯一标准（当然，对视
+        图是否需要测试还有待探讨）。除此以外，Angular2还有一些小功能比如检验模板的类型安全（即，模板里能在编译器保证没有引用
+        model未定义的变量），不过AoT本身似乎还没有稳定，所以不能算优势。对TS的支持也是Angular好，当然前提是你喜欢TS。总体而
+        言，就是Angular2里你能想到的都有了，你没想到的它也有了。框架的全面性是难以撼动的
+        6.虽让angular有很多优点但是他也非常重，而且第三库如rxjs都不是自己维护相比vue个人全部是个人维护，修复问题也更快，而
+        且vue上手简单，文档全，现在个人做到项目来说angular能做的vue同样也能做
+            </pre> 
+            <div class="explain">
+                <a href="https://angular.cn/docs/ts/latest/guide/">angular中文网</a>&emsp;
+                <a href="https://github.com/limingkang/angular-webpack-starter">angular项目架构实践</a>&emsp;
+                <a href="https://www.tslang.cn/docs/handbook/basic-types.html">typescript语法</a>&emsp;
+                <a href="https://github.com/ng-book2/code">ng-book随书源码</a>
+            </div>                                                                                                    
+            
+            <div class="title">angular中form表单的使用，响应式模型驱动表单</div>
+            <textarea style="border: 1px solid #D7D8C8;height: 1320px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
+        //html结构设计
+        <form [formGroup]="userForm">
+            <label>姓名:</label>
+            <input type="text" formControlName="name">
+            <span *ngIf="userForm.controls.name.pristine">未修改</span>
+            <span *ngIf="userForm.controls.name.dirty">已修改</span>
+            <span *ngIf="userForm.controls.name.valid">有效</span>
+            <div [hidden]="userForm.controls.name.valid||userForm.controls.name.pristine">
+                <p *ngIf="userForm.controls.name.errors?.minlength">姓名最小长度为3</p>
+                <p *ngIf="userForm.controls.name.errors?.required">必须输入姓名</p>
+                <p>{{userForm.controls.name.className}}</p>        //验证器的有效否会调用相应class如ng-valid,ng-invalid等
+            </div>
+            <label>电话:</label>
+            <input type="text" formControlName="mobile">
+
+            <fieldset formGroupName="address">
+                <label>城市:</label>
+                <input type="text" formControlName="city">
+                <label>街道:</label>
+                <input type="text" formControlName="street">
+            </fieldset>
+            <button type="submit">保存</button>
+        </form>
+        //组件内容,其中的验证器也可以自定义，当然在模板驱动和模型驱动下方法不同,上网可查此处不再赘述
+        import{ Component, OnInit }from'@angular/core';
+        import{ FormGroup, FormControl, FormBuilder, Validators }from'@angular/forms';
+
+        export class ReactiveFormsComponent implements OnInit{
+            userForm: FormGroup;
+            constructor(private formBuilder: FormBuilder) {}
+            ngOnInit() {
+                this.userForm =this.formBuilder.group({
+                    name: ['张三', [Validators.required, Validators.minLength(3)]],
+                    mobile: [13800138001, [Validators.required, Validators.minLength(11), Validators.maxLength(11)]],
+                    address: this.formBuilder.group({
+                        city: ['北京', Validators.required],
+                        street: ['朝阳望京...', Validators.required]
+                    })
+                });
+
+                // 也可以创建响应式表单，从表单控件中获得地址、城市、街道控件的引用
+                // 地址控件也是一个FormGroup，需要将它转型成FormGroup类型
+                // 要引入 import'rxjs/add/operator/debounceTime';
+                // 要引入 import'rxjs/add/operator/distinctUntilChanged';
+                const addr$ = <FormGroup>this.userForm.controls['address'];
+                const city$ = addr$.controls['city'];
+                const street$ = addr$.controls['street'];
+                city$.valueChanges.debounceTime(1000).distinctUntilChanged().subscribe(cityValue => {
+                    this.msg = cityValue + ' 欢迎你!';
+                    street$.setValue(cityValue);
+                });
+                this.userForm.valueChanges.subscribe(x => this.changeMsg = { event: 'Form DATA CHANGED', object: x });
+                }
+                reset() {
+                    // 我们同样可以使用reset方法来重置数据
+                    this.userForm.reset();
+                }
+            }
+        }
+            </textarea>
+            <div class="explain">根传统的模板驱动的form表单相比，使用模型驱动的表单，我们的页面可以很整洁，没有验证器，没有
+            数据绑定，没有 onChange , onBlur 等事件绑定，这些都在组件中完成，这对于测试会非常容易。所以，当你有一个表单，考
+            虑用哪种表单创建方式的时候，如果这个表单比较简单，甚至不需要测试，那就用模板驱动的表单就可以。如果表单比较复杂
+            就应该考虑使用模型驱动的表单方式</div>
+
+            <div class="title">HTML attribute 与 DOM property 的对比</div>
+            <pre>
+        1.attribute 初始化 DOM property，然后它们的任务就完成了。property 的值可以改变；attribute 的值不能改变。
+        如浏览器渲染<span><</span>input type="text" value="Bob">时,将创建相应DOM节点,其value property 被初始化为 “Bob”。
+        当用户在输入框中输入 “Sally” 时，DOM 元素的value property 变成了 “Sally”。 但是这个 HTML value attribute 保持不变
+        如果我们读取 input 元素的 attribute，就会发现确实没变： input.getAttribute('value') // 返回 "Bob"
+
+        2.模板绑定是通过 property 和事件来工作的，而不是 attribute，所以在 Angular 的世界中，attribute 唯一的作用是用来初
+        始化元素和指令的状态。 当进行数据绑定时，只是在与元素和指令的 property 和事件打交道，而 attribute 就完全靠边站了
+
+        3.当元素没有属性可绑的时候，就必须使用 attribute 绑定例如colspan只能使用[attr.colspan]='expression';
+        [class]="badCurly"当badCurly有值时候则class全部覆盖为这个值,而[class.classname]='expression'如果expression为真那么
+        增加这个类名否则移除这个类名;style标签则使用[style.font-size.em]="isSpecial ? 3 : 1";或者我们使用ngClass、ngStyle来
+        返回键值对对象
+
+        4.angular的数据绑定有三种
+            从数据源到视图使用的是
+                {{expression}}
+                [target]="expression"
+                bind-target="expression"
+            从视图到数据源使用，一般是事件如click等或者是组件的输出值
+                (target)="statement"
+                on-target="statement"
+            双向绑定使用  
+                [(target)]="expression"
+                bindon-target="expression"    
             </pre>
-            <div class="explain"></div>
-        	
+
+            <div class="title">angular动画</div>
+            <pre>
+        1.首先安装动画npm install @angular/animations --save，之后加载他import @angular/animations,还有在一个模块：
+            import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+        2.注意还要imports进去,然后就可以开始写动画animate.ts
+            import {trigger, state, style, animate, transition,keyframes} from '@angular/animations';
+            export const SingalAnimate = trigger('signal', [
+                state('go', style({
+                    'background-color': 'green',
+                    'height':'100px'
+                })),
+                state('stop', style({
+                    'background-color':'red',
+                    'height':'50px'
+                })),
+                transition('void => *', animate(5000, keyframes([  //void状态表示元素没有被附加到视图
+                    style({'transform': 'scale(0)', offset: 0}),   //offset偏移量没写则均分
+                    style({'transform': 'scale(0.1)', offset: 0.5}),
+                    style({'transform': 'scale(1)', offset: 1})
+                ]))),
+                transition('* => void', [       //离场动画组
+                    group([
+                        animate('0.3s ease', style({
+                          transform: 'translateX(50px)',
+                          width: 10
+                        })),
+                        animate('0.3s 0.2s ease', style({
+                          opacity: 0
+                        }))
+                    ])
+                ]),
+                transition('* => *', animate('.5s 1s cubic-bezier(0.2, 0.8, 0.3, 1.8)'))
+            ]);
+        3.组件ts里：import { SingalAnimate } from './animate';在元数据animation里添加：animations: [ SingalAnimate ]
+        4.在组件html里面使用：
+            <textarea readonly>
+                <div (@signal.start)="animationStarted($event)"
+                 (@signal.done)="animationDone($event)"   [@signal]="'go'"></div>
+            </textarea>
+        回调接收一个参数包含一些属性，例如fromState，toState和totalTime。无论动画是否实际执行过，那些回调都会触发。
+            </pre>
+
+            <div class="title">angular路由简单用法</div>
+            <pre>
+        页面中a标签写入方式,注意我们的router-outlet还可以写name属性，之后在路由中写对应outlet属性即可：
+        routerLink="/portal/login" routerLinkActive="active"
+        //路由地址为/portal/register/12/detail
+        [routerLink]="['/portal/register',id,'detail']" routerLinkActive="active"
+        //路由地址为/home/todoList?id=12&type=important
+        [routerLink]="['/home/todoList']" [queryParams]="{id: id, type: 'important'}" routerLinkActive="active"  
+        手动触发时候想要引入router:Router对象之后
+        this.router.navigate(['/portal/register', this.newid ,'detail']);
+        this.router.navigate(['/portal/login'], { queryParams: { id: this.id, type:'important'} });  
+
+        取值的时候先引入router:ActivatedRoute：
+        组件级别的变化用它，只有当/todo/list到/todo/all是切换到不同组件的时候才会触发
+        var lettodo=+this.route.snapshot.params['id'];
+        当只是换值拉去数据的时候用它即/todo/1到/todo/2是同一组件不同值时候
+        this.route.params.subscribe(params => {
+            console.log(params);   // {id: "xxx",details:"xxx"}对应路径匹配为todo/:id/:detail
+        });
+        如果想获取问号拼的那样的值只是需要将上面的params换成queryParams即可  
+
+        路由钩子：  
+        CanActivate：这种类型的Guard用来控制是否允许进入当前的路径。注意这里即使没有被激活懒加载模块仍旧会加载
+        CanActivateChild：这种类型的Guard用来控制是否允许进入当前路径的所有子路径。
+        CanDeactivate：用来控制是否能离开当前页面进入别的路径
+        CanLoad：用于控制一个异步加载的子模块是否允许被加载，它是先与CanActivate运行的
+            </pre>
+
+            <div class="title">angular的请求</div>
+            <pre>
+        import {Headers, Http, URLSearchParams, Response,RequestOptions} from '@angular/http';
+        import { Observable } from 'rxjs/Observable';
+        import 'rxjs/add/operator/catch';
+        import 'rxjs/add/operator/map';
+        getHeroes(): Observable<any> {
+            var params: URLSearchParams = new URLSearchParams();
+            params.set("test","value");
+            return this.http.get(url,{search:params})
+                    .map(this.extractData)
+                    .catch(this.handleError);
+        }
+        private extractData(res: Response) {
+            let body = res.json();
+            return body.data || { };
+        }
+        private handleError (error: Response | any) {
+            let errMsg: string;
+            if (error instanceof Response) {
+              const body = error.json() || '';
+              const err = body.error || JSON.stringify(body);
+              errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+            } else {
+              errMsg = error.message ? error.message : error.toString();
+            }
+            console.error(errMsg);
+            return Observable.throw(errMsg);
+        }  
+        其他地方只要引入这个服务调用订阅就行了
+        this.heroService.getHeroes()
+            .subscribe(
+               heroes => this.heroes = heroes,
+               error =>  this.errorMessage = <any>error); 
+
+        上面是rxjs的流式操作的方法最后去订阅，也可以强制改为promise对象
+        return this.http.get(url,{ search: params})
+           .toPromise()
+           .then(response => response.json())
+           .catch(this.handleError); 
+        如此的话调用的时候就是：
+        this.heroService.getHeroes()
+            .then(
+               heroes => this.heroes = heroes,
+               error =>  this.errorMessage = <any>error);  
+
+        对于post请求大体基本是一样的
+        getHeroes(): Observable<any> {
+            let headers = new Headers({ 'Content-Type': 'application/json' });
+            let options = new RequestOptions({ headers: headers });
+            let senddata={};
+            return this.http.post(url,senddata,options)
+                    .map(this.extractData)
+                    .catch(this.handleError);
+        } 
+
+
+        我们还可以编写新的服务注入模块中来改变请求时候的默认配置参数等：
+        import { Injectable } from '@angular/core';
+        import { BaseRequestOptions, RequestOptions } from '@angular/http';
+        @Injectable()
+        export class DefaultRequestOptions extends BaseRequestOptions {
+          constructor() {
+            super();
+            // Set the default 'Content-Type' header
+            this.headers.set('Content-Type', 'application/json');
+          }
+        }
+        export const requestOptionsProvider = { provide: RequestOptions, useClass: DefaultRequestOptions };
+        之后在模块中引入providers: [ requestOptionsProvider ] 
+            </pre>
+            <div class="explain">还有跨域的jsonp方法，输入搜索subject流的优化等，可查上面的angular中文网;对于更多的默认参数设置以及http拦截器等可查网上资料</div>
+
+            <div class="title">angular常用的几个小功能</div>
+            <pre>
+        1.安全导航操作符 (?.) 是一种流畅而便利的方式,如：
+            The current hero's name is {{currentHero?.name}}当currentHero为空时候就会报错的，所以使用这个符号就不会，当然
+            也可以使用The current hero's name is {{currentHero && currentHero.name}}来解决问题但是累赘 
+
+        2.所有服务都是单例的，如果想生成新示例得在模块或组件中重新注册
+        providers: [
+            { provide: LocationStrategy, useClass: HashLocationStrategy },//在common模块中使用改变路由方式
+            [LoggerHelper, {provide: Logger, useClass: BetterLogger}], // 带有依赖的注册商
+            UserService,
+            { provide: Hero,          useValue:    someHero },
+            { provide: TITLE,         useValue:   'Hero of the Month' }, //值-提供商
+            { provide: HeroService,   useClass:    HeroService },    //类-提供商
+            { provide: MinimalLogger, useExisting: LoggerService },  //别名-提供商
+            { provide: RUNNERS_UP,    useFactory:  runnersUpFactory(2), deps: [Hero, HeroService] } //工厂-提供商
+        ] 
+        上面对象中provide对应你使用该服务的时候的使用方法的名字，useClass对应用来实例化的那个类的方法
+
+        3.使用@Optional()和@Host()装饰器来限定依赖查找方式
+        依赖可以被注入到任何组件级别,当组件申请一个依赖时，Angular从该组件本身的注入器开始，沿着依赖注入器的树往上找，直到
+        找到第一个符合要求的提供商。如果Angular不能在这个过程中找到合适的依赖，它就会抛出一个错误,看构造函数
+        constructor(
+            @Host() // limit to the host component's instance of the HeroCacheService
+            private heroCache: HeroCacheService,
+            @Host()     // limit search for logger; hides the application-wide logger
+            @Optional() // ok if the logger doesn't exist
+            private loggerService: LoggerService
+        ) {}
+        @Host()函数是heroCache属性的装饰器，确保从其父组件HeroBioComponent得到一个缓存服务。如果该父组件不存在这个服务，
+        Angular就会抛出错误，即使组件树里的再上级有某个组件拥有这个服务，Angular也会抛出错误;
+        另一个@Host()函数是属性loggerService的装饰器，我们知道在应用程序中，只有一个LoggerService实例，也就是在AppComponent
+        级提供的服务。 该宿主HeroBioComponent没有自己的LoggerService提供商;
+        如果没有同时使用@Optional()装饰器的话，Angular就会抛出错误。多亏了@Optional()，Angular把loggerService设置为null，
+        并继续执行组件而不会抛出错误;
+
+        4.当编写一个继承自另一个组件的组件时，要格外小心。如果基础组件有依赖注入，必须要在派生类中重新提供和重新注入它们，
+        并将它们通过构造函数传给基类，所以一定要避免组件的继承：
+        @Component({
+          selector: 'sorted-heroes',
+          template: ``,
+          providers: [HeroService]
+        })
+        export class SortedHeroesComponent extends HeroesBaseComponent {
+          constructor(heroService: HeroService) {
+            super(heroService);
+          }
+          protected afterGetHeroes() {}
+        }
+        现在，请注意afterGetHeroes()方法。 我们第一反应是在SortedHeroesComponent组件里面建一个ngOnInit方法来做排序。但是
+        Angular会先调用派生类的ngOnInit，后调用基类的ngOnInit， 所以可能在英雄到达之前就开始排序。这就产生了一个讨厌的错误。
+        所以覆盖基类的afterGetHeroes()方法可以解决这个问题
+
+        5.依赖注入常用的用来限定注入行为的装饰器
+            @Optional 如果找不到服务，设置参数为null
+            @Attribute 注入宿主元素属性值
+            @ContentChild 注入内容子组件
+            @ViewChild 注入视图子组件
+            @Host 注入本组件或它宿主中的服务
+            @SkipSelf 注入本组件祖先中提供的服务
+            </pre>
+
+            <div class="title">获取父子组件的引用</div>
+            <pre>
+        在Angular里，获取一个组件的引用比较复杂。虽然Angular应用程序是一个组件树，但它没有公开的API来在该树中巡查和穿梭。
+        有一个API可以获取子级的引用(请看API参考手册中的Query, QueryList, ViewChildren,和ContentChildren);但没有公开的API来
+        获取父组件的引用。但是因为每个组件的实例都被加到了依赖注入器的容器中，可以使用Angular依赖注入来找到父组件。
+
+        如果只想在父组件的模板中使用子组件的方法只要：<span><</span>child-component #timer><span><</span>/child-component> 
+        父组件模板中像timer.stop()这样使用就行
+        如果想在父组件ts中文件中引用就得import { AfterViewInit, ViewChild } from '@angular/core';
+        @ViewChild(CountdownTimerComponent)
+        private timerComponent: CountdownTimerComponent;
+        ngAfterViewInit() {
+            setTimeout(() => this.seconds = () => this.timerComponent.seconds, 0);
+        }  
+
+        如果子组件想获取父组件引用并且知道父组件类名的话可以constructor( @Optional() public alex: antParentComponent ) {}
+        但是我们的组件一般是公用的，可能是多个组件的子组件所以我们可以这样写：
+            父组件：providers: [{ provide: Parent, useExisting: forwardRef(() => SelfComponentName) }]
+            Parent是该提供商的类-接口令牌。SelfComponentName引用了自身，造成循环引用，使用forwardRef打破了该循环 
+            子组件中：constructor( @Optional() public parent: Parent ) { }
+        如果是多级，第一级还是那样写,第二级除了在providers像上面那样写,构造函数得加个标识,最后一级还是像上面那样正常写  
+            constructor( @SkipSelf() @Optional() public parent: Parent ) { }
+            添加@SkipSelf主要是出于两个原因：
+                它告诉注入器从一个在自己上一级的组件开始搜索一个Parent依赖
+                如果没写@SkipSelf装饰器的话，Angular就会抛出一个循环依赖错误 
+            </pre>
+            <div class="explain">
+                应用程序组件经常需要共享信息。我们喜欢更加松耦合的技术，比如数据绑定和服务共享。 但有时候组件确实需要拥有
+                另一个组件的引用，用来访问该组件的属性值或者调用它的方法
+            </div>
+
         </div>
     </body>
 </html>
