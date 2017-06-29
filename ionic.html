@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,ionic">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">Ionic和ReactNative</div>
+           <pre>
+	其实还有一个比较流行的平台NativeScript，本人没有接触太多就不再介绍，但是总的来说这三个平台提供了相同的目的：
+	通过网络技术（即HTML，CSS，JavaScript等）来支持创建移动应用程序。但是，将它们相互分开的是他们提供的功能以及
+	它们如何与特定平台的API进行通信;
+
+	Ionic3的介绍:
+		Ionic3仍然使用WebView(就像之前的Ionic版本)也就是hybrid，所以你在Android的活动中编写HTML代码，因此与ReactNative
+		和NativeScript相比，它可能会比较慢。您可以在Ionic2中创建本地化的小部件，但是它们仍然在本地容器中的WebView中
+		呈现，因此在技术上不是原生的。正是因为如此所以它有非常快速的开发测试周期。您编写代码并在浏览器上进行测试，无
+		需重型模拟器加载。允许您在TypeScript中编写代码，使得从AngularJS2过渡非常简单。相同的语言（TypeScript）可用于为
+		每个平台开发应用程序。其插件系统使您可以使用任何类型的设备的本机功能。缺点就是如果您需要对本地代码使用大量回调，
+		可能会出现性能问题。所有设备中的UI都可以为那些喜欢本机UI外观的用户开放。开发高度先进的图形或高度互动的过渡可能
+		是一项复杂的工作;
+
+	ReactNative的介绍:
+		与Ionic3不同，ReactNative和NativeScript都使用特定平台的本地操作系统的本机UI组件，因此您正在使用JavaScript编写组
+		件，但实际上它们是在场景后面使用这些本机组件。这对UX有很好的效果，因为用户可以具有类似的本机应用的体验;其次，这
+		不是像Ionic的PhoneGap/Cordova中的基于浏览器的应用程序，所以实现速度更快，在移动设备中运行速度更快。在Ionic2中，
+		如果要访问本机API，则需要使用Cordova库，您需要使用ObjC/Swift/Java代码。这可能被认为是一个交易破坏者。ReactNative
+		使用本机组件呈现组件，即使代码是用HTML，CSS，JavaScript等编写的。缺点就是ReactNative是跨平台的，意味着可以使用相
+		同的代码库来开发Android和iOS应用程序。它是一种围绕特定平台的本机代码的封装，因此约85％的代码是类似的，最后15％是
+		您可能需要更改以适应特定平台的东西。与Ionic不同，它不是设计为一次写入，无处不在，所以您需要在程序中更改一些平台
+		特定的代码，因为目的是尽可能创建最原始的外观;
+           </pre>
+           <div class="explain">
+           	  <a href="https://yanxiaodi.gitbooks.io/ionic2-guide/content/" target="_blank">Ionic的gitbook学习网址</a>&emsp;
+           	  <a href="http://ionicframework.com/docs" target="_blank">Ionic官网文档</a>&emsp;
+           	  <a href="https://github.com/ionic-team/ionic-preview-app/tree/master/src/pages" target="_blank">git上Ionic组件api</a>&emsp;
+           	  <a href="http://www.jianshu.com/c/be0bf998dcb5" target="_blank">Ionic论坛</a>
+           </div>
+
+           <div class="title">Ionic的安装</div>
+           <pre>
+    简单来说，Ionic 是一套UI框架，对 Angular 进行了封装，提供了一套适配各移动平台UI风格的前端组件，使用 Cordova 进行打包，
+    可以让开发人员免去调试大量 CSS 的工作，专注业务逻辑开发即可，安装步骤：
+    	1.安装最新版nodejs和npm install -g ionic cordova
+    	2.安装JDK
+    		一：从<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" style="color:blue;">这里</a>下载jdk,下载8u111或8u112以上版本。安装时建议安装到C:\Java 目录下
+    		二：设置系统变量,控制面板-->系统和安全-->系统-->高级-->环境变量
+    		三：系统变量-->新建 JAVA_HOME 变量;变量值填写jdk的安装目录（本人是 E:\Java\jdk1.7.0)
+    		四：系统变量-->寻找 Path 变量-->编辑在变量值最后输入 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
+    		（注意原来Path的变量值末尾有没有;号，如果没有，先输入；号再输入上面的代码）
+    		五：系统变量-->新建 CLASSPATH 变量,值填写 .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar（注意最前面有一点）
+    		六：打开终端输入java -version显示版本即安装成功
+    	3.安装Android SDK
+    	    一：翻墙的朋友可以去谷歌上下，不想翻墙进入<a href="http://www.androiddevtools.cn/" style="color:blue;">这里</a>下载，选择sdk tools,之后选择一个版本下载
+            二：包的安装实在太慢可以使用对应镜像网站下载会快一些，安装过程见<a style="color:blue;" target="_blank" href="http://blog.csdn.net/dr_neo/article/details/49870587">博客</a>
+    	4.项目自动化构建工具gradle安装
+    	    一：安卓应用现在很多都是基于gradle进行大包，ionic默认的打包命令就是使用gradle进行打包，先要去官网下载完整的gradle
+    	    的zip文件，之后解压到一个目录下，然后配置系统变量，打开终端输入gradle -v显示版本号即安装成功
+    	    二：我们使用gradle打包的时候需要去下载gradle，很多时候打包失败就是因为我们下载不了gradle，导致超时失败。解决的
+    	    方法就是我们自己去下载gradle，存放在本地，然后更改配置文件，使其不去下载。
+	    我们找到指定路径的文件，如下：
+			yourproject/platforms/android/cordova/lib/builders/GradleBuilder.js
+	    其中对distributionUrl的定义：
+			var distributionUrl = process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] ||
+			 'http\\://services.gradle.org/distributions/gradle-2.2.1-all.zip';
+	    我们下载的gradle（未解压的.zip格式）存放在本地对应的路径为：
+			yourproject/platforms/android/gradle
+	    然后修改成：
+		distributionUrl=process.env['CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL'] || '../gradle-2.4-all.zip';
+    	5.如果要调试ios的话请先安装xcode，本人是windows的安装xcode还要装虚拟机什么的太麻烦不在赘述，如何打包ios app可以看
+    	这篇博客<a href="http://www.jianshu.com/p/9c00358bcc44" style="color:blue;">点击</a>
+    	6.项目写好之后用命令编译成相应ios和android应用，然后使用上面的工具进行真机调试
+           </pre>
+
+           <div class="title">编译安卓过程中的错误汇总ionic cordova build android</div>
+           <pre>
+        1.the task.leftshift(closure) method has been deprecated and is scheduled to be removed use task.dolast
+            就是语法的不兼容找到对应的提示位置的文件将：
+	           	task hello << {
+	           	    println 'Hello world!'
+	           	}  
+	    改成：
+	        	task hello {
+	        	    doLast {
+	        	        println 'Hello world!'
+	        	    }
+	        	} 
+
+	    2.could not resolve all dependencies for configuration ':_debugApk'	
+	    3.failed to notify project evaluation listener
+           </pre>
+
+           <div class="title">ionic导航路由</div>
+           <pre>
+    import { NavController, NavParams } from 'ionic-angular';
+    constructor(public navCtrl: NavController, public navParams: NavParams){}
+    取到导航传过来的值navParams.get('item')  
+    跳转传值this.navCtrl.push(ItemDetailsPage, {
+            item: item
+        });  
+
+    跳转的工作原理：
+    	Ionic的导航像一个简单的栈，我们使用push方法来导航到新页面，将其放在栈的顶部，并显示一个返回按钮。对于返回，我们使
+    	用pop方法将其从栈中移除。因为我们在构造函数中设置了this.navCtrl属性，我们可以调用this.navCtrl.push()方法，来导航到
+    	一个新的页面。我们还可以将一个object传递给将要导航过去的页面。使用push方法导航到新页面非常简单，但Ionic的导航系统是
+    	非常灵活的。可以从导航文档处获得更详细的导航示例   	
+           </pre>
+          
+       </div>
+  </body>
+</html>

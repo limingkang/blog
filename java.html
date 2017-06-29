@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,java">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">java开发环境搭建步骤</div>
+           <pre>
+    1.安装jdk，步骤在ionic学习中有提到，不在赘述
+    2.安装项目管理工具maven
+    	一：官网下载maven解压到本地,新建变量MAVEN_HOME最后配置系统变量PATH里加入maven的bin的路径，输入mvn -v测试一下 
+    	二：官网下载tomcat，最好是下载7就行了，下载好之后新建系统变量CATALINA_HOME之后path变量中加入bin路径，进入bin
+    	目录下面，运行service.bat install成功之后运行tomcat7w.exe文件，浏览器打开localhost:8080即可 
+      三：从别的地方下载过来未编译的java项目，进入目录后运行mvn package编译,它会去读下面的pom.xml文件，下载相应的
+      依赖之后打包生成一个文件夹target,进入之后把里面的war包拷贝出来（可以在maven的conf/settings.xml指定war包下载地址，
+      在里面的mirror标签里面）
+      四： 将打包好的war包放到tomcat/webapps下面,运行tomcat之后，它会将war包处理成一个相应的文件夹，打开浏览器输入
+      localhost:8080/文件夹名即可访问该项目
+      五：如果是别人已经编译好的项目，那就直接放tomcat下面运行就行    	
+           </pre>
+           <div class="explain">
+           		做为一个前端工程师对于服务器端的语言了解是必须的，这可以帮助你和后端人员更好的合作，同时能够使你对前端的
+           		架构做出更好的搭建，当然node是必须学的而且要学的深一点，其他的如php，java这两个主流的后端语言基本会用就行
+           </div>         
+       </div>
+  </body>
+</html>
