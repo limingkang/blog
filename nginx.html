@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,nginx">
+  </head>
+  <body>
+       <div class="big_container">
+            <div class="title">nginx的下载与安装</div>
+            <pre>
+   	1.先去下载文件<a href="http://nginx.org/en/download.html" style="color:blue;">http://nginx.org/en/download.html</a>
+   	2.进入到安装目录输入nginx start，代开localhost显示正确即可
+   	3.nginx的使用比较简单，就是几条命令，常用到的命令如下：
+	nginx -s stop       快速关闭Nginx，可能不保存相关信息，并迅速终止web服务。
+	nginx -s quit       平稳关闭Nginx，保存相关信息，有安排的结束web服务。
+	nginx -s reload     因改变了Nginx相关配置，需要重新加载配置而重载。
+	nginx -s reopen     重新打开日志文件。
+	nginx -c filename   为 Nginx 指定一个配置文件，来代替缺省的。
+	nginx -t            不运行，而仅仅测试配置文件。nginx将检查配置文件的语法的正确性，并尝试打开配置文件中所引用到的文件
+	nginx -v            显示 nginx 的版本。
+	nginx -V            显示 nginx 的版本，编译器版本和配置参数
+            </pre> 
+            <div class="explain">
+           		Nginx (engine x) 是一款轻量级的Web 服务器 、反向代理服务器及电子邮件（IMAP/POP3）代理服务器,
+           		很多用到nginx的地方都是作为静态伺服器，这样可以方便缓存那些静态文件，比如CSS，JS，html，htm等文件
+           		<a href="http://www.shoucewang.com/nginx-doc/" target="_blank" style="color:blue;">nginx中文手册1</a>&emsp;
+           		<a href="http://www.nginx.cn/doc/" target="_blank" style="color:blue;">nginx中文手册2</a>
+           	</div>
+
+            <div class="title">tomcat结合nginx使用小结</div> 
+            <pre>
+    Tomcat 服务器是一个免费的开放源代码的Web 应用服务器，属于轻量级应用服务器，在中小型系统和并发访问用户不是很多的场合下被
+    普遍使用，是开发和调试JSP 程序的首选。可以这样认为，当在一台机器上配置好Apache 服务器，可利用它响应HTML（标准通用标记语
+    言下的一个应用）页面的访问请求。实际上Tomcat是Apache 服务器的扩展，但运行时它是独立运行的，所以当你运行tomcat 时，它实
+    际上作为一个与Apache 独立的进程单独运行的。当配置正确时，Apache 为HTML页面服务，而Tomcat 实际上运行JSP 页面和Servlet。
+    另外，Tomcat和IIS等Web服务器一样，具有处理HTML页面的功能，另外它还是一个Servlet和JSP容器，独立的Servlet容器是Tomcat的
+    默认模式。不过，Tomcat处理静态HTML的能力不如Apache服务器 
+
+    找到安装目录下面的conf/nginx.conf将其location改为：
+    	location / {  
+    	    proxy_pass http://localhost:8080;   我的tomcat在8080端口启动 
+    	} 
+    我们也可以改其server_name参数例如改为www.hello.com,接着改host文件，在C:\Windows\System32\drivers\etc目录下的host文件
+    中添加一条DNS记录127.0.0.1 www.hello.com，这样在访问www.hello.com时候就是解析到本地ip之后代理到tomcat
+
+    我们需要分文件类型来进行过滤，比如jsp直接给tomcat处理，因为nginx并不是servlet容器，没办法处理JSP，而html,js,css这些不
+    需要处理的，直接给nginx进行缓存。下面我们来进行一下配置，让JSP页面直接给tomcat，而html,png等一些图片和JS等直接给nginx
+    进行缓存。这时最主要用的还是location这个元素：
+    	location ~ \.jsp$ {  
+    	        proxy_pass http://localhost:8080;  
+    	}     	          
+    	location ~ \.(html|js|css|png|gif)$ {  
+    	    root D:/software/developerTools/server/apache-tomcat-7.0.8/webapps/ROOT;  
+    	}       	
+            </pre>
+            <div class="explain">
+    			Servlet是Java编写的服务器端程序，tomcat支持java而apache不支持      	
+            </div> 
+
+			<div class="title">nginx配置文件解析,每个指令必须有分号结束,前面加#号表示注释</div>
+			<pre>
+	user administrator administrators;  #配置用户或者组，默认为nobody nobody。
+	worker_processes 2;  #允许生成的进程数，默认为1
+	pid /nginx/pid/nginx.pid;   #指定nginx进程运行文件存放地址
+	error_log log/error.log debug;  #制定日志路径，级别。这个设置可以放入全局块，http块，server块，级别以此为：
+			debug|info|notice|warn|error|crit|alert|emerg
+	events {
+	    accept_mutex on;   #设置网路连接序列化，防止惊群现象发生，默认为on
+	    multi_accept on;  #设置一个进程是否同时接受多个网络连接，默认为off
+	    #use epoll;      #事件驱动模型，select|poll|kqueue|epoll|resig|/dev/poll|eventport
+	    worker_connections  1024;    #最大连接数，默认为512
+	}
+	http {
+	    include       mime.types;   #文件扩展名与文件类型映射表
+	    default_type  application/octet-stream; #默认文件类型，默认为text/plain
+	    access_log off; #取消服务日志    
+	    log_format myFormat 
+	    	'$remote_addr–$remote_user [$time_local] $request $status $body_bytes_sent 
+	    	$http_referer $http_user_agent $http_x_forwarded_for'; #自定义myFormat日志变量
+	    access_log log/access.log myFormat;  #combined为日志格式的默认值
+
+	    sendfile on;   #允许sendfile方式传输文件，默认为off，可以在http块，server块，location块。
+	    sendfile_max_chunk 100k;  #每个进程每次调用传输数量不能大于设定的值，默认为0，即不设上限。
+	    keepalive_timeout 65;  #连接超时时间，默认为75s，可以在http，server，location块。
+
+	    upstream mysvr {   
+	      server 127.0.0.1:7878;
+	      server 192.168.10.121:3333 backup;  #热备
+	    }
+	    error_page 404 https://www.baidu.com; #错误页
+	    server {
+	        keepalive_requests 120; #单连接请求上限次数。
+	        listen       4545;   #监听端口
+	        server_name  127.0.0.1;   #监听地址
+
+	        #编码格式
+            charset utf-8;
+             
+            #代理配置参数
+            proxy_connect_timeout 180;
+            proxy_send_timeout 180;
+            proxy_read_timeout 180;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarder-For $remote_addr;
+
+	        location  ~*^.+$ {       #请求的url过滤，正则匹配，~为区分大小写，~*为不区分大小写。
+	           #root path;  #根目录
+	           #index vv.txt;  #设置默认页
+	           proxy_pass  http://mysvr;  #请求转向mysvr 定义的服务器列表
+	           deny 127.0.0.1;  #拒绝的ip
+	           allow 172.18.5.54; #允许的ip           
+	        }
+	        #静态文件，nginx自己处理
+            location ~ ^/(images|javascript|js|css|flash|media|static)/ {
+              root D:\01_Workspace\Project\src\main\webapp\views;
+              #过期30天，静态文件不怎么更新，过期可以设大一点，如果频繁更新，则可以设置得小一点。
+              expires 30d;
+            }          
+            #设定查看Nginx状态的地址
+            location /NginxStatus {
+              stub_status      on;
+              access_log      on;
+              auth_basic      "NginxStatus";
+              auth_basic_user_file conf/htpasswd;
+            }           
+            #禁止访问 .htxxx 文件
+            location ~ /\.ht {
+              deny all;
+            }             
+            #错误处理页面（可选择性配置）
+            error_page  404       /404.html;
+            error_page  500 502 503 504 /50x.html;
+            location = /50x.html {
+              root  html;
+            }
+	    }
+	}
+	上面的日志格式的解释： 
+		$remote_addr与$http_x_forwarded_for 用以记录客户端的ip地址
+		$remote_user用来记录客户端用户名称
+		$time_local用来记录访问时间与时区
+		$request用来记录请求的url与http协议
+		$status用来记录请求状态；成功是200
+		$body_bytes_s ent记录发送给客户端文件主体内容大小
+		$http_referer用来记录从那个页面链接访问过来的
+		$http_user_agent记录客户端浏览器的相关信息
+	惊群现象：一个网路连接到来，多个睡眠的进程被同事叫醒，但只有一个进程能获得链接，这样会影响系统性能。		
+			</pre>
+
+			<div class="title">nginx实现负载均衡</div>
+			<pre>
+	假设这样一个应用场景：将应用部署在192.168.1.11:80、192.168.1.12:80、192.168.1.13:80三台linux环境的服务器上。网站域
+	名叫www.helloworld.com，公网IP为192.168.1.11。在公网IP所在的服务器上部署nginx，对所有请求做负载均衡处理	
+
+	http {
+	   #设定mime类型,类型由mime.type文件定义
+	  include    /etc/nginx/mime.types;
+	  default_type application/octet-stream;
+	  #设定日志格式
+	  access_log  /var/log/nginx/access.log;
+	 
+	  #设定负载均衡的服务器列表
+	  upstream load_balance_server {
+	    #weigth参数表示权值，权值越高被分配到的几率越大
+	    server 192.168.1.11:80  weight=5;
+	    server 192.168.1.12:80  weight=1;
+	    server 192.168.1.13:80  weight=6;
+	  }
+	 
+	  #HTTP服务器
+	  server {
+	    #侦听80端口
+	    listen    80;
+	     
+	    #定义使用www.xx.com访问
+	    server_name www.helloworld.com;
+	 
+	    #对所有请求进行负载均衡请求
+	    location / {
+	      root    /root;         #定义服务器的默认网站根目录位置
+	      index    index.html index.htm; #定义首页索引文件的名称
+	      proxy_pass http://load_balance_server ;#请求转向load_balance_server 定义的服务器列表
+	 
+	      #以下是一些反向代理的配置(可选择性配置)
+	      #proxy_redirect off;
+	      proxy_set_header Host $host;
+	      proxy_set_header X-Real-IP $remote_addr;
+	      #后端的Web服务器可以通过X-Forwarded-For获取用户真实IP
+	      proxy_set_header X-Forwarded-For $remote_addr;
+	      proxy_connect_timeout 90;     #nginx跟后端服务器连接超时时间(代理连接超时)
+	      proxy_send_timeout 90;       #后端服务器数据回传时间(代理发送超时)
+	      proxy_read_timeout 90;       #连接成功后，后端服务器响应时间(代理接收超时)
+	      proxy_buffer_size 4k;       #设置代理服务器（nginx）保存用户头信息的缓冲区大小
+	      proxy_buffers 4 32k;        #proxy_buffers缓冲区，网页平均在32k以下的话，这样设置
+	      proxy_busy_buffers_size 64k;    #高负荷下缓冲大小（proxy_buffers*2）
+	      proxy_temp_file_write_size 64k;  #设定缓存文件夹大小，大于这个值，将从upstream服务器传
+	       
+	      client_max_body_size 10m;     #允许客户端请求的最大单文件字节数
+	      client_body_buffer_size 128k;   #缓冲区代理缓冲用户端请求的最大字节数
+	    }
+	  }
+	}		
+			</pre>
+
+			<div class="title">网站有多个webapp的配置</div>
+			<pre>
+	当一个网站功能越来越丰富时，往往需要将一些功能相对独立的模块剥离出来，独立维护。这样的话，通常，会有多个webapp。
+	举个例子：假如www.helloworld.com站点有好几个webapp，finance（金融）、product（产品）、admin（用户中心）。访问这
+	些应用的方式通过上下文(context)来进行区分:
+		www.helloworld.com/finance/
+		www.helloworld.com/product/
+		www.helloworld.com/admin/
+	我们知道，http的默认端口号是80，如果在一台服务器上同时启动这3个webapp应用，都用80端口，肯定是不成的。所以，这三
+	个应用需要分别绑定不同的端口号。那么，问题来了，用户在实际访问www.helloworld.com站点时，访问不同webapp，总不会还
+	带着对应的端口号去访问吧。所以，你再次需要用到反向代理来做处理,配置如下：
+		http {
+		  #此处省略一些基本配置
+		   
+		  upstream product_server{
+		    server www.helloworld.com:8081;
+		  }
+		   
+		  upstream admin_server{
+		    server www.helloworld.com:8082;
+		  }
+		   
+		  upstream finance_server{
+		    server www.helloworld.com:8083;
+		  }
+		 
+		  server {
+		    #此处省略一些基本配置
+		    #默认指向product的server
+		    location / {
+		      proxy_pass http://product_server;
+		    }
+		 
+		    location /product/{
+		      proxy_pass http://product_server;
+		    }
+		 
+		    location /admin/ {
+		      proxy_pass http://admin_server;
+		    }
+		     
+		    location /finance/ {
+		      proxy_pass http://finance_server;
+		    }
+		  }
+		}			
+			</pre>
+			<div class="title">https反向代理配置</div>
+			<pre>
+		一些对安全性要求比较高的站点，可能会使用HTTPS（一种使用ssl通信标准的安全HTTP协议）这里不科普HTTP协议和SSL标准。
+		但是，使用nginx配置https需要知道几点,其他和http反向代理基本一样，只是在Server部分配置有些不同：
+			HTTPS的固定端口号是443，不同于HTTP的80端口
+			SSL标准需要引入安全证书，所以在nginx.conf中你需要指定证书和它对应的key	
+
+		server {
+		  #监听443端口。443为知名端口号，主要用于HTTPS协议
+		  listen    443 ssl;
+		 
+		  #定义使用www.xx.com访问
+		  server_name www.helloworld.com;
+		 
+		  #ssl证书文件位置(常见证书文件格式为：crt/pem)
+		  ssl_certificate   cert.pem;
+		  #ssl证书key位置
+		  ssl_certificate_key cert.key;
+		 
+		  #ssl配置参数（选择性配置）
+		  ssl_session_cache  shared:SSL:1m;
+		  ssl_session_timeout 5m;
+		  #数字签名，此处使用MD5
+		  ssl_ciphers HIGH:!aNULL:!MD5;
+		  ssl_prefer_server_ciphers on;
+		 
+		  location / {
+		    root  /root;
+		    index index.html index.htm;
+		  }
+		}	
+			</pre>
+
+       </div>
+  </body>
+</html>
