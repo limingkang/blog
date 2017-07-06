@@ -180,7 +180,8 @@
             <div class="title">angular路由简单用法</div>
             <pre>
         页面中a标签写入方式,注意我们的router-outlet还可以写name属性，之后在路由中写对应outlet属性即可：
-        routerLink="/portal/login" routerLinkActive="active"
+        routerLink="/portal/login" routerLinkActive="active"  
+        //当前面没有/时候protal/login就是意味着在当前路由路径后面加上这个地址来匹配的
         //路由地址为/portal/register/12/detail
         [routerLink]="['/portal/register',id,'detail']" routerLinkActive="active"
         //路由地址为/home/todoList?id=12&type=important
@@ -204,6 +205,10 @@
         CanDeactivate：用来控制是否能离开当前页面进入别的路径
         CanLoad：用于控制一个异步加载的子模块是否允许被加载，它是先与CanActivate运行的
             </pre>
+            <div class="explain">
+                angular的路由只能有两层模块好像，就是说当你更模块可以写路由，之后再引入模块中，引入的模块还能写路由，
+                当是如果想在引入的模块中在来一层模块写路由，他会将其当做第一层路由匹配
+            </div>
 
             <div class="title">angular的请求</div>
             <pre>
