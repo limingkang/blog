@@ -12,7 +12,7 @@
   </head>
   <body>
        <div class="big_container">
-           <div class="title">java开发环境搭建步骤</div>
+           <div class="title">java运行环境搭建步骤</div>
            <pre>
     1.安装jdk，步骤在ionic学习中有提到，不在赘述
     2.安装项目管理工具maven
@@ -29,7 +29,35 @@
            <div class="explain">
            		做为一个前端工程师对于服务器端的语言了解是必须的，这可以帮助你和后端人员更好的合作，同时能够使你对前端的
            		架构做出更好的搭建，当然node是必须学的而且要学的深一点，其他的如php，java这两个主流的后端语言基本会用就行
-           </div>         
+           </div>
+
+           <div class="title">java开发环境配置</div>  
+           <pre>
+               1.先下载eclipse,设置好相应的工作区间
+               2.将java项目导入，file ==> import ==> maven ==> exsiting maven project 
+               3.下载架包依赖，对java项目右键==>maven==>update project   注意要勾选Force Update of.......
+               4.点击控制台下面的server再点击creat a new server,选择appach，再选择你下的那个tomcat版本之后add all即可
+               5.这时候会生成server文件夹找到下面的server.xml,在host里面加入如下配置,可配置请求位置和静态资源位置
+                <textarea style="height: 156px;" readonly>
+<Context docBase="C:\Users\Administrator\Desktop\daisy_risk_res\dist" path="daisy" reloadable="true"/>
+<Context docBase="daisy_risk" path="/risk" reloadable="true" source="org.eclipse.jst.jee.server:daisy_risk"/>
+<Context docBase="daisy_common" path="/common" reloadable="true" source="org.eclipse.jst.jee.server:daisy_common"/>
+                </textarea>
+                6.在控制台下面我们的那个server上面右键选择open，其中的http/1.1就是配置端口号的
+                7.之后再在server上面右键运行即可
+                8.我的端口8081可以输入localhost:8081/daisy/即可访问到静态了
+           </pre> 
+
+           <div class="title">eclipse的maven配置</div>
+           <pre>
+               1.安装eclipse maven插件 m2eclipse
+                    第一种方法：从网上下载m2eclipse，这个网上有很多下载的地方。然后放到eclipse安装目录的plugins下。
+                    第二种方法：打开eclipse->help->install new software。在work with后输入：
+                        http://download.eclipse.org/technology/m2e/releases
+               2.eclipse配置maven
+                    window-》prefrences-》maven-》user setting设置maven的conf/settings.xml文件位置
+                    window-》prefrences-》maven-》installations 设置你安装的maven的地址
+           </pre>      
        </div>
   </body>
 </html>

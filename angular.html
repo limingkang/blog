@@ -41,7 +41,7 @@
             </div>                                                                                                    
             
             <div class="title">angular中form表单的使用，响应式模型驱动表单</div>
-            <textarea style="border: 1px solid #D7D8C8;height: 1320px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
+            <textarea style="border: 1px solid #D7D8C8;height: 1566px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
         //html结构设计
         <form [formGroup]="userForm">
             <label>姓名:</label>
@@ -101,6 +101,17 @@
                 }
             }
         }
+
+
+        模型驱动表单一个简单例子:
+        <form class="form_layout" (ngSubmit)="login()" #loginForm="ngForm" [hidden]="registermark">
+            <div>
+                <input type="text" name="loginname" pattern="^(?!\d+$)(?![a-zA-Z]+$)(?![!@#\$%\^\&\*]+$)[\w!@#\$%\^\&\*]{6,16}$" minlength="6" maxlength="16" required
+                       autocomplete="off" [(ngModel)]="model.loginname" #loginname="ngModel">
+                <small [class.myhidden]="loginname.valid || loginname.pristine">输入正确用户名</small>
+            </div>
+            <button [disabled]="loginForm.form.invalid" type="submit">登录</button>
+        </form>
             </textarea>
             <div class="explain">根传统的模板驱动的form表单相比，使用模型驱动的表单，我们的页面可以很整洁，没有验证器，没有
             数据绑定，没有 onChange , onBlur 等事件绑定，这些都在组件中完成，这对于测试会非常容易。所以，当你有一个表单，考
@@ -343,6 +354,14 @@
             @ViewChild 注入视图子组件
             @Host 注入本组件或它宿主中的服务
             @SkipSelf 注入本组件祖先中提供的服务
+
+        6.angular2 模型数据更新了，需要监听数据改变,实现接口Docheck，检测页面上所有元素数据更新
+            import { Component, DoCheck } from "@angular/core";
+            export class LangListUserComponent implements DoCheck {
+                ngDoCheck() {
+                  //只要输入组件的任何一个的数据变化了都会触发这个方法
+                }
+            }
             </pre>
 
             <div class="title">获取父子组件的引用</div>
@@ -353,9 +372,9 @@
 
         如果只想在父组件的模板中使用子组件的方法只要：<span><</span>child-component #timer><span><</span>/child-component> 
         父组件模板中像timer.stop()这样使用就行
-        如果想在父组件ts中文件中引用就得import { AfterViewInit, ViewChild } from '@angular/core';
-        @ViewChild(CountdownTimerComponent)
-        private timerComponent: CountdownTimerComponent;
+        如果想在父组件ts中文件中引用就得import { AfterViewInit, ViewChild ,ElementRef} from '@angular/core';
+        @ViewChild('timer') timerComponent: ElementRef;    // string类型
+        @ViewChild(childcomponent) timerComponent: childcomponent;    // type类型
         ngAfterViewInit() {
             setTimeout(() => this.seconds = () => this.timerComponent.seconds, 0);
         }  
