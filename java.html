@@ -33,7 +33,7 @@
 
            <div class="title">java开发环境配置</div>  
            <pre>
-               1.先下载eclipse,设置好相应的工作区间
+               1.先下载eclipse,设置好相应的工作区间，一定要配置maven的地址，参考下面的方法
                2.将java项目导入，file ==> import ==> maven ==> exsiting maven project 
                3.下载架包依赖，对java项目右键==>maven==>update project   注意要勾选Force Update of.......
                4.点击控制台下面的server再点击creat a new server,选择appach，再选择你下的那个tomcat版本之后add all即可
@@ -44,8 +44,10 @@
 <Context docBase="daisy_common" path="/common" reloadable="true" source="org.eclipse.jst.jee.server:daisy_common"/>
                 </textarea>
                 6.在控制台下面我们的那个server上面右键选择open，其中的http/1.1就是配置端口号的
+                如果没有server就在(window->show view->server)加到下面控制台
                 7.之后再在server上面右键运行即可
                 8.我的端口8081可以输入localhost:8081/daisy/即可访问到静态了
+                9.也可以直接在server.xml文件中改端口号什么的
            </pre> 
 
            <div class="title">eclipse的maven配置</div>
@@ -55,7 +57,7 @@
                     第二种方法：打开eclipse->help->install new software。在work with后输入：
                         http://download.eclipse.org/technology/m2e/releases
                2.eclipse配置maven
-                    window-》prefrences-》maven-》user setting设置maven的conf/settings.xml文件位置
+                    window-》prefrences-》maven-》user setting设置maven的conf/settings.xml文件位置,可换个地方写只要引入即可
                     window-》prefrences-》maven-》installations 设置你安装的maven的地址
            </pre>      
        </div>

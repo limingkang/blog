@@ -172,6 +172,15 @@
 
         git config --global alias.co checkout 配置命令别名，若想删除某个别名，就在仓库的Git配置文件.git/config文件中删除该行就行
            </pre>
+
+           <div class="title">windows下面直接使用torrentgit更好用</div>
+           <pre>
+        1.先下载git安装之后，接着下载torrentgit
+        2.ssh-keygen -t rsa -C "limk@mail.com" 最后得到了两个文件：id_rsa和id_rsa.pub
+        3.id_rsa.pub打开这个拷贝到git公钥上面
+        4.打开小乌龟的setting配置，点击git配置名字和email
+        5.点击network配置ssh client 就是git安装时候下面bin\ssh.exe文件指到即可，这个是用来连接github的
+           </pre>
        </div>
   </body>
 </html>

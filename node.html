@@ -11,6 +11,14 @@
   </head>
   <body>
       <div class="big_container">
+           <div class="title">npm包管理</div>
+           <pre>
+          ~1.2.0 这个版本号的意思是1.2.X都行但是1.3不行
+          ^1.2.0这个意思是1.x.x都行但是2.x不行
+          npm list 查看所有安装包的版本
+          npm list -g    
+           </pre>
+           <div class="explain">在使用过程中尽量使用~这样版本不一致导至的错误就会小一些，要不直接改用yarn</div>
            <div class="title">对exports和module.exports的理解</div>
            <pre>
           1.每一个node.js执行文件，都自动创建一个module对象，同时，module对象会创建一个叫exports的属性，初始化的值是 {}
