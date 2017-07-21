@@ -41,7 +41,7 @@
             </div>                                                                                                    
             
             <div class="title">angular中form表单的使用，响应式模型驱动表单</div>
-            <textarea style="border: 1px solid #D7D8C8;height: 1566px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
+            <textarea style="border: 1px solid #D7D8C8;height: 1590px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
         //html结构设计
         <form [formGroup]="userForm">
             <label>姓名:</label>
@@ -215,6 +215,42 @@
         CanActivateChild：这种类型的Guard用来控制是否允许进入当前路径的所有子路径。
         CanDeactivate：用来控制是否能离开当前页面进入别的路径
         CanLoad：用于控制一个异步加载的子模块是否允许被加载，它是先与CanActivate运行的
+
+
+        详细路由参数记录：
+        [routerLink]="['data',{ key : 'value' }]" [queryParams]="{ name : 'keatkeat' }" fragment="someWhere"
+        this.router.navigate(
+            ["data", { key: "value" }], 
+            //data 是 child path, {key : "value"} 是 Matrix Url (矩阵 URL) 长这样 /data;key=value
+            {
+                relativeTo: this.route, 
+                //默认值为根路由，设置后相对当前路由跳转，route是ActivatedRoute的实例，使用需要导入ActivatedRoute 
+                queryParams: {
+                    'name': "keatkeat" // ng 会对值调用 toString + encode 才放入 url 中, 解析时会 decode
+                },
+                //一般的 queryParams, 这里只能 override 整个对象, 如果你只是想添加一个的话，你必须自己实现保留之前的全部.         
+                fragment: "someWhere",     //#可理解为锚点坐标
+                replaceUrl : true          //有时候我们希望 replace history 而不是 push history 
+                preserveQueryParams: true  //默认false,设为true,保留之前路由中查询参数/user?id=1 to /view?id=1
+                preserveFragment: true     //默认false,设为true,保留之前路由中锚点/user/1#top to /view#top
+                skipLocationChange: true //默认值为false,设为true路由跳转时浏览器中url保持不变,但传入的参数依然有效
+
+            }
+        );
+
+
+        hash值定位跳转问题，这是angular2固有问题，提供一个简单解决方案：
+        import {Router, NavigationEnd} from '@angular/router';
+        this.router.events.subscribe(s => {
+            if (s instanceof NavigationEnd) {
+                const tree = this.router.parseUrl(this.router.url);
+                if (tree.fragment) {
+                   const element = document.querySelector("#" + tree.fragment);
+                   if (element)  element.scrollIntoView(element);
+                }
+            }
+        })
+        这时候跳转写入fragment参数即可，记住页面上要有相应id
             </pre>
             <div class="explain">
                 angular的路由只能有两层模块好像，就是说当你更模块可以写路由，之后再引入模块中，引入的模块还能写路由，
