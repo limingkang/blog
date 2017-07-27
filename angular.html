@@ -263,7 +263,7 @@
         import { Observable } from 'rxjs/Observable';
         import 'rxjs/add/operator/catch';
         import 'rxjs/add/operator/map';
-        getHeroes(): Observable<any> {
+        getHeroes(): Observable<span><</span>any> {
             var params: URLSearchParams = new URLSearchParams();
             params.set("test","value");
             return this.http.get(url,{search:params})
@@ -290,7 +290,7 @@
         this.heroService.getHeroes()
             .subscribe(
                heroes => this.heroes = heroes,
-               error =>  this.errorMessage = <any>error); 
+               error =>  this.errorMessage = <span><</span>any>error); 
 
         上面是rxjs的流式操作的方法最后去订阅，也可以强制改为promise对象
         return this.http.get(url,{ search: params})
@@ -301,12 +301,12 @@
         this.heroService.getHeroes()
             .then(
                heroes => this.heroes = heroes,
-               error =>  this.errorMessage = <any>error);  
+               error =>  this.errorMessage = <span><</span>any>error);  
 
         对于post请求大体基本是一样的
-        getHeroes(): Observable<any> {
+        getHeroes(): Observable<span><</span>any> {
             let headers = new Headers({ 'Content-Type': 'application/json' });
-            let options = new RequestOptions({ headers: headers });
+            let options = new RequestOptions({ headers: headers,search: params });
             let senddata={};
             return this.http.post(url,senddata,options)
                     .map(this.extractData)
@@ -391,12 +391,25 @@
             @Host 注入本组件或它宿主中的服务
             @SkipSelf 注入本组件祖先中提供的服务
 
-        6.angular2 模型数据更新了，需要监听数据改变,实现接口Docheck，检测页面上所有元素数据更新
+        6.angular2 模型数据更新了，需要监听数据改变,实现接口Docheck，检测页面上所有元素数据更新,这个代价很大
             import { Component, DoCheck } from "@angular/core";
-            export class LangListUserComponent implements DoCheck {
+            export class LangListUserComponent implements DoCheck,OnChanges {
                 ngDoCheck() {
                   //只要输入组件的任何一个的数据变化了都会触发这个方法
                 }
+                ngOnChanges(changes: SimpleChanges) {
+                    //使用这个检测一个数据forcefresh的变化
+                    //如果在组件内手动改变输入属性的值，ngOnChanges 钩子是不会触发的
+                    if(changes['forcefresh'] && changes['forcefresh'].currentValue) {
+                      this.forceRefresh();
+                    }
+                }
+            }
+
+        7.有的时候我们需要阻止一些事件冒泡等
+            在事件中引入$event即可(click)="do($event)"
+            之后在方法里面do(event:Event){
+                event.stopPropagation();
             }
             </pre>
 
@@ -409,7 +422,7 @@
         如果只想在父组件的模板中使用子组件的方法只要：<span><</span>child-component #timer><span><</span>/child-component> 
         父组件模板中像timer.stop()这样使用就行
         如果想在父组件ts中文件中引用就得import { AfterViewInit, ViewChild ,ElementRef} from '@angular/core';
-        @ViewChild('timer') timerComponent: ElementRef;    // string类型
+        @ViewChild('timer') timerComponent: any;    // string类型
         @ViewChild(childcomponent) timerComponent: childcomponent;    // type类型
         ngAfterViewInit() {
             setTimeout(() => this.seconds = () => this.timerComponent.seconds, 0);
@@ -430,6 +443,89 @@
                 应用程序组件经常需要共享信息。我们喜欢更加松耦合的技术，比如数据绑定和服务共享。 但有时候组件确实需要拥有
                 另一个组件的引用，用来访问该组件的属性值或者调用它的方法
             </div>
+
+            <div class="title">angular2的变更检测机制</div>
+            <pre>
+        对于angular2来说如果使用默认的检测策略，每当发生变化时，都会从根组件开始，从上往下在每个组件上执行变化检测。但如果子组件中的
+        输入属性没有发生变化，是没有必要再执行变化检测。针对这种情况，Angular 2 为我们提供了 OnPush 的检测策略
+
+        import { Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+        @Component({
+            selector: 'exe-child',
+            template:"{{counter}}",
+            changeDetection: ChangeDetectionStrategy.OnPush
+        })
+        export class ChildComponent implements OnInit {
+            @Input() counter: number = 0;
+
+            constructor(private cdRef: ChangeDetectorRef) {}
+            
+            ngOnInit() {
+                setInterval(() => {
+                    this.counter++;
+                    this.cdRef.markForCheck();
+                }, 1000);
+            }
+        } 
+        markForCheck():
+            在组件metadata设置changeDetection: ChangeDetectionStrategy.OnPush,变化检测不会再次执行,除非手动调用该方法
+        以下的其他方法不依赖雨changeDetection: ChangeDetectionStrategy.OnPush设置
+        detach() - 从变化检测树中分离变化检测器，该组件的变化检测器将不再执行变化检测，除非手动调用 reattach() 方法
+        reattach() - 重新添加已分离的变化检测器，使得该组件及其子组件都能执行变化检测
+        detectChanges() - 从该组件到各个子组件执行一次变化检测 
+
+
+        使用 Observables 机制提升性能和不可变的对象类似，但当发生变化的时候，Observables 不会创建新的模型，但我们可以通过订阅 
+        Observables 对象，在变化发生之后，进行视图更新。使用Observables机制的时候，我们同样需要设置组件变化检测策略为OnPush
+        例如在父组件中对要输入给子组件的值：
+            counterStream: Observable<span><</span>any>;
+            this.counterStream = Observable.timer(0, 1000); 
+        在子组件中我们使用：
+            @Input() counterStream: Observable<span><</span>any>;
+            constructor(private cdRef: ChangeDetectorRef) { }
+            ngOnInit() {
+                this.addStream.subscribe(() => {
+                    this.counter++;
+                    this.cdRef.markForCheck();
+                });
+            }  
+
+
+
+        ChangeDetectionStrategy 变化检测策略总共有几种 ？
+            export declare enum ChangeDetectionStrategy {
+                OnPush = 0, // 变化检测器的状态值是 CheckOnce
+                Default = 1, // 组件默认值 - 变化检测器的状态值是 CheckAlways，即始终执行变化检测
+            }
+        变化检测器的状态有哪几种 ？
+            export declare enum ChangeDetectorStatus {
+                CheckOnce = 0, // 表示在执行detectChanges之后，变化检测器的状态将会变成Checked
+                Checked = 1, // 表示变化检测将被跳过，直到变化检测器的状态恢复成CheckOnce
+                CheckAlways = 2, // 表示在执行detectChanges之后，变化检测器的状态始终为CheckAlways
+                Detached = 3, // 表示该变化检测器树已从根变化检测器树中移除，变化检测将会被跳过
+                Errored = 4, // 表示在执行变化检测时出现异常
+                Destroyed = 5, // 表示变化检测器已被销毁
+            } 
+            </pre>
+
+            <div class="title">搜索中formController的用法</div>
+            <pre>
+        1.先要在input中使用[formControl]='temp'  记住要引入FormsModule,ReactiveFormsModule两个模块
+        2.temp=new FormControl();           
+        3.selectCompany:Observable<span><</span>Array<span><</span>string>>;  //保存后台值   
+        4.this.temp.valueChanges
+            .debounceTime(400)         //延迟400毫秒
+            .distinctUntilChanged()    //值未改变
+            .switchMap((term:any) => this.riskService.search(term))  //当多个异步请求出去的时候他用最后一个最为数据返回
+            .subscribe((result) => {    //订阅返回值
+                this.selectCompany=JSON.parse(result)
+            })
+        5.点击之后也可给他强制赋值：
+            this.temp.setValue(value,{emitEvent:false});  //后面参数是为了不让他出发上面的change事件
+        6.对于上面的后台调用方法我们使用map才行：
+            return this.http.get(url)
+              .map((response) => response.json());     
+            </pre>
 
         </div>
     </body>
