@@ -516,7 +516,8 @@
         4.this.temp.valueChanges
             .debounceTime(400)         //延迟400毫秒
             .distinctUntilChanged()    //值未改变
-            .switchMap((term:any) => this.riskService.search(term))  //当多个异步请求出去的时候他用最后一个最为数据返回
+            .switchMap((term:any) => this.riskService.search(term))  
+            //switchMap会在处理每一个新的消息的时候，就直接把上一个消息注册的订阅方法直接取消掉
             .subscribe((result) => {    //订阅返回值
                 this.selectCompany=JSON.parse(result)
             })

@@ -1,0 +1,389 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,angular,node,webpack,rxjs">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">为什么rxjs</div>
+           <pre>
+        其实rxjs在国内使用的人很少，这东西太抽象而且学习成本高，但是如果你学习过node stream的概念你会好理解很多。现在我们遇到
+        的异步等问题大多都可以使用回调解决，再复杂一点的我们可以使用promise去解决了，没有必要使用rx这种入侵式很强的框架，之所以
+        使用也只是因为现在用angular2它用了rx，所有有必要学习一下，这里做一个入门记录小结。   	
+           </pre>
+           <div class="explain">
+           	   <a href="http://reactivex.io/rxjs/manual/overview.html" target="_blank">rxjs官网学习</a>&emsp;
+           	   <a href="https://github.com/limingkang/learning-data/blob/master/rxjs.pdf" target="_blank">rxjs学习记录pdf版下载</a>
+           </div>
+
+           <div class="title">rxjs的核心理念</div>
+           <pre>
+        rxjs是通过一个可观察的序列来构建异步和基于事件的程序的库，可以把它当做一个针对事件的lodash，它将观察者模式以及迭代器模式
+        和使用集合的函数式编程结合在一起来满足事件的管理。
+        Observable可观察对象：表示一个可调用的未来值或者事件的集合
+        Observer观察者：一个回调函数的集合，它知道如何去监听被Observable发送的值
+        Subscription订阅：表示一个可观察对象的执行，主要用于取消执行
+        Operators操作符：纯粹的函数，使得以函数编程的方式处理集合比如：map,filter等
+        Subject(主题)：等同于一个事件驱动器，是将一个值或者事件广播到多个观察者的唯一途径
+        Schedulers(调度者)：用来控制并发，当计算发生的时候允许我们协调，比如setTimeout,requestAnimationFrame   	
+           </pre>
+
+           <div class="title">订阅事件和创建流</div>
+           <pre>
+        let foo = Rx.Observable.create(observer => {
+          console.log('Hello');
+          observer.next(42);
+        });
+        foo.subscribe(x => console.log(x));
+        foo.subscribe(y => console.log(y));
+
+        output: "Hello"  42  "Hello"  42
+        这里可以把foo想象成一个函数，这意味着你每次调用foo都会导致传入Rx.Observable.create里的回调函数重新执行一次, 调用的方式为
+        foo.subscribe(callback), 相当于foo()。 接收函数返回值的方式也从var a = foo()改为通过传入回调函数的方式获取。第三行的
+        observer.next表示返回一个值, 你可以调用多次，每次调用observer.next后， 会先将next里的值返回给foo.subcribe里的回调函数
+        执行完后再返回。observer.complete, observer.error来控制流程,具体可看代码：
+        var observable = Rx.Observable.create(observer => {
+            //这个observer是rx内部的一个对象给这个参数的，当调用next的时候就是就是触发subscribe的callback
+	        try {
+	            observer.next(1);
+	            console.log('hello');
+	            observer.next(2);
+	            observer.next(3);
+	            observer.complete();
+	            observer.next(4);
+	        } catch (err) {
+	            observer.error(err); 
+	        }
+        });
+        let = subcription = observable.subscribe(value => {
+          	console.log(value)
+        })
+
+        output: 1	hello	2	3  
+        如上的第一个回调函数里的结构是推荐的结构。 当observable的执行出现异常的时候，通过observer.error将错误返回, 然而
+        observable.subscribe的回调函数无法接收到.因为observer.complete已经调用, 因此observer.next(4)的返回是无效的. 
+        Observable不是可以返回多个值的Promise虽然获得Promise的值的方式是通过then函数这种类似的方式, 但是new Promise(callback)
+        里的callback回调永远只会执行一次！因为Promise的状态是不可逆的,可以使用其他方式创建Observable， 看代码：
+        var clicks = Rx.Observable.fromEvent(document, 'click');
+        clicks.subscribe(x => console.log(x)); 	
+           </pre>
+
+           <div class="title">取消订阅基本用法</div>
+           <pre>
+        var observable = Rx.Observable.interval(1000);
+        var subscription = observable.subscribe(x => console.log(x));
+        setTimeout(() => {
+          subscription.unsubscribe();
+        }, 3100)
+
+        output: 0 1 2
+        其中interval方法是每隔1秒返回一个可订阅的时间流的作用值是1 2 3...,subscription有个unsubscribe方法,可让subscription
+        订阅的observable发射的数据被observer忽略掉.通俗点说就是取消订阅，unsubscribe存在一个陷阱。 先看代码：
+        var foo = Rx.Observable.create((observer) => {
+          var i = 0
+          setInterval(() => {
+            observer.next(i++)l
+            console.log('hello')
+          }, 1000)
+        })
+        const subcription = foo.subscribe((i) => console.log(i))
+        subcription.unsubscribe() 
+
+        output: hello	hello	hello ...
+        unsubscribe只会让observer忽略掉observable发射的数据，但是setInterval依然会继续执行,所以不建议这样写。  	
+           </pre>
+
+           <div class="title">Subject基本用法</div>
+           <pre>
+        Subject是一种能够发射数据给多个observer的Observable, 这让Subject看起来就好像是EventEmitter。 先上代码：
+        var subject = new Rx.Subject();
+        subject.subscribe({
+          next: (v) => console.log('observerA: ' + v)
+        });
+        subject.subscribe({
+          next: (v) => console.log('observerB: ' + v)
+        });
+        subject.next(1);
+        subject.next(2); 
+
+        output//	observerA: 1	observerB: 1	observerA: 2	observerB: 2  
+        与Observable不同的是， Subject发射数据给多个observer。 其次， 定义subject的时候并没有传入callback， 这是因为subject自带
+        next, complete, error等方法。从而可以发射数据给observer。 这和EventEmitter很类似。observer并不知道他subscribe的是
+        Obervable还是Subject。 对observer来说是透明的。 而且Subject还有各种派生， 比如说：
+        	BehaviorSubject 能够保留最近的一个数据，使得当有subscribe的时候，立马发射出去。看代码：
+        	var subject = new Rx.BehaviorSubject(0); // 0 is the initial value
+        	subject.subscribe({
+        	  next: (v) => console.log('observerA: ' + v)
+        	});
+        	subject.next(1);
+        	subject.next(2);
+        	subject.subscribe({
+        	  next: (v) => console.log('observerB: ' + v)
+        	});
+        	subject.next(3);	
+        	output//observerA: 0 observerA: 1 observerA: 2	observerB: 2	observerA: 3	observerB: 3
+
+        	ReplaySubject能够保留最近的几个数据， 使得当有subscribe的时候，将这些数据发射出去。看代码：
+        	var subject = new Rx.ReplaySubject(3);声明表示ReplaySubject最大能够记录的数据的数量是3 
+        	subject.subscribe({
+        	  next: (v) => console.log('observerA: ' + v)
+        	});
+        	subject.next(1);
+        	subject.next(2);
+        	subject.next(3);
+        	subject.next(4);
+        	subject.subscribe({
+        	  next: (v) => console.log('observerB: ' + v)
+        	});
+        	subject.next(5);
+        	output//  observerA: 1  observerA: 2  observerA: 3  observerA: 4	
+        	observerB: 2 observerB: 3 observerB: 4 observerA: 5	observerB:5
+
+        	AsyncSubject 只会发射结束前的一个数据。 看代码：
+        	var subject = new Rx.AsyncSubject();
+        	subject.subscribe({
+        	  next: (v) => console.log('observerA: ' + v)
+        	});
+        	subject.next(1);
+        	subject.next(2);
+        	subject.next(3);
+        	subject.next(4);
+        	subject.subscribe({
+        	  next: (v) => console.log('observerB: ' + v)
+        	});
+        	subject.next(5);
+        	subject.complete();
+        	output// observerA: 5	observerB: 5
+
+        	既然subject有next, error, complete三种方法， 那subject就可以作为observer看代码：
+        	var subject = new Rx.Subject();
+        	subject.subscribe({
+        	  next: (v) => console.log('observerA: ' + v)
+        	});
+        	subject.subscribe({
+        	  next: (v) => console.log('observerB: ' + v)
+        	});
+        	var observable = Rx.Observable.from([1, 2, 3]);
+        	observable.subscribe(subject);
+        	output// observerA: 1 observerB: 1 observerA: 2 observerB: 2 observerA: 3 observerB: 3
+        	也就是说， observable.subscribe可以传入一个subject来订阅其消息。 这就好像是Rxjs中的一颗语法糖,Rxjs有专门实现
+           </pre>
+
+           <div class="title">rxjs操作符</div>
+           <pre>
+	Observable上有很多方法， 比如说map, filter, merge等等。 他们基于调用它们的observable，返回一个全新的observable。 
+	而且他们都是纯方法。 operators分为两种， instance operators 和 static operators。 instance operators是存在于
+	observable实例上的方法， 也就是实例方法； static operators是存在于Observable这个类型上的方法,也就是静态方法。Rxjs
+	拥有很多强大的operators,自己实现一个operators：
+	    function multiplyByTen(input) {
+	      var output = Rx.Observable.create(function subscribe(observer) {
+	        input.subscribe({
+	          next: (v) => observer.next(10 * v),
+	          error: (err) => observer.error(err),
+	          complete: () => observer.complete()
+	        });
+	      });
+	      return output;
+	    }
+	    var input = Rx.Observable.from([1, 2, 3, 4]);
+	    var output = multiplyByTen(input);
+	    output.subscribe(x => console.log(x));  
+	输出：10	20	30	40	
+
+
+
+	一、debounce:防抖动，只有当另一个Observable发射值时，才取源Obervable的最新数据进行发射，其他数据取消发射
+		// 每次点击，且当计时器的最新值未被发射时，才从计时器发射一个值
+		Rx.Observable.interval( 1000 )
+		    .debounce(( ) => Rx.Observable.fromEvent(document, 'click'))
+		    .subscribe(x => console.log( x ));
+
+	
+	二、debounceTime:防抖动，一段时间内，只取最新数据进行发射，其他数据取消发射
+		// 每隔一秒，输出一个计时器的值
+		Rx.Observable.interval( 1000 )
+		    .debounceTime( 500 )
+		    .subscribe(x => console.log( x ));
+
+
+	三、distinct:去除重复的值
+		// 去除重复的值，输出A,B,C,b
+		Rx.Observable.of('A', 'B', 'C', 'A', 'b', 'B')
+		    .distinct( )
+		    .subscribe( x => console.log( x ))
+
+
+	四、distinctUntilChanged:去除连续重复的值
+		// 去除连续重复的元素，输出A,B,A,B,A
+		Rx.Observable.of('A', 'B', 'B', 'A', 'B', 'A', 'A')
+		    .distinctUntilChanged( )
+		    .subscribe( x => console.log( x ))
+
+
+	五、distinctKeyUntilChanged:去除连续项中，拥有相同给予key值的value的项
+		let items = [
+		    { age: 4, name: 'Foo'},
+		    { age: 7, name: 'Bar'},
+		    { age: 5, name: 'Foo'},
+		    { age: 6, name: 'Foo'}
+		]
+		Rx.Observable.of( ...items )
+		    .distinctUntilKeyChanged('name') 
+		    .subscribe( x => console.log( x ))
+
+		// 输出
+		//  { age: 4, name: 'Foo'}
+		//  { age: 7, name: 'Bar'}
+		//  { age: 5, name: 'Foo'}
+
+
+	六、ElementAt:只发射指定位置的元素
+		// 下标从0开始，输出 ‘A’
+		Rx.Observable.of('A', 'B', 'B', 'A', 'B', 'A', 'A')
+		    .elementAt( 3 )
+		    .subscribe( x => console.log( x ))
+
+
+	七、Filter:自定义过滤规则，符合才把该值进行发射
+		// 输出奇数：1,2,5,7,9,1
+		Rx.Observable.of(1,3,2,5,4,7,6,9,1)
+		    .filter( x => x % 2 !== 0 )
+		    .subscribe( x => console.log( x ))
+
+
+	八、first只发射第一个元素last只发射最后一个元素ignoreElements忽略所有值
+
+
+	九、audit、auditTime
+	audit：当另一个Observable发射值前，源Observable的值会被忽略，当另一个Observable发射值时，才从源Observable发
+	射一个最新值，然后重复上述过程。
+	auditTime：在指定等待时间内，源Observable的值会被忽略，等待结束后，发射一个源Observable的最新值，然后重复上述过程。
+	他们与throttle的区别是，第一个值的发射，是先等待再发射，而throttle是先发射第一个值，然后再等待。
+	// 输出2,5,8,11,13...
+	Rx.Observable.interval( 1000 )
+	    .auditTime( 2000 )
+	    .subscribe( x => console.log( x ))
+
+
+	十、sample：当另一个Observable发射值时，才从源Observable数据集发射一个最新值。
+	// 每次点击输出一个计时器的最新值
+	Rx.Observable.interval( 1000 )
+	    .sample( Rx.Observable.fromEvent( document, 'click' ))
+	    .subscribe( x => console.log( x ))
+
+
+
+	十一、sampleTime：每隔一定的时间间隔，发射一个源Observable数据集的最新值。
+	// 每隔2秒，分别输出 0,2,4,6,8....
+	Rx.Observable.interval( 1000 )
+	    .sampleTime( 2000 )
+	    .subscribe( x => console.log( x ))
+	　　
+
+	 十二、single：若源Observable数据集只有一个数据项，则输出该项。若多于一个数据项，则报错
+	// 输出 1
+	Rx.Observable.of( 1 )
+	    .single( )
+	    .subscribe( x => console.log( x ))
+
+
+	十三、skip：跳过源Observable数据集的n个数据，然后才发射值。
+	// 跳过开头2个，输出3,4
+	Rx.Observable.of(1,2,3,4)
+	    .skip( 2 )
+	    .subscribe( x => console.log( x ))
+
+
+	十四、skipUntil：忽略源Observable开头的一系列值，直到当另一个Observable开始发射值，才会从源Observable开始发射值
+	// 3秒后，才每秒发射计时器的值，输出：2,3,4,5,6.....
+	Rx.Observable.interval( 1000 )
+	    .skipUntil( Rx.Observable.of( 1 ).delay( 3000 ))
+	    .subscribe( x => console.log( x ))
+
+
+	十五、skipWhile：忽略源Observable开头的一系列值，直到有一项不符合条件，才开始从源Observable的该值开始，开始发射值。
+	// 输出4,5,3,2,1
+	Rx.Observable.of( 1, 2, 3, 4, 5, 3, 2, 1)
+	    .skipWhile( x => x < 4 )
+	    .subscribe( x => console.log( x ))
+
+
+	十六、take：从源Obervable的开头开始，拿到n个数据项进行发射，其余的数据项将被忽略。
+	// 每秒输出：0,1,2 后结束
+	Rx.Observable.interval( 1000 )
+	    .take( 3 )
+	    .subscribe( x => console.log( x ))
+
+
+	十七、takeLast：从源Obervable的倒数第一个向前数，拿到n个数据项并进行发射，从开头开始的的数据项将被忽略。
+	// 输出5,6,7
+	Rx.Observable.of( 1,2,3,4,5,6,7 )
+	    .takeLast( 3 )
+	    .subscribe( x => console.log( x ))
+
+
+
+	十八、takeUtil：从源Observable数据集的第一项开始进行发射，直到另一个Observable开始发射第一个值时，源Observable停止发射值
+	// 3秒后停止计时器的值输出
+	Rx.Observable.interval( 1000 )
+	    .takeUntil( Rx.Observable.of( 1 ).delay( 3000 ))
+	    .subscribe( x => console.log( x ))
+
+
+
+	十九、takeWhile：从源Observable数据集的第一个数据项开始发射值,直到遇到符合条件的第一个数据项后,停止源Observable数据集发射
+	// 输出：1,2,3
+	Rx.Observable.of( 1,2,3,4,3,2,1)
+	    .takeWhile( x => x < 4 )
+	    .subscribe( x => console.log( x ))
+
+
+
+	二十、throttle：每当源Observable数据集发射一个数据项时，会等另一Observable发射值,等待时候源Observable的值将被忽略
+	并不会发射，直到另一个Observable发射了一个值时，才把源Observable的最新值进行发射
+	// 输出0,3,6,9,12.....
+	// 每次输出一个值，至少等待两秒后，才输出最新值
+	Rx.Observable.interval( 1000 )
+	    .throttle( x => Rx.Observable.interval( 2000 ))
+	    .subscribe( x => console.log( x ))
+
+
+
+	二十一、throttleTime：每当源Observable数据集发射一个数据项时，会等待n秒，n秒后输出源Observable的最新值。
+	// 输出0,3,6,9,12.....
+	Rx.Observable.interval( 1000 )
+	    .throttleTime( 2000 )
+	    .subscribe( x => console.log( x ))
+
+
+	
+	二十二：scan:对值进行某些操作类似于js的reduce
+	//输出1
+	var button = document.querySelector('button');
+	Rx.Observable.fromEvent(button, 'click')
+	    .throttleTime(1000)
+	    .scan(count => count + 1, 0)  //第二个参数是默认值
+	    .subscribe(count => console.log(`${count}`));
+
+
+	二十三：switchMap 其实是 map and switch，而 switch 操作符的行为是：
+	如果 Observable 中流动的数据也是 Observable，switch 会将数据流中最新的一个 Observable 订阅并将它的值传递给下一个操作符，
+	然后取消订阅之前的 Observable
+	const item$ = input$
+	  .map(() => $input.value)
+	  .filter(r => r !== '')
+	  .map(mockHttpPost)
+	  .switch()
+	  .map(value=>value+3)  //对返回来的数据进行再次处理并返回给下个订阅者
+	...
+           </pre>
+          
+       </div>
+  </body>
+</html>
