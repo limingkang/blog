@@ -266,6 +266,8 @@
         getHeroes(): Observable<span><</span>any> {
             var params: URLSearchParams = new URLSearchParams();
             params.set("test","value");
+            注意当传的是{search:params}时候我们是在url后面拼接，但是如果要是urlencode形式的话就直接写params就行了
+            实际上传的就是"value1=1&value2=2"如return this.http.post(url,params,options)
             return this.http.get(url,{search:params})
                     .map(this.extractData)
                     .catch(this.handleError);
@@ -527,6 +529,37 @@
             return this.http.get(url)
               .map((response) => response.json());     
             </pre>
+
+            <div class="title">动态创建组件的一种简单方案</div>
+            <pre>
+        针对我的项目场景：用户拖动相关的块到特定区域，区域中便会生成相应的UI控件，此UI控件有自己的模板、行为等等。生成UI 后便会在区域
+        中显示出来。所以我觉得将UI控件封为一个小组件，再动态加载，是个不错的方案。
+
+        要实现这个功能，得先简单了解angular2 中相关的api,从@angular/core中导入:
+            ViewChild：一个属性装饰器，用来从模板视图中获取对应的元素，可以通过模板变量获取，获取时可以通过 read 属性设置查询的条件，
+            就是说可以把此视图转为不同的实例
+            ViewContainerRef ：一个视图容器，可以在此上面创建、插入、删除组件等等
+            ComponentFactoryResolve：一个服务，动态加载组件的核心，这个服务可以将一个组件实例呈现到另一个组件视图上
+        有了这三个，一个简单的思路便连贯了：特定区域就是一个视图容器，可以通过 ViewChild 来实现获取和查询，然后使用
+        ComponentFactoryResolve将已声明未实例化的组件解析成为可以动态加载的 component，再将此component 呈现到此前的视图容器中
+
+        1.在父组件中我们使用
+            constructor(private cfr : ComponentFactoryResolver) { }
+            @ViewChild("target", { read : ViewContainerRef }) target : ViewContainerRef
+            addcomponent(){
+                let factory = this.cfr.resolveComponentFactory(oneComponent);  
+                let component = this.target.createComponent(factory, 0);
+            }
+        2.在模块中声明该组件还得增加entryComponents:[onecomponent]
+
+        3.如果你使用的是预编译的话就会有问题了，可以手动加入@angular/compiler包并做相应配置但是这就没意义了
+        
+            </pre>
+            <div class="explain">
+                angular2的变异过程大体可以分为三步就是Inputs(源代码)-----Parser(解析器)----->Instantiate(实例化),如果不是aot的话就是
+                这三个过程全部浏览器去做，但是如果是aot的话就是服务器端通过compiler-cli来把它变成parser后的代码但是实例化(真正创建dom)
+                还是在浏览器端实现
+            </div>
 
         </div>
     </body>
