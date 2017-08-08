@@ -24,7 +24,7 @@
 	        学习曲线较陡峭。
 	        开发成本较大。
 	        部署审核时间较长。
-	2.第二种方式：hybrid app，基于开源的framework，使用HTML+CSS+JS编程语言,通过编写web应用,并且转化成native app的方式进行开发
+	2.第二种方式：Hybrid APP底层依赖于Native提供的容器（UIWebview），上层使用Html&Css&JS做业务开发
 	优点：
 		Write once，run anywhere！
 		学习曲线比较平滑，web思维，开发简单。
@@ -35,15 +35,13 @@
 		Web不能解决一切问题。
 		不适合高质量交互及动画类应用，性能相比native app有一定的差距。
 	3.第三种方式：基于跨平台的开发工具，来进行原生态应用的开发
-	Titanium：用Javascript通过提供跨平台的Javascript运行时和mobile api来进行native app开发。要针对不同的平台进行不同的编码
+	Cordova:提供了一组设备相关的API，通过这组API，移动应用能够以JavaScript访问原生的设备功能，如摄像头、麦克风等,他还提供了
+		一组统一的JavaScript类库，并为这些类库所用设备相关的原生后台代码；还有一个PhoneGap他被Adobe收购了,但是剥离了核
+		心代码贡献给Apache Software Foundation,Apache将这个项目命名为Cordova,就是说PhoneGap是基于Cordova的
 	React Native：使用Javascript语言，通过JavascriptCore与Native API进行通信来进行native app的开发，由Facebook开源
-	优点：
-		Lean once，write anywhere！
-		拥有native app的性能。
-		拥有web开发的效率。
-	缺点：
-		入门门槛比较高。
-		需要自己为不同的平台定制UI组件。
+	ionic:其底层还是依赖于UIWebview,虽然最终也是编译成ios和android但是本质上讲还是hybrid所以体验并不好
+	weex:阿里出品的，并没有真正用过不做评论，但是他们的文档真的写的不错
+
            </pre>
            <div class="explain">
                react native不是所谓的hybrid,它是通过javascriptCore来进行开发的，JavaScriptCore是webkit的一个重要组成部分，主要是
@@ -58,12 +56,12 @@
 	如果说Node.js把js扩展到服务器世界，那么Native.js则把js扩展到手机App的原生世界。
 	HTML/JS/Css全部语法只有7万多，而原生语法有几十万，Native.js大幅提升了HTML5的能力。
 	NJS突破了浏览器的功能限制，也不再需要像Hybrid那样由原生语言开发插件才能补足浏览器欠缺的功能。
-	NJS编写的代码，最终需要在HBuilder里打包发行为App安装包，或者在支持Native.js技术的浏览器里运行。目前Native.js技术不能在普通手
+	NJS编写的代码，最终要用HBuilder打包发行为App安装包，或者在支持Native.js技术的浏览器里运行。目前Native.js技术不能在普通手
 	机浏览器里直接运行。
 		1.NJS大幅扩展了HTML5的能力范围，原本只有原生或Hybrid App的原生插件才能实现的功能如今可以使用JS实现。
 		2.NJS大幅提升了App开发效率，将iOS、Android、Web的3个工程师组队才能完成的App，变为1个web工程师就搞定。
 		3.NJS不再需要配置原生开发和编译环境，调试、打包均在HBuilder里进行。没有mac和xcode一样可以开发iOS应用。
-		4..再次强调，Native.js不是一个js库，不需要下载引入到页面的script中，也不像nodejs那样有单独的运行环境，Native.js的
+		4.Native.js不是一个js库，不需要下载引入到页面的script中，也不像nodejs那样有单独的运行环境，Native.js的
 		运行环境是集成在5+runtime里的，使用HBuilder打包的app或流应用都可以直接使用Native.js。   	
 		   </pre>
 		   <div class="explain">
@@ -82,6 +80,33 @@
 	原生App的安装包，包括Android的apk和iOS的ipa。发行到原生应用市场。	
 		   </pre>
 		   <div class="explain">API参考地址<a href="http://www.dcloud.io/runtime.html">http://www.dcloud.io/runtime.html</a></div>
+
+		   <div class="title">个人比较看好的react native</div>
+		   <pre>
+	Hybrid 及 React Native 等开发模式包含了哪些常规移动开发所不具备的优势:
+	1. 跨平台＋动态更新
+		Android 与 iOS Team 分别编写客户端代码，打包，分发到 Play Store 和 Apple Store，通过更新JSON数据来更新页面。但
+		是当客户端发生严重问题而服务器上无法quick fix时，就得重新发版。对国外Android市场而言还好，因为能通过Play Store快
+		速更新；国内 Android 市场则由于分发渠道太杂，很难及时把新版本立即推送给所有用户，当然这也是为何热修复技术在国内
+		盛行而国外冷清的原因；而 Apple Store 则需要一定的审核时间，而且最近又在抓 iOS 热修复框架如 JsPatch、Rollout 等。
+		相比而言，Hybrid 和 RN/Weex 模式除了能下发 Json 数据来刷新界面内容，更能直接下发业务逻辑代码，直接实现整体 App的
+		更新。而且它们不用在乎 Android 和 iOS 两个平台，因为一份 JS 代码写好后，把 JS Bundle 放在服务器上，所有的客户端
+		立即更新。当然这个功能迟早是废掉，因为这绕过了审核带来了安全隐患
+	2. 代码复用
+		一般而言，同一款产品的 Android 和 iOS 两端除 UI 有些许不同外，多数业务逻辑几乎完全一致，这便造成了人力的浪费。
+		而利用 RN (React Native 缩写，下同) 开发的 feature 可以实现 85% - 99% 的代码复用率。这意味着我们可以用更少的
+		人力成本来达到相同的效果。
+	3.性能方面
+		Hybrid是基于WebView的，在Android上的性能缺陷非常明显；而RN是利用JSCore转化成Native运行的，性能相对而言好不少
+	4.RN的劣势
+		不得不说RN的学习成本很高，由于ios和android不能完全使用一套代码还要做一些适配的改动，不仅如此最好你得会底层就
+		是说得会java和oc等，这样才能更好的扩张原生给RN调用，还有就是安装包大，首屏慢等缺点   	
+		   </pre>
+		   <div class="explain">
+		   	   <a href="http://reactnative.cn/docs/0.47/getting-started.html">react native中文网</a>&emsp;
+		   	   <a href="http://mobile.yyuap.com/UAPMobile/new/static/instruction.html?cid=18">我公司用的框架</a>
+		   </div>
+
        </div>
   </body>
 </html>

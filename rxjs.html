@@ -19,6 +19,7 @@
            </pre>
            <div class="explain">
            	   <a href="http://reactivex.io/rxjs/manual/overview.html" target="_blank">rxjs官网学习</a>&emsp;
+           	   <a href="http://cw.hubwiz.com/card/c/569d92e3acf9a45a69b05154/1/1/1/" target="_blank">rxjs汇智网中的介绍</a>&emsp;
            	   <a href="https://github.com/limingkang/learning-data/blob/master/rxjs.pdf" target="_blank">rxjs学习记录pdf版下载</a>
            </div>
 
@@ -368,8 +369,15 @@
 	var button = document.querySelector('button');
 	Rx.Observable.fromEvent(button, 'click')
 	    .throttleTime(1000)
-	    .scan(count => count + 1, 0)  //第二个参数是默认值
-	    .subscribe(count => console.log(`${count}`));
+	    .scan((count,value) =>{
+	       console.log('value就是流中传入过来的值 count是这里每回return出来的值');
+	       return count + 1
+	    }, 0)  //第二个参数是默认值
+	    .subscribe(
+	    	count => console.log(`${count}`),
+	    	err=>console.log('第二个参数函数捕获出现错误'),
+	    	()=>console.log('所有流都处理完成了completed')
+	    );
 
 
 	二十三：switchMap 其实是 map and switch，而 switch 操作符的行为是：

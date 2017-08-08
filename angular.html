@@ -34,7 +34,7 @@
         且vue上手简单，文档全，现在个人做到项目来说angular能做的vue同样也能做
             </pre> 
             <div class="explain">
-                <a href="https://angular.cn/docs/ts/latest/guide/">angular中文网</a>&emsp;
+                <a href="https://angular.cn/docs">angular中文网</a>&emsp;
                 <a href="https://github.com/limingkang/angular-webpack-starter">angular项目架构实践</a>&emsp;
                 <a href="https://www.tslang.cn/docs/handbook/basic-types.html">typescript语法</a>&emsp;
                 <a href="https://github.com/ng-book2/code">ng-book随书源码</a>
@@ -559,6 +559,73 @@
                 angular2的变异过程大体可以分为三步就是Inputs(源代码)-----Parser(解析器)----->Instantiate(实例化),如果不是aot的话就是
                 这三个过程全部浏览器去做，但是如果是aot的话就是服务器端通过compiler-cli来把它变成parser后的代码但是实例化(真正创建dom)
                 还是在浏览器端实现
+            </div>
+
+            <div class="title">angular中asyncPipe中的用法</div>
+            <pre>
+        正常没用管道的情况下这样写：
+            <textarea style="height: 650px;" readonly>
+        <button (click)="newSeq()">New random sequence</button>
+        <ul>
+          <li [style.background-color]="item.color"
+              *ngFor="let item of items">{{item.num}}</li>
+        </ul>`
+
+        export class AppComponent {
+          ...
+          subscription: Subscription;
+
+          newSeq() {
+            //每一次新的流出现都会创建一个订阅所以必须取消否则会有多个订阅事件发生
+            if (this.subscription) {
+              this.subscription.unsubscribe();
+            }
+
+            // generate a random color
+            let color = '#' + Math.random().toString(16).slice(-6);
+
+            this.subscription = Observable.interval(1000)
+                  .scan((acc, num)=>[{num, color }, ...acc].slice(0, 5), [])
+                  .subscribe(items => this.items = items);
+          }
+        }
+        每次我们订阅一个Observable ，我们将它保存到组件实例的一个属性中。然后，当我们再次运
+        行newSeq的时候，我们检查this.subscription是否存在，如果存在的话，我们就需要去调用
+        unsubscribe来取消订阅。这就是为什么我们看不到我们的列表在各种颜色之间跳转，不管我
+        们点击了按钮多少次,当然这里也可以使用switchMap来搞定
+            </textarea> 
+
+        当我们使用管道的时候就简单了:
+            <textarea style="height: 550px;" readonly>
+        <button (click)="newSeq()">New random sequence</button>
+        <ul>
+          <li [style.background-color]="item.color"
+              *ngFor="let item of items | async">{{item.num}}</li>
+        </ul>`
+        export class AppComponent {
+          items: Observable<any>;
+
+          constructor () {
+            this.newSeq();
+          }
+
+          newSeq() {
+
+            // generate a random color
+            let color = '#' + Math.random().toString(16).slice(-6);
+
+            this.items = Observable.interval(1000)
+                                   .scan((acc, num)=>[{num, color }, ...acc].slice(0, 5), []);
+          }
+        }
+        AsyncPipe一旦组件被销毁，就会从Observables取消订阅。而且一旦表达式的引用发生变化，也会
+        取消订阅，只要我们为此分配一个新的Observable，则AsyncPipe将自动取消订阅先前绑定的
+        Observable！这不仅使我们的代码变得美观干净，还能保护我们免受非常微妙的内存泄漏
+            </textarea>       
+            </pre>
+            <div class="explain">
+                在变更检测方面，这意味着每次Observables 都可以检查所有组件。这是浪费资源。通过将组件的更改检测设置为OnPush，我们可以
+                做得更好，这意味着如果输入（我们的案例中的数组）发生变化，它将只检查它的绑定
             </div>
 
         </div>
