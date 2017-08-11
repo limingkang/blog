@@ -394,14 +394,16 @@
             @SkipSelf 注入本组件祖先中提供的服务
 
         6.angular2 模型数据更新了，需要监听数据改变,实现接口Docheck，检测页面上所有元素数据更新,这个代价很大
-            import { Component, DoCheck } from "@angular/core";
+            import { Component, DoCheck,SimpleChanges,OnChanges } from "@angular/core";
             export class LangListUserComponent implements DoCheck,OnChanges {
                 ngDoCheck() {
                   //只要输入组件的任何一个的数据变化了都会触发这个方法
                 }
                 ngOnChanges(changes: SimpleChanges) {
                     //使用这个检测一个数据forcefresh的变化
+                    //如果组件没有输入属性的话那它永不触发
                     //如果在组件内手动改变输入属性的值，ngOnChanges 钩子是不会触发的
+                    //我们在组件内部也可以改变输入属性的值该组件也会做出响应但是不建议这么做
                     if(changes['forcefresh'] && changes['forcefresh'].currentValue) {
                       this.forceRefresh();
                     }
@@ -413,6 +415,14 @@
             之后在方法里面do(event:Event){
                 event.stopPropagation();
             }
+
+        8.通常我们会在ngOninit里面去做值的获取赋值等，但是里面必须是异步的，他会等待里面异步结束之后执行检测，否则直接赋值就：
+                Expression has changed after it was checked. Previous value......
+        这个错误就是说检测已经执行完了，但是值又变了，可是此时angular不会进行变更检测的，除非页面有点击输入什么的，这个报错是
+        不会影响运行的，页面会正常显示，生产环境下不会报错，我们可以调用：
+                import { enableProdMode } from '@angular/core';
+                enableProdMode();  这方法会调用生产模式就不会再报错了，但是不建议用
+        我们可以在要改值的地方使用一个异步即可使用observable订阅使用async或者settimeout等能造成异步的东西即可达到效果
             </pre>
 
             <div class="title">获取父子组件的引用</div>
@@ -443,7 +453,7 @@
             </pre>
             <div class="explain">
                 应用程序组件经常需要共享信息。我们喜欢更加松耦合的技术，比如数据绑定和服务共享。 但有时候组件确实需要拥有
-                另一个组件的引用，用来访问该组件的属性值或者调用它的方法
+                另一个组件的引用，用来访问该组件的属性值或者调用它的方法,同级组件之间我们可以通过引用在模板中使用来传递信息
             </div>
 
             <div class="title">angular2的变更检测机制</div>
@@ -478,7 +488,7 @@
 
 
         使用 Observables 机制提升性能和不可变的对象类似，但当发生变化的时候，Observables 不会创建新的模型，但我们可以通过订阅 
-        Observables 对象，在变化发生之后，进行视图更新。使用Observables机制的时候，我们同样需要设置组件变化检测策略为OnPush
+        Observables 对象，在变化发生之后，进行视图更新。使用Observables机制的时候，我们同样需要设置子组件变化检测策略为OnPush
         例如在父组件中对要输入给子组件的值：
             counterStream: Observable<span><</span>any>;
             this.counterStream = Observable.timer(0, 1000); 
@@ -486,7 +496,7 @@
             @Input() counterStream: Observable<span><</span>any>;
             constructor(private cdRef: ChangeDetectorRef) { }
             ngOnInit() {
-                this.addStream.subscribe(() => {
+                this.counterStream.subscribe(() => {
                     this.counter++;
                     this.cdRef.markForCheck();
                 });
@@ -628,6 +638,73 @@
                 做得更好，这意味着如果输入（我们的案例中的数组）发生变化，它将只检查它的绑定
             </div>
 
+            <div class="title">组件的生命周期</div>
+            <pre>
+        ngOnChanges:当被绑定的输入属性的值发生变化时调用，首次调用一定会发生在 ngOnInit之前
+
+        ngOnInit:在第一轮 ngOnChanges 完成之后调用之后的不会再调用了.(也就是说当每个输入属性的值都被触发了一次ngOnChanges之后才
+        会调用 ngOnInit ，此时所有输入属性都已经有了正确的初始绑定值)
+
+        ngDoCheck：在每个 Angular 变更检测周期中调用
+
+        ngAfterContentInit：当把内容投影进组件之后调用
+
+        ngAfterContentChecked：内容投影进组件之后，每次完成被投影组件内容的变更检测之后调用
+
+        ngAfterViewInit：初始化完组件视图及其子视图之后调用
+
+        ngAfterViewChecked：初始化完组件视图及其子视图之后，每次做完组件视图和子视图的变更检测之后调用
+
+        ngOnDestroy：当 Angular 每次销毁指令 / 组件之前调用
+
+        ngOnInit() {
+            console.log(2);
+            var clear=setTimeout(()=>{
+                this.type="risk";
+                console.log(3);
+                clearTimeout(clear);
+            },0)
+        }
+        ngAfterContentInit(){
+            console.log(1);
+        }
+        ngAfterContentChecked(){
+            console.log(4);
+        }
+        ngAfterViewInit(){
+            console.log(5);
+        }
+        ngAfterViewChecked(){
+            console.log(6);
+        }
+        ngDoCheck(){
+            console.log(7);
+        }
+        当组件被加载的时候输出：
+        2  7  1  4  5  6  7  4  6  3  7  4  6  7  4  6  7  4  6  7  4  6......
+        如果没有输入值的话就不会触发ngOnchanges,如果有的话则其第一个触发，初始化完成之后就会立即执行一次总的变更检测
+        之后再正常填充内容即可，记住在接下来页面有输入值或者谁的点击触发等都会触发7 4 6这个组件的整个数据检测
+        数据变化的检测一般发生异步事件中，例如： 
+            - 浏览器事件，例如 click, mouseover, keyup 
+            - setTimout 和 setInterval 
+            - Ajax 请求
+        于是 Angular 使用了 zone.js 这个大杀器来跟踪异步任务，并进行脏检查。zone.js 这个工具给所有 JavaScript 异步事件都提
+        供了一个上下文。zone.js 可以实现异步任务的跟踪、分析、错误记录。zone.js 是利用重写浏览器异步函数的方法来实现的。
+        类似于下面这样：
+            var realTetTimeout = window.setTimeout;
+            var beforeTask = ()=> { console.log('before task') };
+            var afterTask = ()=> { console.log('after task') };
+            window.setTimeout = (fn, time)=> {
+              realTetTimeout(()=> {
+                beforeTask();
+                fn();
+                afterTask();
+              }, time);
+            };
+             
+            </pre>
+
         </div>
     </body>
 </html>
+
