@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,react native">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title">react native开发环境搭建</div>
+		   <pre>
+	1.安装最新版nodejs和npm install -g react-native-cli yarn
+	记住包管理一定要使用yarn否则后期坑太多，用yarn去安装依赖yarn install
+	2.安装JDK
+		一：从<a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html" style="color:blue;">这里</a>下载jdk,下载8u111或8u112以上版本。安装时建议安装到C:\Java 目录下
+		二：设置系统变量,控制面板-->系统和安全-->系统-->高级-->环境变量
+		三：系统变量-->新建 JAVA_HOME 变量;变量值填写jdk的安装目录（本人是 E:\Java\jdk1.7.0)
+		四：系统变量-->寻找 Path 变量-->编辑在变量值最后输入 %JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
+		（注意原来Path的变量值末尾有没有;号，如果没有先输入;号再输入上面的代码,末尾不要分号）
+		五：系统变量-->新建 CLASSPATH 变量,值填写 .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar（注意最前面有一点）
+		六：打开终端输入java -version显示版本即安装成功
+	3.安装Android SDK
+	    一：翻墙的朋友可以去谷歌上下，不想翻墙进入<a href="http://www.androiddevtools.cn/" style="color:blue;">这里</a>下载，选择sdk tools和全选extras,之后选择一个版本下载
+	    注意文档上已经写明了，必须是23.0.1版本的build-tools，因为它的java包的编译的配置是这个版本,还有选择版本必须为Android6.0
+	    二：包的安装实在太慢可以使用对应镜像网站下载会快一些，安装过程见<a style="color:blue;" target="_blank" href="http://blog.csdn.net/dr_neo/article/details/49870587">博客</a>   	
+	    三：注意博客上面有个坑，就是配置环境变量的时候不要设置ANDROID_SDK_HOME的，直接在path里面写上安装的platform-tools
+	    和tools对应的路径即可，否则安装不上，还有得配置一个ANDROID_HOME环境变脸就是sdk装的地址来供reactnative打包时候使用
+	    四：输入adb version显示版本则成功
+	4.使用Gradle构建的（如果你已经在使用Android Studio的这些的都可以忽略了）
+	5.模拟器使用Genymotion,也可以使用Android Studio的但是个人觉得效果不好
+	6.ios的配置自行百度
+		   </pre>
+		   <div class="explain">
+		   	   <a href="http://reactnative.cn/docs/0.47/getting-started.html">react native中文网</a>&emsp;
+		   </div>
+
+		   <div class="title">react native项目部署调试以及打包</div>
+		   <pre>
+	1.安装项目react-native init projectname,提示：你可以使用--version参数创建指定版本的项目。例如
+	react-native init MyApp --version 0.44.3。注意版本号必须精确到两个小数点，之后cd到项目根目录
+	运行npm install 安装好之后react-native start，显示运行在端口8081上面，浏览器打开:
+		http://localhost:8081/index.android.bundle?platform=android显示一段不报错的js即可
+	2.如果报错了那么就运行这两段代码重装这个包试试：
+		yarn remove babel-preset-react-native
+		yarn add babel-preset-react-native@2.1.0
+	3.打包的时候显示在下载gradle这很慢我们可以先下载好<a href="http://www.androiddevtools.cn/" style="color:blue;" target="_blank">一个版本</a>	   	
+	下载的zip文件不要解压，放到本地即可，之后找到我们项目下的android/gradle/wrapper/gradle-wrapper.properties文件
+	设置变量distributionUrl=file\:///D:/gradle/gradle-2.14.1-all.zip，注意装的版本一定要和一开始那个相同
+	4.配置与夜神模拟器的连接，进入夜神的安装目录的bin目录下面nox_adb.exe connect 127.0.0.1:62001，之后
+	运行adb connect 127.0.0.1:62001，如果不知道nox_adb连接哪个可以运行nox_adb devices查看连接的哪个地址段，成功之
+	后输入adb devices显示我们连接的设备地址则成功
+	5.运行react-native run-android 此时会在模拟器上装上相应安装，如果报错出现unable to load script from assets......
+	我们可以在工程目录冲创建assets文件夹android/app/src/main/assets，之后运行命令：
+		react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output 
+		android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res 
+	最后再react-native run-android问题可解决
+	6.模拟器打开开发者菜单(右边那一排按钮中三条线那个)，设置dev settings，选择debug server host & port for device
+	输入本机IP地址和端口号，最后返回页面，当我们改变js文件的时候可以点击开发者菜单选择reload即可，还有live reload等多种实用功能
+	7.也可以使用chrome进行debug调试(不会显示页面的)，我们打开开发者菜单使用debug js remotely这时候会用chrome打开
+	http://localhost:8081/debugger-ui;不过第一次打开需要安装React DevTools(最好翻墙一下)<a href="http://facebook.github.io/react/blog/2015/09/02/new-react-developer-tools.html" style="color:blue;" target="_blank">安装方法</a>
+	8.真机调试
+	在iOS上打开”RCTWebSocketExecutor.m “文件，将“localhost”改为你的电脑的ip，然后在Developer Menu下单击
+	”Debug JS Remotely” 启动JS远程调试功能;
+	在Android上,方式一： 在Android5.0以上设备上，将手机通过usb连接到你的电脑，然后通过adb命令行工具运行如下命令来设置端口转发。 
+	adb reverse tcp:8081 tcp:8081;方式二：你也可以通过在“Developer Menu”下的“Dev Settings”中设置你的电脑ip来进行调试。
+	记住在使用真机调试时，你需要确保你的手机和电脑处在同一个网段内。
+	9.打包发布安卓apk请参考<a href="http://reactnative.cn/docs/0.47/signed-apk-android.html#content" style="color:blue;" target="_blank">打包apk</a>
+	10.ios打包发布过程：
+		一：进入rn项目的ios工程文件夹,找到和rn项目同名的文件夹(当然里面还有其他文件夹我们不管)打开AppDelegate.m文件，将这
+		行注释掉(为了方便真机和模拟器间的切换，尽量注释)：
+jsCodeLocation=[[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
+		新加一行：
+jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"index.ios" withExtension:@"jsbundle"];
+		如果需要切换回模拟器调试，只需要将新加这行注释掉，并恢复原代码即可。
+		新加这行代码大概意思就是告诉native rn代码的入口，我们会在下一步生成这个jsbundle
+		二：打开终端，进入你的rn工程，在根目录下执行bundle命令：
+		react-native bundle --entry-file ./index.ios.js --bundle-output ./ios/bundle/index.ios.jsbundle
+		 --platform ios --assets-dest ./ios/bundle --dev false
+		参数说明：
+			--entry-file 指定入口文件 因为要打包ios平台，所以指定为rn项目的index.ios.js作为入口
+			--bundle-output 指定输出的jsbundle文件路径和文件名 指定到rn项目的ios工程文件夹下，记得
+			一定要先创建bundle文件夹，不然终端会报文件夹找不到的错误
+			--platform 指定平台类型
+			--assets-dest 指定资源文件夹路径 assets文件夹的路径，包含图片、node模块等资源
+			--dev 是否为开发模式 如果设置为false，不会产生警告，并且bundle会被压缩
+			还有其他命令，比如：transformer、prepack、bundle-encoding等，可以到官网查看具体介绍
+		三：使用xcode新建一个项目，并将打包生成的index.ios.jsbundle和assets文件夹拖拽进其根目录，注意一定要
+		选择 Create folder references,接着修改该目录内的AppDelegate.m文件，就是告诉项目入口文件在哪里而已：
+jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"index.ios" withExtension:@"jsbundle"];
+		四：接着配置请求等参数可以参考<a href="http://blog.csdn.net/birthmarkqiqi/article/details/73650844" style="color:blue;" target="_blank">博客</a>
+		五：最后就是xcode的配置打包成ipa并发布的流程
+		六：如果想要在windows下打包发布ios我们可以使用Appuploader,流程可参考<a href="http://blog.csdn.net/sinat_17775997/article/details/71305822" style="color:blue;" target="_blank">博客</a>
+		   </pre>
+
+       </div>
+
+  </body>
+</html>
