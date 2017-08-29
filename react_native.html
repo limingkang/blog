@@ -37,6 +37,7 @@
 		   </pre>
 		   <div class="explain">
 		   	   <a href="http://reactnative.cn/docs/0.47/getting-started.html">react native中文网</a>&emsp;
+		   	   <a href="https://reactnavigation.org/docs/intro/">react native推荐路由配置</a>&emsp;
 		   </div>
 
 		   <div class="title">react native项目部署调试以及打包</div>
@@ -97,7 +98,210 @@ jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"index.ios" withExtensio
 		六：如果想要在windows下打包发布ios我们可以使用Appuploader,流程可参考<a href="http://blog.csdn.net/sinat_17775997/article/details/71305822" style="color:blue;" target="_blank">博客</a>
 		   </pre>
 
-       </div>
+		   <div class="title">react native开发注意点</div>
+		   <pre>
+	1.导入文件的时候不要导入正确的包，否则报错，要分清现在的包版本中有哪些方法 
+	import React, { Component } from 'react';
+	import { AppRegistry, Text, View } from 'react-native'
 
+	2.当我们用rn开发的时候已经没有了div，我们的view组件就相当于div使用即可，而且render函数里面最外层只能有一个父元素如view，
+	我们的每个组件上能设置的样式都要去查，如view上不能设置字体大小和颜色等
+
+	3.对于react native来说已经没有了块级元素和行内元素的区别了，如果要想实现并排什么的都有flex布局搞定，例如我们想实现底下tap
+	页固定上面滚动的效果可以:
+	<textarea readonly style="height: 880px;">
+		return (
+		  <View style={styles.welcome}>
+		    <ScrollView>
+		    <Text style={{marginBottom:1000}}>Chat with</Text>
+		    <Text>Chat with mode</Text>
+		    </ScrollView>
+		    <View style={styles.container}>
+		        <Text style={styles.instructions}>
+		          CinemaNav 1
+		        </Text>
+		        <Text style={styles.instructions}>
+		          CinemaNav 2
+		        </Text>
+		        <Text style={styles.instructions}>
+		          CinemaNav 3
+		        </Text>
+		      </View>
+		  </View>
+		);
+
+		const styles = StyleSheet.create({
+		  container: {
+		    justifyContent: 'space-around',
+		    alignItems: 'center',
+		    height:50,
+		    backgroundColor: '#F5FCFF',
+		    flexDirection:"row"
+		  },
+		  welcome: {
+		      flex:1,
+		    justifyContent: 'flex-end',
+		    backgroundColor: 'red',
+		  },
+		  instructions: {
+		    color: '#333333',
+		    fontSize: 16,
+		  },
+		});
+	</textarea>
+
+	4.对于react native来说没有循环v-for,*ngFor等这些东西了，请用它已经封装好的组件FlatList或者SectionList
+		   </pre>
+
+		   <div class="title">react native中字体大小与宽高适配函数</div>
+		   <pre>
+	ui设计基准,iphone 6   width:750   height:1334
+	设备的像素密度，例如：
+	PixelRatio.get() === 1          mdpi Android 设备 (160 dpi)
+	PixelRatio.get() === 1.5        hdpi Android 设备 (240 dpi)
+	PixelRatio.get() === 2          iPhone 4, 4S,iPhone 5, 5c, 5s,iPhone 6,xhdpi Android 设备 (320 dpi)
+	PixelRatio.get() === 3          iPhone 6 plus , xxhdpi Android 设备 (480 dpi)
+	PixelRatio.get() === 3.5        Nexus 6       */
+
+	import {
+	    Dimensions,
+	    PixelRatio,
+	} from 'react-native';
+
+
+	export const deviceWidth = Dimensions.get('window').width;      //设备的宽度
+	export const deviceHeight = Dimensions.get('window').height;    //设备的高度
+	let fontScale = PixelRatio.getFontScale();                      //返回字体大小缩放比例
+
+	let pixelRatio = PixelRatio.get();      	//当前设备的像素密度
+	const defaultPixel = 2;                     //iphone6的像素密度
+	//px转换成比例
+	const w2 = 750 / defaultPixel;
+	const h2 = 1334 / defaultPixel;
+	const scale = Math.min(deviceHeight / h2, deviceWidth / w2);   //获取缩放比例
+	//字体适配方法
+	export function setSpText(size: number) {
+	    size = Math.round((size * scale + 0.5) * pixelRatio / fontScale);
+	    return size / defaultPixel;
+	}
+	//宽高适配方法
+	export function scaleSize(size: number) {
+	    size = Math.round(size * scale + 0.5);
+	    return size / defaultPixel;
+	}
+	<textarea readonly style="height: 220px;">
+		//使用方法
+		<View>
+	        <Text style={{fontSize: ScreenUtil.setSpText(30)}}>已适配</Text>
+	        <View style={{
+	            height: ScreenUtil.scaleSize(50),
+	            width: ScreenUtil.scaleSize(240),
+	            backgroundColor: 'red'
+	        }}></View>
+	    </View>
+	</textarea>	   	
+		   </pre>
+
+		   <div class="title">react native路由react-native-tab-navigator的简单用法</div>
+		   <pre>
+    <textarea readonly style="height: 1020px;width: 930px;">
+npm install react-native-tab-navigator --save
+
+import React, {Component} from 'react';
+import { AppRegistry,StyleSheet,Text,View,Image} from 'react-native';
+//导入react-native-tab-navigator方式：
+//cmd项目路径下执行npm install react-native-tab-navigator --save
+import TabNavigator from 'react-native-tab-navigator'
+export default class Tabnavigator extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedTab: 'Event'
+        }
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <TabNavigator>
+                    <TabNavigator.Item
+                        //设置选中的位置
+                        selected={this.state.selectedTab === 'Event'}
+                        //标题
+                        title="Event"
+                        //标题样式
+                        titleStyle={styles.tabText}
+                        //选中时标题文字样式
+                        selectedTitleStyle={styles.selectedTabText}
+                        //图标
+                        renderIcon={() => <Image source={require("./icon_alarm_normal.png")} />}
+                        //选中时图标
+                        renderSelectedIcon={() => <Image style={[styles.icon,{tintColor:'red'}]} source={require("./icon_alarm_normal.png")} />}
+                        //点击Event
+                        onPress={() => this.setState({ selectedTab: 'Event' })}>
+                        这里放置对应切换到时候要显示的组件<a-child-component/>
+                    </TabNavigator.Item>
+                    <TabNavigator.Item
+                        selected={this.state.selectedTab === 'Log'}
+                        title="Log"
+                        titleStyle={styles.tabText}
+                        selectedTitleStyle={styles.selectedTabText}
+                        renderIcon={() => <Image source={require("./icon_event.png")} />}
+                        renderSelectedIcon={() =>  <Image source={require("./icon_event.png")} />}
+                        onPress={() => this.setState({ selectedTab: 'Log' })}>
+                        <View style={styles.page0}>
+                            <Text style={{fontSize:18,padding:15,color: 'blue'}}>can write component</Text>
+                        </View>
+                    </TabNavigator.Item>
+                    <TabNavigator.Item
+                        selected={this.state.selectedTab === 'Device'}
+                        title="Device"
+                        titleStyle={styles.tabText}
+                        selectedTitleStyle={styles.selectedTabText}
+                        renderIcon={() => <Image source={require("./icon_device_normal.png")} />}
+                        renderSelectedIcon={() => <Image source={require("./icon_device_normal.png")} />}
+                        onPress={() => this.setState({ selectedTab: 'Device' })}>
+                        <View style={styles.page1}>
+                            <Text style={{fontSize:18,padding:15,color: '#fff'}}>This is Device Page</Text>
+                        </View>
+                    </TabNavigator.Item>
+                </TabNavigator>
+            </View>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    tabText: {
+        fontSize: 10,
+        color: 'black'
+    },
+    selectedTabText: {
+        fontSize: 10,
+        color: 'red'
+    },
+    icon: {
+        width: 22,
+        height: 22
+    },
+    page0: {
+        flex: 1,
+        backgroundColor: 'yellow'
+    },
+    page1: {
+        flex: 1,
+        backgroundColor: 'blue'
+    }
+});
+
+// AppRegistry.registerComponent('Tabnavigator', () => Tabnavigator);
+    </textarea>
+           </pre>
+		   <div class="explain">RN官方声明 从RN 0.43版本开始，官方将停止维护Navigator，建议大家迁移到新的React-navigation库，但是在做底部导航的时候，我建议使用react-native-tab-navigator这个插件</div>
+
+       </div>
   </body>
 </html>
