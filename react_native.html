@@ -151,6 +151,24 @@ jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"index.ios" withExtensio
 	</textarea>
 
 	4.对于react native来说没有循环v-for,*ngFor等这些东西了，请用它已经封装好的组件FlatList或者SectionList
+
+	5.RN 的组件除了 Text，其他组件默认是不支持点击事件，也不能响应基本触摸事件，所以RN中提供了几个直接处理响应事件的组件，基本
+	上能够满大部分点击处理需求TouchableHighlight,TouchableNativeFeedback,TouchableOpacity和TouchableWithoutFeedback
+	这几个组件功能和使用方法基本类似，只是Touch的反馈效果不一样，一般我们用Touchable** 代替。Touchable** 有如下几个回调：
+		onPressIn：点击开始；
+		onPressOut：点击结束或者离开；
+		onPress：单击事件回调；
+		onLongPress：长按事件回调
+
+	6.如果点击事件要传值得这样写：
+	onPress={()=>{this.gomain('canshu')}}
+
+	7.安卓back键的处理主要就是一个事件监听
+	BackHandler.addEventListener('hardwareBackPress', function () {
+         BackHandler.exitApp(0);//退出应用
+         return true;
+    });
+    BackHandler.removeEventListener('hardwareBackPress', handler)
 		   </pre>
 
 		   <div class="title">react native中字体大小与宽高适配函数</div>
@@ -301,6 +319,82 @@ const styles = StyleSheet.create({
     </textarea>
            </pre>
 		   <div class="explain">RN官方声明 从RN 0.43版本开始，官方将停止维护Navigator，建议大家迁移到新的React-navigation库，但是在做底部导航的时候，我建议使用react-native-tab-navigator这个插件</div>
+
+		   <div class="title">Navigator使用</div>
+		   <pre>
+	<textarea readonly style="height: 1120px;">
+	class NavigatorDemo extends Component {
+	  render() {
+	    return (
+	      //1. 使用导航控制器
+	      <Navigator
+	        //2. 设置初始页面
+	        initialRoute={{name: 'First'}}
+	        //3. 设置路由表
+	        renderScene={(route, navigator) => {
+	          //4. 更加名称路由
+	          switch (route.name) {
+	            case 'First':
+	              return (
+	                //渲染页面，并且传入导航控制器，方便页面内使用
+	                <FirstScene title={route.name} navigator={navigator}/>
+	              );
+	            case 'Second':
+	              return (
+	                <SecondScene title={route.name} navigator={navigator}/>
+	              );
+	          }
+	        }}
+	      />
+	   );
+	}	
+	导航控制器有两个非常重要的属性initialRoute和renderScene，整个页面的管理就依靠这两个属性的设
+	置。其中initialRoute用于设置初始页面（第一个页面）；而renderScene设置页面路由信息。
+	其中initialRoute的值就是页面路由时的第一个参数route对象，因此可以在里面设置任意需要在路由时
+	使用的信息，其中最重要的是需要有一个能够区分页面的标识，这里我们使用name进行区分。	
+	renderScene是一个路由函数，导航控制器中的每个页面显示前都会调用该函数，从而根据传递的参数（route）获取对应的页面
+
+	export default class FirstScene extends Component {
+	  render() {
+	    return (
+	      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+	        <TouchableHighlight onPress={() => {
+	          //1. 使用props获取传入的navigator并使用route对象作为参数，跳转到新的页面
+	          this.props.navigator.push({name: 'Second'});
+	          //2. 使用传入的导航控制器进行跳转，返回上一页
+	          //this.props.navigator.pop();
+	        }}>
+	          <Text>{this.props.title}</Text>
+	        </TouchableHighlight>
+	      </View>
+	    );
+	  }
+	}
+	</textarea>  	
+		   </pre>
+		   <div class="explain">
+		   	你还可能在很多地方听说过Navigator，这个老组件会逐步被React Navigation替代，但是它经历了长期的实践，较为稳定,从0.44版本开始，
+		   	Navigator被从react native的核心组件库中剥离到了一个名为react-native-deprecated-custom-components的单独模块中。如果你需要继
+		   	续使用Navigator，则需要先yarn add react-native-deprecated-custom-components安装，然后从这个模块中import，即
+		   	import { Navigator } from 'react-native-deprecated-custom-components'
+		   </div>
+
+		   <div class="title">通过解决app启动白屏问题来明白怎么和native层通信</div>
+		   <pre>
+	1.创建底层实现的显示屏幕和隐藏屏幕的java文件，这个方法所有底层都可调用
+	2.js不能直接调Java，所有我们需要为他们搭建一个桥梁(Native Modules)，创建ReactContextBaseJavaModule类型的类，供js调用
+	3.创建一个MyReactPackage类型的类，用于向React Native注册我们的SplashScreenModule组件	
+	4.在MainApplication中注册SplashScreenModule组件
+	5.在JS中调用hide方法来关闭启动屏
+		import { NativeModules } from 'react-native';
+		module.exports = NativeModules.SplashScreen;
+		SplashScreen.hide();  
+
+	由于没有mac关于ios的解决方法参考<a href="http://blog.csdn.net/fengyuzhengfan/article/details/52712829" style="color:blue;" target="_blank">博客</a> 	
+		   </pre>
+		   <div class="explain">
+		   	   具体实现较复杂，不在赘述，可以去看我的github上的项目<a href="https://github.com/limingkang/react-native-starter/tree/master/test" style="color:blue;" target="_blank">react-native start</a>
+		   </div>
 
        </div>
   </body>
