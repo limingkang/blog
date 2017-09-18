@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Blog by limingkang</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="description" content="前端开发记录">
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
@@ -35,88 +34,285 @@
         发生上面情况时，如果不使用 Redux 或者其他状态管理工具，不按照一定规律处理状态的读写，代码很快就会变成一团乱麻。你需要一种机制
         可以在同一个地方查询状态、改变状态、传播状态的变化
            </pre>
+           <div class="explain">redux中文文档地址<a href="http://cn.redux.js.org/">http://cn.redux.js.org/</a></div>
 
-           <div class="title">redux的简单介绍</div>
+           <div class="title">redux的注意点</div>
            <pre>
-        redux的三大基本原则：
-           单一数据源：整个应用的 state 被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 store 中
-           state是只读的：惟一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象
-                          这样确保了视图和网络请求都不能直接修改 state，相反它们只能表达想要修改的意图。因为所有的修改都被集中化处理，
-                          且严格按照一个接一个的顺序执行，因此不用担心 race condition 的出现。 Action 就是普通对象而已，
-                          因此它们可以被日志打印、序列化、储存、后期调试或测试时回放出来
-           使用纯函数来执行修改：为了描述 action 如何改变 state tree ，你需要编写 reducers
+          1.单一数据源：整个应用的 state 被储存在一棵 object tree 中，并且这个 object tree 只存在于唯一一个 store 中
+
+          2.state是只读的：惟一改变 state 的方法就是触发 action，action 是一个用于描述已发生事件的普通对象
+                        这样确保了视图和网络请求都不能直接修改 state，相反它们只能表达想要修改的意图。因为所有的修改都被集中化处理，
+                        且严格按照一个接一个的顺序执行，因此不用担心 race condition 的出现。 Action 就是普通对象而已，
+                        因此它们可以被日志打印、序列化、储存、后期调试或测试时回放出来
+
+          3.使用纯函数来执行修改：为了描述 action 如何改变 state tree ，你需要编写 reducers
                         Reducer 只是一些纯函数，它接收先前的 state 和 action，并返回新的 state。刚开始你可以只有一个 reducer，
                         随着应用变大，你可以把它拆成多个小的 reducers，分别独立地操作 state tree 的不同部分，因为 reducer 只是
                         函数，你可以控制它们被调用的顺序，传入附加数据，甚至编写可复用的 reducer 来处理一些通用任务，如分页器。
+
+          4.尽量保持reducer纯净,只要传入参数相同,返回计算得到的下一个state就相同,只是单纯执行计算,不要在reducer里做这些操作：
+                        修改传入参数；
+                        执行有副作用的操作，如 API 请求和路由跳转；
+                        调用非纯函数，如 Date.now() 或 Math.random()
+
+          5.一个简单的reducer可能是这样的
+                        function todoApp(state = initialState, action) {
+                          switch (action.type) {
+                            case SET_VISIBILITY_FILTER:
+                              //不直接修改 state 中的字段，而是返回新对象
+                              return Object.assign({}, state, {
+                                visibilityFilter: action.filter
+                              })
+                            case ADD_TODO:
+                              return Object.assign({}, state, {
+                                todos: [
+                                  ...state.todos,
+                                  {
+                                    text: action.text,
+                                    completed: false
+                                  }
+                                ]
+                              })
+                            default:
+                              return state
+                          }
+                        }
+
+            6.Store 有以下职责：
+                        维持应用的 state；
+                        提供 getState() 方法获取 state；
+                        提供 dispatch(action) 方法更新 state；
+                        通过 subscribe(listener) 注册监听器;
+                        通过 let a=subscribe(listener); 返回的函数注销监听器(运行a()即可)
+
+            7.根据已有的 reducer 来创建store是非常容易的使用createStore()，注意它的第二个参数是可选的, 用于设置state初始状态
+            这对开发同构应用时非常有用，服务器端 redux 应用的 state 结构可以与客户端保持一致, 那么客户端可以将从网络接收到的服务
+            端 state 直接用于本地数据初始化：let store = createStore(todoApp, window.STATE_FROM_SERVER)
            </pre>
 
-           <div class="title">redux的数据流动</div>
+           <div class="title">使用combineReducers组合多个reducer</div>
            <pre>
-        1.调用 store.dispatch(action)
-            Action 就是一个描述“发生了什么”的普通对象。比如：
-                 { type: 'LIKE_ARTICLE', articleId: 42 };
-                 { type: 'FETCH_USER_SUCCESS', response: { id: 3, name: 'Mary' } };
-                 { type: 'ADD_TODO', text: 'Read the Redux docs.'};
-            可以把 action 理解成新闻的摘要。如 “玛丽喜欢42号文章。” 或者 “任务列表里添加了'学习 Redux 文档'”。
-            你可以在任何地方调用 store.dispatch(action)，包括组件中、XHR 回调中、甚至定时器中
-        2.Redux store 调用传入的 reducer 函数
-            Store 会把两个参数传入 reducer： 当前的 state 树和 action。例如，在这个 todo 应用中，根 reducer 可能接收这样的数据：
-             // 当前应用的 state（todos 列表和选中的过滤器）
-             let previousState = {
-               visibleTodoFilter: 'SHOW_ALL',
-               todos: [
-                 {
-                   text: 'Read the docs.',
-                   complete: false
-                 }
-               ]
-             }
-             // 将要执行的 action（添加一个 todo）
-             let action = {
-               type: 'ADD_TODO',
-               text: 'Understand the flow.'
-             }
-             // render 返回处理后的应用状态
-             let nextState = todoApp(previousState, action);
-            注意 reducer 是纯函数。它仅仅用于计算下一个 state。它应该是完全可预测的：多次传入相同的输入必须产生相同的输出。
-            它不应做有副作用的操作，如 API 调用或路由跳转。这些应该在 dispatch action 前发生。
-        3.根 reducer 应该把多个子 reducer 输出合并成一个单一的 state 树
-            根 reducer 的结构完全由你决定。Redux 原生提供combineReducers()辅助函数，来把根 reducer 拆分成多个函数，
-            用于分别处理 state 树的一个分支。
+          import { combineReducers } from 'redux'
+          import * as reducers from './reducers'
+          const todoApp = combineReducers(reducers)
 
-            下面演示 combineReducers() 如何使用。假如你有两个 reducer：一个是 todo 列表，另一个是当前选择的过滤器设置：
+          引入的reducers文件如下：
+          import { ADD_TODO, TOGGLE_TODO, SET_VISIBILITY_FILTER, VisibilityFilters } from './actions'
+          const { SHOW_ALL } = VisibilityFilters
 
-             function todos(state = [], action) {
-               // 省略处理逻辑...
-               return nextState;
-             }
+          function visibilityFilter(state = SHOW_ALL, action) {
+            switch (action.type) {
+              case SET_VISIBILITY_FILTER:
+                return action.filter
+              default:
+                return state
+            }
+          }
+          function todos(state = [], action) {
+            switch (action.type) {
+              case ADD_TODO:
+                return [
+                  ...state,
+                  {
+                    text: action.text,
+                    completed: false
+                  }
+                ]
+              case TOGGLE_TODO:
+                return state.map((todo, index) => {
+                  if (index === action.index) {
+                    return Object.assign({}, todo, {
+                      completed: !todo.completed
+                    })
+                  }
+                  return todo
+                })
+              default:
+                return state
+            }
+          }
+          const todoApp = {
+            visibilityFilter,
+            todos
+          }
+          export todoApp
 
-             function visibleTodoFilter(state = 'SHOW_ALL', action) {
-               // 省略处理逻辑...
-               return nextState;
-             }
 
-             let todoApp = combineReducers({
-               todos,
-               visibleTodoFilter
-             })
-            当你触发 action 后，combineReducers 返回的 todoApp 会负责调用两个 reducer：
-
-             let nextTodos = todos(state.todos, action);
-             let nextVisibleTodoFilter = visibleTodoFilter(state.visibleTodoFilter, action);
-            然后会把两个结果集合并成一个 state 树：
-
-             return {
-               todos: nextTodos,
-               visibleTodoFilter: nextVisibleTodoFilter
-             };
-            虽然 combineReducers() 是一个很方便的辅助工具，你也可以选择不用；你可以自行实现自己的根 reducer！
-        4.Redux store 保存了根 reducer 返回的完整 state 树
-            这个新的树就是应用的下一个 state！所有订阅 store.subscribe(listener) 的监听器都将被调用；
-            监听器里可以调用 store.getState() 获得当前 state。
-            现在应用新的state更新UI。如果你用了React Redux这类的绑定库,这时就应该调用 component.setState(newState)来更新
+          注意combineReducers() 所做的只是生成一个函数，这个函数来调用你的一系列 reducer，每个 reducer 根据它们的key来筛选state
+          中的一部分数据并处理，然后这个生成的函数再将所有 reducer 的结果合并成一个大的对象，就是说以下两种写法是等价的：
+          const reducer = combineReducers({
+            a: doSomethingWithA,
+            b: processB,
+            c: c
+          })
+          function reducer(state = {}, action) {
+            return {
+              a: doSomethingWithA(state.a, action),
+              b: processB(state.b, action),
+              c: c(state.c, action)
+            }
+          }
            </pre>
-           <div class="explain">redux中文文档地址<a href="http://cn.redux.js.org/">http://cn.redux.js.org/</a></div>
+
+           <div class="title">使用中间键</div>
+           <pre>
+          /**
+           * 记录所有被发起的 action 以及产生的新的 state,写中间键的方法,注意个参数的意义
+           */
+          const logger = store => next => action => {
+            console.group(action.type)
+            console.info('dispatching', action)
+            let result = next(action)
+            console.log('next state', store.getState())
+            console.groupEnd(action.type)
+            return result
+          }
+
+
+          import { createStore, combineReducers, applyMiddleware } from 'redux'
+          let todoApp = combineReducers(reducers)
+          let store = createStore(
+            todoApp,
+            // applyMiddleware() 告诉 createStore() 如何处理中间件
+            applyMiddleware(logger, crashReporter)
+          )
+          // 将经过 logger 和 crashReporter 两个 middleware！
+          store.dispatch(addTodo('Use Redux'))   
+           </pre>
+
+           <div class="title">结合react-redux使用</div>
+           <pre>
+           如果想在组件当中使用分发功能什么的，必须对props和store进行映射函数的编写例如一个正常组件:
+           import React, { PropTypes } from 'react'
+           import Todo from './Todo'
+
+           const TodoList = ({ todos, onTodoClick }) => (
+             <span><</span>ul>
+               {todos.map(todo =>
+                 <span><</span>Todo
+                   key={todo.id}
+                   {...todo}
+                   onClick={() => onTodoClick(todo.id)}
+                 />
+               )}
+             <span><</span>/ul>
+           )
+           TodoList.propTypes = {
+             todos: PropTypes.arrayOf(PropTypes.shape({
+               id: PropTypes.number.isRequired,
+               completed: PropTypes.bool.isRequired,
+               text: PropTypes.string.isRequired
+             }).isRequired).isRequired,
+             onTodoClick: PropTypes.func.isRequired
+           }
+           export default TodoList
+
+           //值的映射
+           const getVisibleTodos = (todos, filter) => {
+             switch (filter) {
+               case 'SHOW_ALL':
+                 return todos
+               case 'SHOW_COMPLETED':
+                 return todos.filter(t => t.completed)
+               case 'SHOW_ACTIVE':
+                 return todos.filter(t => !t.completed)
+             }
+           }
+           const mapStateToProps = (state) => {
+             return {
+               todos: getVisibleTodos(state.todos, state.visibilityFilter)
+             }
+           }
+
+           组件还能分发 action。类似的方式，可以定义 mapDispatchToProps() 方法接收 dispatch() 方法并返回期望注入到展示组件的 
+           props 中的回调方法。例如，我们希望 VisibleTodoList 向 TodoList 组件中注入一个叫 onTodoClick 的 props 中，还希望 
+           onTodoClick 能分发 TOGGLE_TODO 这个 action：
+           const mapDispatchToProps = (dispatch) => {
+             return {
+               onTodoClick: (id) => {
+                 dispatch(toggleTodo(id))
+               }
+             }
+           }
+
+           //最后使用新组合的组件
+           import { connect } from 'react-redux'
+           const VisibleTodoList = connect(
+             mapStateToProps,
+             mapDispatchToProps
+           )(TodoList)
+           export default VisibleTodoList            
+           </pre>
+           <div class="explain">如果要结合react-router使用，也可以使用react-router-redux,它可以将路由的变化也映射到redux,从而做到时间回退等功能</div>
+
+           <div class="title">书写异步action的方法</div>
+           <pre>
+          //actions.js
+          import fetch from 'isomorphic-fetch'
+
+          export const REQUEST_POSTS = 'REQUEST_POSTS'
+          function requestPosts(subreddit) {
+            return {
+              type: REQUEST_POSTS,
+              subreddit
+            }
+          }
+
+          export const RECEIVE_POSTS = 'RECEIVE_POSTS'
+          function receivePosts(subreddit, json) {
+            return {
+              type: RECEIVE_POSTS,
+              subreddit,
+              posts: json.data.children.map(child => child.data),
+              receivedAt: Date.now()
+            }
+          }
+
+          // thunk action 函数创建
+          export function fetchPosts(subreddit) {
+            // Thunk middleware 知道如何处理函数。把dispatch方法通过参数的形式传给函数，来让它自己也能 dispatch action
+            return function (dispatch) {
+
+              // 首次 dispatch：更新应用的 state 来通知，API 请求发起了。
+              dispatch(requestPosts(subreddit))
+
+              // thunk middleware 调用的函数可以有返回值，它会被当作 dispatch 方法的返回值传递。
+              // 我们返回一个等待处理的 promise，这并不是 redux middleware 所必须的，但很方便。
+              return fetch(`http://www.subreddit.com/r/${subreddit}.json`)
+                .then(response => response.json())
+                .then(json =>
+
+                  // 可以多次 dispatch！这里，使用 API 请求结果来更新应用的 state。
+                  dispatch(receivePosts(subreddit, json))
+                )
+                //在实际应用中，还需要捕获网络请求的异常。
+            }
+          }
+
+
+          //index.js  
+          import thunkMiddleware from 'redux-thunk'
+          import createLogger from 'redux-logger'
+          import { createStore, applyMiddleware } from 'redux'
+          import { selectSubreddit, fetchPosts } from './actions'
+          import rootReducer from './reducers'
+          //reducer还是正常情况下的写法，处理action返回结果即可
+          const loggerMiddleware = createLogger()
+
+          const store = createStore(
+            rootReducer,
+            applyMiddleware(
+              thunkMiddleware, // 允许我们 dispatch() 函数
+              loggerMiddleware // 一个很便捷的 middleware，用来打印 action 日志
+            )
+          )
+
+          store.dispatch(selectSubreddit('reactjs'))
+          store.dispatch(fetchPosts('reactjs')).then(() =>
+            console.log(store.getState())
+          ) 
+           </pre>
+
        </div>
   </body>
 </html>

@@ -167,8 +167,13 @@ jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"index.ios" withExtensio
 	BackHandler.addEventListener('hardwareBackPress', function () {
          BackHandler.exitApp(0);//退出应用
          return true;
-    });
-    BackHandler.removeEventListener('hardwareBackPress', handler)
+	});
+	BackHandler.removeEventListener('hardwareBackPress', handler)
+
+	8.修改图标和App名称，修改名称：..\android\app\src\main\res\values\strings.xml文件里面的名称
+	修改图标：..\android\app\src\main\res目录下面文件夹里面的png文件，替换图标文件，注意图片尺寸和名称不能改变
+	之后在项目目录下面要运行 react-native start ，一定要运行这个命令，然后新开命令窗口在项目目录下面再运行 
+	react-native run-android，会重新安装就可以看到新的名称和图标了
 		   </pre>
 
 		   <div class="title">react native中字体大小与宽高适配函数</div>

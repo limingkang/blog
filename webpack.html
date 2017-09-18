@@ -34,7 +34,8 @@
                //chunkhash是每个生成的包的hash值，大家都不一样而且只有相应文件改变的时候值才变否则不变
                //id是内部每个包的特别标示id
                filename: "[name]-[hash]-[chunkhash].bundle.js",       
-    	         chunkFilename: "[id].bundle.js"，
+               //name属性时候是require.ensure的第三个参数，如果异步加载时候没指定那么就是用id标识，一般就是1,2这样的数字什么的
+               chunkFilename: "[id].bundle.js"，
                path: "/home/public/assets",
                publicPath: "/assets/"
     	    }

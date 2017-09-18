@@ -30,13 +30,13 @@
             let num = Math.random();
             console.log(`your num is ${num}`);
 
-        5.Object.assign()是es6复制对象的方法是浅复制
+        5.Object.assign()是es6复制对象的方法是浅复制,只能复制到一层
             var o1 = { a: 1 };
-            var o2 = { b: 2 };
-            var o3 = { c: 3 };
+            var o2 = { b: 2,d:{test:111,e:333} };
+            var o3 = { c: 3 ,d:{test:2222}};
             var obj = Object.assign(o1, o2, o3);
-            console.log(obj); // { a: 1, b: 2, c: 3 }
-            console.log(o1);  // { a: 1, b: 2, c: 3 }   
+            console.log(obj); // { a: 1, b: 2, c: 3,d:{test:222}}
+            console.log(o1);  // { a: 1, b: 2, c: 3,d:{test:222}}   
             第一个对象是要最终输出的目标对象所以一般在前面写个空对象，相同属性会合并更新
 
         6.Object.values方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值而Object.keys方法
@@ -179,7 +179,7 @@
         2.ssh-keygen -t rsa -C "limk@mail.com" 最后得到了两个文件：id_rsa和id_rsa.pub
         3.id_rsa.pub打开这个拷贝到git公钥上面
         4.打开小乌龟的setting配置，点击git配置名字和email
-        5.点击network配置ssh client 就是git安装时候下面bin\ssh.exe文件指到即可，这个是用来连接github的
+        5.点击network配置ssh client 就是git安装时候下面git\usr\bin\ssh.exe文件指到即可，这个是用来连接github的
            </pre>
        </div>
   </body>
