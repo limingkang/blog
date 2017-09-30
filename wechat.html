@@ -242,7 +242,11 @@
 	3.一个页面如果在page对象之外var一个变量的话，他会成为这个页面的全局变量，即使这个页面来回切换这个值都不会改变了，不管他
 	是navigate跳转还是什么的，都是如此
 
-	4.如果在页面地址上传参数的话，小程序会将所有的参数变成字符串，传false的话就会变成"false"		
+	4.如果在页面地址上传参数的话，小程序会将所有的参数变成字符串，传false的话就会变成"false"	
+
+	5.在滚动 scroll-view 时会阻止页面回弹，所以在 scroll-view 中滚动，是无法触发 onPullDownRefresh
+	若要使用下拉刷新，请使用页面的滚动，而不是 scroll-view ，这样也能通过点击顶部状态栏回到页面顶部 
+	其实也就说了在使用scroll-view时是不能使用onPullDownRefresh了,只能用scroll-view去模拟	
 			</pre>
 
 			<div class="title">用户登录方式</div>
