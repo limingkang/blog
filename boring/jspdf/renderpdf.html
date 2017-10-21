@@ -57,7 +57,7 @@
 	        'tabloid': [792, 1224]
     	}
 
-       var renderPDF = function(content, pdfName, format, onSuccess){
+        var renderPDF = function(content, pdfName, format, onSuccess){
 	        // 如果要分页的话要算比例
 	        var pdfProportion = pdfFormat[format][0] / pdfFormat[format][1];
 	        var contentHeight = content.offsetHeight;
@@ -74,9 +74,9 @@
 	            pdf.addImage(imgData, 'JPEG', 0, 0,contentWidth,contentHeight);
 	            pdf.save(pdfName);
 	            onSuccess();
-	            //下面就是要分页时候的代码,可以选择性要不要
 	            return;
 
+	            //下面就是要分页时候的代码,可以选择性要不要
 	            //l:横向， p：纵向
 	            // 第二个是单位，第三个是大小格式
 	            var pageHeight = contentWidth / pdfProportion;          // 根据这个来判断是否要分页
@@ -155,13 +155,26 @@
 	            allowTaint: true  //避免一些不识别的图片干扰，默认为false，遇到不识别的图片干扰则会停止处理html2canvas
 
 	        });
-       }
+        }
        
-       function myexport(){
+        function myexport(){
        		renderPDF(document.getElementById("html2canvasmask"),"pdfname","a4", function(){
        		    console.log("pdf success")
        		});
-       }
+        }
+
+
+
+
+        // 小知识点当页面中有svg的时候，由于html2canvas只支持dom所以无法画出页面并导出pdf，这时候我们可以先把svg导成png并放到
+        //svg父元素的背景图上面，最后使用上面的方法来导出pdf即可，注意当svg中有中文的时候要注意转码
+        // for(var ii =0;ii<document.getElementsByTagName('svg').length;ii++){
+	       // 	var domsvg=document.getElementsByTagName('svg')[ii];
+	       // 	var svg_xml = (new XMLSerializer()).serializeToString(domsvg);
+	       // 	var baseimg=window.btoa(unescape(encodeURIComponent(svg_xml)));
+	       // 	//domsvg.style.visibility="hidden";
+	       // 	domsvg.parentNode.style.backgroundImage="url(data:image/svg+xml;base64," + baseimg+")";
+        // }
     </script>
 </body>  
 </html>

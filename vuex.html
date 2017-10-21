@@ -1,0 +1,470 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,vuex,node,webpack,vue">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title" style="margin-top:0;">vuex介绍</div>
+           <pre>
+        当我们的应用遇到多个组件共享状态时，单向数据流的简洁性很容易被破坏如：
+            多个视图依赖于同一状态;
+            来自不同视图的行为需要变更同一状态;
+        对于问题一，传参的方法对于多层嵌套的组件将会非常繁琐，并且对于兄弟组件间的状态传递无能为力。对于问题二，我们经常会采用父子组件
+        直接引用或者通过事件来变更和同步状态的多份拷贝。以上的这些模式非常脆弱，通常会导致无法维护的代码。我们可以把组件的共享状态抽取
+        出来，以一个全局单例模式管理这就是vuex做的事。这其实就和angular2的service一样，也是单例的，它可在根模块provider中注入这
+        个服务，之后在其他任意模块中引入即可使用这个单例的对象。
+
+        虽然 Vuex 可以帮助我们管理共享状态，但也附带了更多的概念和框架。这需要对短期和长期效益进行权衡。如果不打算开发大型单页应用，
+        使用 Vuex 可能是繁琐冗余的，用以前的老方法就行。但是，如果您需要构建是一个中大型单页应用，您很可能会考虑如何更好地在组件外
+        部管理状态，Vuex 将会成为自然而然的选择。其思想和Redux基本一样。
+           </pre>
+           <div class="explain">vuex中文文档<a href="http://vuex.vuejs.org/zh-cn/index.html">http://vuex.vuejs.org/zh-cn/index.html</a></div>
+       	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看vue-vue_router-vuex这个小应用</div>
+
+			<div class="title">State介绍</div>
+			<pre>
+		//首先我们得向全局注入store
+		import Vue from 'vue'
+		import Vuex from 'vuex'
+		const mutations = {...};
+		const actions = {...};
+		const state = {...};
+		const store=new Vuex.Store({
+		  state,
+		  actions,
+		  mutation
+		});	
+		Vue.use(Vuex)
+		new Vue({
+		  el: '#app',
+		  store,
+		  render: h => h(App)
+		})			
+
+		后续在组件中使用的过程中，如果想要获取对应的状态你就可以直接使用this.$store.state获取，当然，也可以利用vuex提
+		供的mapState辅助函数将state映射到计算属性中去，随便一个组件如:
+		import {mapState} from 'vuex'
+		export default {
+		    computed: mapState({
+			      // 箭头函数可使代码更简练
+			      count: state => state.count,
+
+			      // 传字符串参数 'count' 等同于 `state => state.count`
+			      countAlias: 'count',
+
+			      // 为了能够使用 `this` 获取组件局部状态变量，必须使用常规函数
+			      //注意虽然它是一个函数，但是取值的时候不用运行直接取，内部帮你做好处理了
+			      countPlusLocalState (state) {
+			        return state.count + this.localCount
+			      }
+		    })
+		}
+		当映射的计算属性的名称与 state 的子节点名称相同时，我们也可以给 mapState 传一个字符串数组
+		computed: mapState([
+		  // 映射 this.count 为 store.state.count
+		  'count'
+		])
+
+		mapState 函数返回的是一个对象。我们将它与局部计算属性混合使用：
+		computed: {
+		  localComputed () { /* ... */ },
+		  // 使用对象展开运算符将此对象混入到外部对象中
+		  ...mapState({
+		    // ...
+		  })
+		}
+
+		使用 v-model 绑定 vuex 计算属性的时候要设置get 和 set 才能双向绑定
+		computed: {
+		    value: {
+		        get () {
+		            return this.$store.getters.value;
+		        },
+		        set (event) {
+		            this.$store.dispatch('updateValue', event.target.value);
+		        }
+		    }
+		}
+			</pre>
+
+			<div class="title">Getter介绍</div>
+			<pre>
+		const store = new Vuex.Store({
+		  state: {
+		    todos: [
+		      { id: 1, text: '...', done: true },
+		      { id: 2, text: '...', done: false }
+		    ]
+		  },
+		  getters: {
+		    //使用的时候直接使用this.$store.getters.doneTodos即可取到值 
+		    doneTodos: state => {
+		      return state.todos.filter(todo => todo.done)
+		    },
+		    //Getter 也可以接受其他 getter 作为第二个参数
+		    doneTodosCount: (state, getters) => {
+		        return getters.doneTodos.length
+		    }
+		    //你也可以通过让 getter 返回一个函数，来实现给 getter 传参。在你对 store 里的数组进行查询时非常有用
+		    //取值如this.$store.getters.getTodoById(2) // -> { id: 2, text: '...', done: false }
+		    getTodoById: (state, getters) => (id) => {
+		        return state.todos.find(todo => todo.id === id)
+		    }
+		  }
+		})
+
+		mapGetters 辅助函数仅仅是将 store 中的 getter 映射到局部计算属性:
+		import { mapGetters } from 'vuex'
+		export default {
+		  computed: {
+		    // 使用对象展开运算符将 getter 混入 computed 对象中
+		    ...mapGetters([
+		      'doneTodosCount',
+		      'anotherGetter'
+		    ])
+		  }
+		}
+		//如果你想将一个 getter 属性另取一个名字，使用对象形式：
+		mapGetters({
+		  // 映射 `this.doneCount` 为 `store.getters.doneTodosCount`
+		  doneCount: 'doneTodosCount'
+		})		
+			</pre>
+			<div class="explain">
+				有时候我们需要从 store 中的 state 中派生出一些状态属性，例如对列表进行过滤并计数如果有多个组件需要用到此属性，我们
+				要么复制这个函数，或者抽取到一个共享函数然后在多处导入它——无论哪种方式都不是很理想。
+				Vuex 允许我们在 store 中定义“getter”（可以认为是 store 的计算属性）。就像计算属性一样，getter 的返回值会根据它的依赖
+				被缓存起来，且只有当它的依赖值发生了改变才会被重新计算。
+			</div>
+
+			<div class="title">Mutation介绍</div>
+			<pre>
+	1.mutation的规则：
+	(1)最好提前在你的 store 中初始化好所有所需属性。当需要在对象上添加新属性时，你应该使用 Vue.set(obj, 'newProp', 123), 或者
+	以新对象替换老对象。例如，利用 stage-3 的对象展开运算符我们可以这样写：state.obj = { ...state.obj, newProp: 123 }
+	(2)mutation 必须是同步函数,这一点和redux是一样的，它只做state的同步改变，异步的话在action里面解决
+
+	2.使用常量替代 mutation 事件类型在各种 Flux 实现中是很常见的模式。这样可以使 linter 之类的工具发挥作用，同时把这些常量放在
+	单独的文件中可以让你的代码合作者对整个app包含的 mutation 一目了然，用不用常量取决于你——在需要多人协作的大型项目中，这会
+	很有帮助。但如果你不喜欢，你完全可以不这样做
+	// mutation-types.js
+	export const SOME_MUTATION = 'SOME_MUTATION'
+	// store.js
+	import Vuex from 'vuex'
+	import { SOME_MUTATION } from './mutation-types'
+	const store = new Vuex.Store({
+	  state: { ... },
+	  mutations: {
+	    // 我们可以使用 ES2015 风格的计算属性命名功能来使用一个常量作为函数名
+	    [SOME_MUTATION] (state) {
+	      // mutate state
+	    }
+	  }
+	})
+
+	3.提交载荷（payload）
+	const store = new Vuex.Store({
+	  state: {
+	    count: 1
+	  },
+	  mutations: {
+	    increment (state, payload) {
+	        state.count += payload.amount
+	    }
+	  }
+	})	
+	store.commit('increment', {
+	  amount: 10
+	})
+	另一种方式是直接用包含type属性的对象，当使用对象风格的提交方式，整个对象都作为载荷传给mutation函数，因此handler保持不变
+	store.commit({
+	  type: 'increment',
+	  amount: 10
+	})
+
+	4.在组件中提交mutation
+	import { mapMutations } from 'vuex'
+	export default {
+	  // ...
+	  methods: {
+	    ...mapMutations([
+	      'increment', // 将 `this.increment()` 映射为 `this.$store.commit('increment')`
+
+	      // `mapMutations` 也支持载荷：
+	      'incrementBy' // 将 `this.incrementBy(amount)` 映射为 `this.$store.commit('incrementBy', amount)`
+	    ]),
+	    ...mapMutations({
+	      add: 'increment' // 将 `this.add()` 映射为 `this.$store.commit('increment')`
+	    })
+	  }
+	}
+			</pre>
+			<div class="title">Action介绍</div>
+			<pre>
+		调用异步 API 和分发多重 mutation的方法：
+			actions: {
+			  checkout ({ commit, state }, products) {
+			    // 把当前购物车的物品备份起来
+			    const savedCartItems = [...state.cart.added]
+			    // 发出结账请求，然后乐观地清空购物车
+			    commit(types.CHECKOUT_REQUEST)
+			    // 购物 API 接受一个成功回调和一个失败回调
+			    shop.buyProducts(
+			      products,
+			      // 成功操作
+			      () => commit(types.CHECKOUT_SUCCESS),
+			      // 失败操作
+			      () => commit(types.CHECKOUT_FAILURE, savedCartItems)
+			    )
+			  }
+			}
+			// 以载荷形式分发
+			store.dispatch('checkout', {
+			  value: 10
+			})
+			// 以对象形式分发
+			store.dispatch({
+			  type: 'checkout',
+			  value: 10
+			})	
+
+		你在组件中使用 this.$store.dispatch('xxx') 分发 action，或者使用 mapActions 辅助函数将组件的 methods 映射为 
+		store.dispatch 调用（需要先在根节点注入 store）:
+			import { mapActions } from 'vuex'
+			export default {
+			  methods: {
+			    ...mapActions([
+			      'increment', // 将 `this.increment()` 映射为 `this.$store.dispatch('increment')`
+
+			      // `mapActions` 也支持载荷：
+			    // 将 `this.incrementBy(amount)` 映射为 `this.$store.dispatch('incrementBy', amount)`
+			      'incrementBy' 
+			    ]),
+			    ...mapActions({
+			      add: 'increment' // 将 `this.add()` 映射为 `this.$store.dispatch('increment')`
+			    })
+			  }
+			}
+
+		组合异步Action:
+			actions: {
+			  actionA ({ commit }) {
+			    return new Promise((resolve, reject) => {
+			      setTimeout(() => {
+			        commit('someMutation')
+			        resolve()
+			      }, 1000)
+			    })
+			  },
+			  //在另外一个 action 中也可以
+			  actionB ({ dispatch, commit }) {
+			      return dispatch('actionA').then(() => {
+			        commit('someOtherMutation')
+			      })
+			  }
+			  //利用es6特性
+			  async actionA ({ commit }) {
+			      commit('gotData', await getData())
+			  },
+			  async actionB ({ dispatch, commit }) {
+			      await dispatch('actionA') // 等待 actionA 完成
+			      commit('gotOtherData', await getOtherData())
+			  }
+			}
+		    现在可以store.dispatch('actionA').then(() => {})	
+			</pre>
+			<div class="explain">
+				Action 类似于 mutation，不同在于Action 提交的是 mutation，而不是直接变更状态，Action 可以包含任意异步操作;而且
+				一个store.dispatch在不同模块中可以触发多个action函数。这时只有当所有触发函数完成后，返回的 Promise 才会执行
+			</div>
+
+			<div class="title">Modules介绍</div>
+			<pre>
+		const store = new Vuex.Store({
+		    state: {
+		        sideBarOpened: false,
+		        count:333
+		        //放置公用状态
+		    },
+		    getters: {},
+		    mutations: {},
+		    actions: {},
+		    modules: {
+		        a:moduleA,
+		        account:moduleB
+		    }
+		});	
+		store.state.a             // -> moduleA 的全部状态
+		store.state.account       // -> moduleB 的全部状态	
+		store.state.sideBarOpened // -> 根的状态	
+
+		模块嵌套时候的参数访问
+		const moduleA={
+		    state:{count:0},
+		    mutations:{
+		        increment(state){
+		        //这是的state对象是模块的局部状态,这里只能改自己的状态
+		        state.count++
+		        }
+		    },
+		    getters:{
+		        //对于模块内部的getter，根节点状态作为第三个参数暴露出来
+		        doubleCount(state,getters,rootState){
+		            return return state.count+rootState.count
+		        }
+		    },
+		    //对于模块内部的action，局部状态通过context.state暴露出来，根节点状态则为context.rootState
+		    actions:{
+		            incrementIfOddOnRootSum({state,commit,rootState}){
+		                if((state.count+rootState.count)%2===1){
+		                    commit('increment')
+		                }
+		            }
+		    }
+		}
+
+		默认情况下，模块内部的 action、mutation 和getter是注册在全局命名空间的这使得多个模块能够对同一mutation或action 
+		作出响应。如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为命名空间模块。
+		当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名
+		const moduleB={
+		    namespaced: true,
+		    state: { ... }, // 模块内的状态已经是嵌套的了，使用 `namespaced` 属性不会对其产生影响
+		    getters: {
+		        // 在这个模块的 getter 中，`getters` 被局部化了
+	                // 你可以使用 getter 的第四个参数来调用 `rootGetters`
+	                someGetter (state, getters, rootState, rootGetters) {
+	                	getters.someOtherGetter // -> 'foo/someOtherGetter'
+	                	rootGetters.someOtherGetter // -> 'someOtherGetter'
+	              	},
+	              	someOtherGetter: state => { ... }
+		    },
+		    actions: {
+		        login () { ... } // -> 根部store可以通过dispatch('account/login')触发这个action
+		        // 在这个模块中， dispatch 和 commit 也被局部化了
+	                // 他们可以接受 `root` 属性以访问根 dispatch 或 commit
+	                someAction ({ dispatch, commit, getters, rootGetters }) {
+	                	getters.someGetter // -> 'foo/someGetter'
+	                	rootGetters.someGetter // -> 'someGetter'
+
+	                	dispatch('someOtherAction') // -> 'foo/someOtherAction'
+	                	dispatch('someOtherAction', null, { root: true }) // -> 'someOtherAction'
+
+	                	commit('someMutation') // -> 'foo/someMutation'
+	                	commit('someMutation', null, { root: true }) // -> 'someMutation'
+	                },
+	                someOtherAction (ctx, payload) { ... }
+		    },
+		    mutations: {
+		        login () { ... } // -> 根部store可以通过commit('account/login')触发这个mutation
+		    },
+		    // 嵌套模块
+		    modules: {
+		        // 继承父模块的命名空间
+		        myPage: {
+		          state: { ... },
+		          getters: {
+		            profile () { ... } // -> getters['account/profile']
+		          }
+		        },
+		        // 进一步嵌套命名空间
+		        posts: {
+		          namespaced: true,
+		          state: { ... },
+		          getters: {
+		            popular () { ... } // -> getters['account/posts/popular']
+		          }
+		        }
+		    }
+		}
+			</pre>
+			<div class="explain">
+				由于使用单一的状态树，应用的所有状态会集中到一个比较大的对象。当应用变得非常复杂，store对象就会变得非常臃肿；为了
+				解决这个问题，Vuex允许我们将store分隔成模块（module），每个模块拥有自己的state，mutation，action，getter，甚至是嵌
+				套子模块,这会使状态的管理变得清晰，但在内存消耗方面差不多。
+			</div>
+
+			<div class="title">Modules介绍之带命名空间的绑定函数的几种方法</div>
+			<pre>
+	当使用 mapState, mapGetters, mapActions 和 mapMutations 这些函数来绑定命名空间模块时，写起来可能比较繁琐：
+		computed: {
+		  ...mapState({
+		    a: state => state.some.nested.module.a,
+		    b: state => state.some.nested.module.b
+		  })
+		},
+		methods: {
+		  ...mapActions([
+		    'some/nested/module/foo',
+		    'some/nested/module/bar'
+		  ])
+		}
+
+	简化一点的写法：
+		computed: {
+		  ...mapState('some/nested/module', {
+		    a: state => state.a,
+		    b: state => state.b
+		  })
+		},
+		methods: {
+		  ...mapActions('some/nested/module', [
+		    'foo',
+		    'bar'
+		  ])
+		}
+
+	通过使用 createNamespacedHelpers 创建基于某个命名空间辅助函数：
+		import { createNamespacedHelpers } from 'vuex'
+		const { mapState, mapActions } = createNamespacedHelpers('some/nested/module')
+		export default {
+		  computed: {
+		    // 在 `some/nested/module` 中查找
+		    ...mapState({
+		      a: state => state.a,
+		      b: state => state.b
+		    })
+		  },
+		  methods: {
+		    // 在 `some/nested/module` 中查找
+		    ...mapActions([
+		      'foo',
+		      'bar'
+		    ])
+		  }
+		}
+
+	在 store 创建之后，你可以使用 store.registerModule 方法注册模块：
+	// 注册模块 `myModule`
+	store.registerModule('myModule', {
+	  // ...
+	})
+	// 注册嵌套模块 `nested/myModule`
+	store.registerModule(['nested', 'myModule'], {
+	  // ...
+	})
+	之后就可以通过 store.state.myModule 和 store.state.nested.myModule 访问模块的状态,你也可以使用
+	store.unregisterModule(moduleName) 来动态卸载模块。注意，你不能使用此方法卸载静态模块（即创建 store 时声明的模块）
+
+	有时我们可能需要创建一个模块的多个实例,如果我们使用一个纯对象来声明模块的状态，那么这个状态对象会通过引用被共享，
+	导致状态对象被修改时 store 或模块间数据互相污染的问题。实际上这和 Vue 组件内的 data 是同样的问题。因此解决办法也
+	是相同的——使用一个函数来声明模块状态（仅 2.3.0+ 支持）：
+	const MyReusableModule = {
+	  state () {
+	    return {
+	      foo: 'bar'
+	    }
+	  },
+	  // mutation, action 和 getter 等等...
+	}
+			</pre>
+
+       </div>
+  </body>
+</html>
