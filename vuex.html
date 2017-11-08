@@ -26,7 +26,7 @@
         部管理状态，Vuex 将会成为自然而然的选择。其思想和Redux基本一样。
            </pre>
            <div class="explain">vuex中文文档<a href="http://vuex.vuejs.org/zh-cn/index.html">http://vuex.vuejs.org/zh-cn/index.html</a></div>
-       	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去github中查看vue-vue_router-vuex这个小应用</div>
+       	   <div class="explian">对于sublime先下插件Vuejs Snippets和Vue Syntax Highlight，这样便于.vue文件的开发,具体项目应用可去我的github中查看vue-webpack-starter应用骨架</div>
 
 			<div class="title">State介绍</div>
 			<pre>
@@ -82,8 +82,9 @@
 		}
 
 		使用 v-model 绑定 vuex 计算属性的时候要设置get 和 set 才能双向绑定
+		<span><</span>input v-model="message">
 		computed: {
-		    value: {
+		    message: {
 		        get () {
 		            return this.$store.getters.value;
 		        },

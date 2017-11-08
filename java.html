@@ -26,7 +26,8 @@
       依赖之后打包生成一个文件夹target,进入之后把里面的war包拷贝出来（可以在maven的conf/settings.xml指定war包下载地址，
       在里面的mirror标签里面）
       四： 将打包好的war包放到tomcat/webapps下面,运行tomcat之后，它会将war包处理成一个相应的文件夹，打开浏览器输入
-      localhost:8080/文件夹名即可访问该项目
+      localhost:8080/文件夹名即可访问该项目，一般情况下所有的后台代码都编译成了 .class文件，在\WEB-INF\classes下面
+      我们习惯将所有的 .jar包放在\ WEB-INF \ lib 下面
       五：如果是别人已经编译好的项目，那就直接放tomcat下面运行就行    	
            </pre>
            <div class="explain">
@@ -45,11 +46,8 @@
 <Context docBase="daisy_risk" path="/risk" reloadable="true" source="org.eclipse.jst.jee.server:daisy_risk"/>
 <Context docBase="daisy_common" path="/common" reloadable="true" source="org.eclipse.jst.jee.server:daisy_common"/>
                 </textarea>
-                6.在控制台下面我们的那个server上面右键选择open，其中的http/1.1就是配置端口号的
-                如果没有server就在(window->show view->server)加到下面控制台
-                7.之后再在server上面右键运行即可
-                8.我的端口8081可以输入localhost:8081/daisy/即可访问到静态了
-                9.也可以直接在server.xml文件中改端口号什么的
+                6.在控制台下面我们的那个server(window->show view->server)上面右键选择open，http/1.1可配置端口号等
+                7.我的端口8081可以输入localhost:8081/daisy/即可访问到静态了
            </pre> 
 
            <div class="title">eclipse的maven配置</div>
@@ -61,7 +59,46 @@
                2.eclipse配置maven
                     window-》prefrences-》maven-》user setting设置maven的conf/settings.xml文件位置,可换个地方写只要引入即可
                     window-》prefrences-》maven-》installations 设置你安装的maven的地址
-           </pre>      
+           </pre>   
+
+           <div class="title">maven项目介绍</div>
+           <pre>
+      maven项目几个文件介绍：
+          1.src/main/java，src/test/java和src/main/resources，src/test/resource一个为主要的一个是测试的，其中java文件
+          夹中主要放置我们的源码就是.java文件最终会被编译成.class;resource文件夹下面放一下不需编译的资源，如配置文件
+          .xml文件什么的;
+
+          2.maven管理项目依赖的配置文件pom.xml它可以从本地仓库或远程仓库获得你需要的 Jar 包，即便是你自己写的 Java 项目
+          也完全不用再配置“Configure Build Path”，只需向pom.xml 添加dependency节点，写上你引用项目的GroupId和ArtfactId
+          就能直接引用如:
+          <textarea style="height: 114px;overflow: hidden;">
+              <dependency>
+                    <groupId>com.yonyou.bq(包名)</groupId>
+                    <artifactId>bq_report_service(项目工程名)</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+              </dependency>
+          </textarea>
+          这时候我们在本项目中就可以使用如import com.yonyou.bq.service.utils.BQAnaObjServiceUtils来访问bq_report_service
+          项目中com.yonyou.bq包下面的所有类或者包中的类
+          
+          3.其中的.classpath文件定义了你这个项目在编译时所使用的$CLASSPATH,也就是配置构建编译时候的打包位置等如：
+            一：指定源文件位置, 对应工程属性Java build path中Source项中的一项, kind="src" 指明为源文件, 源文件路径
+                path, output为这条路径中 源文件编译以后class文件的输出路径；
+            二：指定编译以后class文件的默认输出路径, 对应工程属性Java build path中 Source项中的default output path, 
+                kind="output"指明为默认 class输出路径, path为相应输出路径；
+            三：指定工程所用到的库文件或目录, 对应工程属性Java build path中 Libraries项中的一项, kind="lib"指明为库
+            文件或目录, path为库 文件或目录位置；
+
+          4.其中的.project 文件配置主要描述工程的基本信息如工程名(name标签)工程注释(comment标签)运行时需要的额外
+          Eclipse插件(natures标签)及其具体加载方式信息(buildSpec标签)；
+
+          5.其中.settings 文件里面存放各种插件的配置文件；
+           </pre>
+           <div class="explain">
+              用 Maven 管理 Java 项目的确方便。它带给你直观的方便是：你不用在网上找 Jar 包，然后把它复制到 lib 目录，再在项目中引用它;
+              而只需向 pom.xml 写入你需要的 Jar 包依赖，Maven 就能自动从本地仓库或远程仓库下载，并引用;用eclipse开发好代码之后，我们最终
+              可以使用工具或者使用maven将其编译成war包之后放到tomcat下面上线即可。
+           </div>   
        </div>
   </body>
 </html>
