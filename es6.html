@@ -16,10 +16,10 @@
            <pre>
         1.使用let来声明一个块级作用域，使用const变量来声明一个常量
 
-        2.顶层对象，在浏览器环境指的是window对象，在Node指的是global对象，顶层对象的属性与全局变量挂钩，被认为是JavaScript语言最大的
-        设计败笔之一，ES6为了改变这一点，一方面规定，为了保持兼容性，var命令和function命令声明的全局变量，依旧是顶层对象的属性；另一
-        方面规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全局变量将逐步与顶层对象的
-        属性脱钩
+        2.顶层对象，在浏览器环境指的是window对象，在Node指的是global对象，顶层对象的属性与全局变量挂钩，被认为是JavaScript语
+        言最大的设计败笔之一，ES6为了改变这一点，一方面规定，为了保持兼容性，var命令和function命令声明的全局变量，依旧是顶层
+        对象的属性；另一方面规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全
+        局变量将逐步与顶层对象的属性脱钩
 
         3.变量的解构赋值
             let [x = 1, y = x] = [2];    // x=2; y=2
@@ -79,8 +79,8 @@
         11.ES6中新增的箭头操作符 => 简化了函数的书写。操作符左边为输入的参数，而右边则是进行的操作以及返回的值，这样的写法可以为我们
         减少大量的代码，注意这会改变this指针的指向
 
-        11.使用es6的generator函数来解决异步问题也可以内部调用yeild即可，对于该函数的封装的有co函数thunk函数等，注意还有一个async函数
-        内部使用的是await也可以用来来解决异步问题
+        11.使用es6的generator函数来解决异步问题也可以内部调用yeild即可，对于该函数的封装的有co函数thunk函数等，注意还有一个
+        async函数内部使用的是await也可以用来来解决异步问题
 
         12.es6也引入class的用法，其本质就是添加自身属性和原型对象上加属性也可以实现类的继承但是内部注意要去掉一个super()方法否则没办
         法用this。但是他没办法去定义私有属性和公有属性只能通过命名的规则或者函数二次嵌套调用勉强实现
@@ -130,11 +130,11 @@
         git checkout -b "branchname"          创建+切换分支
 
         git checkout -b [分支名] [远程名]/[分支名]
-            从远程分支 checkout 出来的本地分支，称为_跟踪分支(tracking branch)_。跟踪分支是一种和远程分支有直接联系的本地分支。在跟踪
-            分支里输入git push，Git 会自行推断应该向哪个服务器的哪个分支推送数据。反过来，在这些分支里运行git pull 会获取所有远程索引
-            并把它们的数据都合并到本地分支中来。在克隆仓库时，Git 通常会自动创建一个名为 master 的分支来跟踪 origin/master。这正是
-            git push 和 git pull 一开始就能正常工作的原因。当然，你可以随心所欲地设定为其它跟踪分支，比如origin 上除了 master 之外
-            的其它分支
+            从远程分支 checkout 出来的本地分支，称为_跟踪分支(tracking branch)_。跟踪分支是一种和远程分支有直接联系的本地分
+            支。在跟踪分支里输入git push，Git 会自行推断应该向哪个服务器的哪个分支推送数据。反过来，在这些分支里运行
+            git pull 会获取所有远程索引并把它们的数据都合并到本地分支中来。在克隆仓库时，Git 通常会自动创建一个名为 master
+             的分支来跟踪 origin/master。这正是git push 和 git pull 一开始就能正常工作的原因。当然，你可以随心所欲地设定为
+             其它跟踪分支，比如origin 上除了 master 之外的其它分支
 
         git merge "branchname"                合并某分支到当前分支
 
@@ -170,7 +170,7 @@
 
         git push origin :refs/tags/tagname    可以删除一个远程标签
 
-        git config --global alias.co checkout 配置命令别名，若想删除某个别名，就在仓库的Git配置文件.git/config文件中删除该行就行
+        git config --global alias.co checkout 配置命令别名,若想删除某个别名,在仓库的Git配置文件.git/config文件中删除该行就行
            </pre>
 
            <div class="title">windows下面直接使用torrentgit更好用</div>
@@ -180,6 +180,10 @@
         3.id_rsa.pub打开这个拷贝到git公钥上面
         4.打开小乌龟的setting配置，点击git配置名字和email
         5.点击network配置ssh client 就是git安装时候下面git\usr\bin\ssh.exe文件指到即可，这个是用来连接github的
+
+        注意你push或者pull的地址必须是ssh的否则不能成功，通过git remote -v如果地址是https开头的则重新配置地址才行
+        git remote rm origin
+        git remote add origin git@github.com:test/myblog.git这是ssh的地址
            </pre>
        </div>
   </body>

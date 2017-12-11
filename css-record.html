@@ -172,6 +172,27 @@
                    /*（设置进行转换的元素的背面在面对用户时是否可见：隐藏）*/
                    -webkit-backface-visibility: hidden;
                }
+
+          21.给table加上圆角
+          切结border-collapse:collapse这个属性和下面的设置冲突，最好设置为inherit
+          table tr td:last-child, table tr th:last-child{
+              border-right: 1px solid #dadada;
+          }
+          table tr:last-child td{
+              border-bottom: 1px solid #dadada;
+          }
+          table tr:first-child th:first-child {
+              border-top-left-radius: 4px;
+          }
+          table tr:first-child th:last-child{
+              border-top-right-radius: 4px;
+          }
+          table tr:last-child td:first-child {
+              border-bottom-left-radius: 4px;
+          }
+          table tr:last-child td:last-child {
+              border-bottom-right-radius: 4px;
+          }
           </pre>
           <div class="explain">当使用3d做gpu渲染的时候，并不能触发重绘，他只能使元素变大小或者旋转等，不能改颜色</div>
 

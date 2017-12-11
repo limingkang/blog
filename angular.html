@@ -11,7 +11,7 @@
     </head>
     <body>
         <div class="big_container">
-            <div class="title">对于angular的想法</div>
+            <div class="title">angular介绍</div>
             <pre>
         1.由于angular1的问题非常多，所以本人并不看好其发展，但是新出来的angular可以说其设计上性能上都有了巨大的飞跃，还是值得
         一学的。不得不说Angular相对于Vue的优势在Vue2.0之后已经削弱很多了。比如SSR（Vue2已经原生支持）和全栈式框架（官方推荐
@@ -35,13 +35,14 @@
             </pre> 
             <div class="explain">
                 <a href="https://angular.cn/docs">angular中文网</a>&emsp;
+                <a href="https://github.com/brillout/awesome-angular-components">angular插件</a>&emsp;
                 <a href="https://github.com/limingkang/angular-webpack-starter">angular项目架构实践</a>&emsp;
                 <a href="https://www.tslang.cn/docs/handbook/basic-types.html">typescript语法</a>&emsp;
-                <a href="https://github.com/ng-book2/code">ng-book随书源码</a>
+                <a href="http://www.typescriptlang.org/docs/handbook/tsconfig-json.html">tsconfig文件配置</a>
             </div>                                                                                                    
             
             <div class="title">angular中form表单的使用，响应式模型驱动表单</div>
-            <textarea style="border: 1px solid #D7D8C8;height: 1590px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
+            <textarea style="border: 1px solid #D7D8C8;height: 1610px;width: 100%;background-color: #FDFEFB;" readonly="readonly">
         //html结构设计
         <form [formGroup]="userForm">
             <label>姓名:</label>
@@ -109,6 +110,7 @@
                 <input type="text" name="loginname" pattern="^(?!\d+$)(?![a-zA-Z]+$)(?![!@#\$%\^\&\*]+$)[\w!@#\$%\^\&\*]{6,16}$" minlength="6" maxlength="16" required
                        autocomplete="off" [(ngModel)]="model.loginname" #loginname="ngModel">
                 <small [class.myhidden]="loginname.valid || loginname.pristine">输入正确用户名</small>
+                <div [hidden]="!loginname.errors?.pattern && !loginname.errors?.required">更加精确的哪一个格式不合法</div>
             </div>
             <button [disabled]="loginForm.form.invalid" type="submit">登录</button>
         </form>
@@ -189,7 +191,7 @@
             </pre>
 
             <div class="title">angular路由简单用法</div>
-            <pre>
+            <pre style="overflow-x: hidden;">
         页面中a标签写入方式,注意我们的router-outlet还可以写name属性，之后在路由中写对应outlet属性即可：
         routerLink="/portal/login" routerLinkActive="active"  
         //当前面没有/时候protal/login就是意味着在当前路由路径后面加上这个地址来匹配的
@@ -258,7 +260,7 @@
             </div>
 
             <div class="title">angular的请求</div>
-            <pre>
+            <pre style="overflow-x: hidden;">
         import {Headers, Http, URLSearchParams, Response,RequestOptions} from '@angular/http';
         import { Observable } from 'rxjs/Observable';
         import 'rxjs/add/operator/catch';
@@ -266,11 +268,13 @@
         getHeroes(): Observable<span><</span>any> {
             var params: URLSearchParams = new URLSearchParams();
             params.set("test","value");
-            注意当传的是{search:params}时候我们是在url后面拼接，但是如果要是urlencode形式的话就直接写params就行了
-            实际上传的就是"value1=1&value2=2"如return this.http.post(url,params,options)
             return this.http.get(url,{search:params})
                     .map(this.extractData)
                     .catch(this.handleError);
+            注意当传的是{search:params}时候我们是在url后面拼接，但是如果要是urlencode形式的话就直接写params就行了
+                    urlencode时候这样写：return this.http.get(url,params,options)
+            这是因为当get请求时候，浏览器用x-www-form-urlencoded的编码方式把数据转换成一个字串name1=value1&name2=value2
+            然后把这个字串append到url后面,用?分割。 当为post时，数据会做一些处理变成formdata形式到http body中
         }
         private extractData(res: Response) {
             let body = res.json();
@@ -307,15 +311,39 @@
 
         对于post请求大体基本是一样的
         getHeroes(): Observable<span><</span>any> {
+            //let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' });           
             let headers = new Headers({ 'Content-Type': 'application/json' });
             let options = new RequestOptions({ headers: headers,search: params });
             let senddata={};
             return this.http.post(url,senddata,options)
                     .map(this.extractData)
                     .catch(this.handleError);
-        } 
+        }
 
 
+
+        要发起一个支持进度事件的请求，首先要创建一个设置过reportProgress选项的HttpRequest实例：
+            const req = new HttpRequest('POST', '/upload/file', file, {
+              reportProgress: true,
+            });
+        该选项让我们可以跟踪进度事件。记住，每个进度事件都会触发变更检测，所以应该只有在你真的打算在每个事件中更新 UI 时才打开它。
+        接下来，通过HttpClient上的request()方法发起这个请求。其结果应该是一个关于事件的可观察对象，就像拦截器中看到的那样：
+            http.request(req).subscribe(event => {
+              // Via this API, you get access to the raw event stream.
+              // Look for upload progress events.
+              if (event.type === HttpEventType.UploadProgress) {
+                // This is an upload progress event. Compute and show the % done:
+                const percentDone = Math.round(100 * event.loaded / event.total);
+                console.log(`File is ${percentDone}% uploaded.`);
+              } else if (event instanceof HttpResponse) {
+                console.log('File is completely uploaded!');
+              }
+            });
+            </pre>
+            <div class="explain">还有跨域的jsonp方法，输入搜索subject流的优化等，可查上面的angular中文网</div>
+
+            <div class="title">angular请求拦截器等功能的写法</div>
+            <pre style="overflow-x: hidden;">
         我们还可以编写新的服务注入模块中来改变请求时候的默认配置参数等：
         import { Injectable } from '@angular/core';
         import { BaseRequestOptions, RequestOptions } from '@angular/http';
@@ -329,8 +357,67 @@
         }
         export const requestOptionsProvider = { provide: RequestOptions, useClass: DefaultRequestOptions };
         之后在模块中引入providers: [ requestOptionsProvider ] 
+
+
+        上面是扩展原有服务配置的用法，我们可以重新写一个拦截器如日志记录
+        需要这个拦截器的模块写法：
+            import {NgModule} from '@angular/core';
+            import {HTTP_INTERCEPTORS} from '@angular/common/http';
+            @NgModule({
+              providers: [{
+                provide: HTTP_INTERCEPTORS,
+                useClass: TimingInterceptor,
+                multi: true,
+              }],
+            })
+            export class AppModule {}
+            注意multi: true选项。这是必须的，因为它会告诉 Angular 这个 HTTP_INTERCEPTORS 表示的是一个数组，而不是单个的值
+        拦截器TimingInterceptor服务的写法：
+            import {Injectable} from '@angular/core';
+            import {HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse} from '@angular/common/http';
+            import 'rxjs/add/operator/do';    
+            @Injectable()      
+            export class TimingInterceptor implements HttpInterceptor {
+              constructor() {}
+              intercept(req: HttpRequest<span><</span>any>, next: HttpHandler): Observable<span><</span>HttpEvent<span><</span>any>> {
+                const started = Date.now();
+                return next
+                  .handle(req)
+                  .do(event => {
+                    if (event instanceof HttpResponse) {
+                      const elapsed = Date.now() - started;
+                      console.log(`Request for ${req.urlWithParams} took ${elapsed} ms.`);
+                    }
+                  });
+              }
+            }
+        一：RxJS 的 do()操作符 —— 它为可观察对象添加一个副作用，而不会影响到流中的值。这里，它会检测HttpResponse的事件，并且记录这
+        个请求花费的时间;
+        二：intercept是一个方法，它把一个请求对象转换成一个返回这个响应的可观察对象（Observable）。从这个意义上说，每个拦截器都要完
+        全自己处理这个请求。当然，大多数时候，拦截器会对请求做一些小的修改，然后才把它转给拦截器链中的其它部分，也就是所传进来
+        的next参数。next是一个HttpHandler，是一个类似于intercept的接口，它会把一个请求对象转换成一个可观察的响应对象。在拦截器中，
+        next总是代表位于拦截器链中的下一个拦截器（如果有的话），如果没有更多拦截器了，它就会是最终的后端。所以，大多数拦截器的最
+        后一句都会以它们转换后请求对象为参数调用next.handle函数;
+        三：intercept和HttpHandler.handle返回的可观察对象并不是Observable<span><</span>HttpResponse<span><</span>any>>，
+        而是Observable<span><</span>HttpEvent<span><</span>any>>。 这是因为拦截器所工作的层级要低于 HttpClient 接口。单
+        个请求会生成多个事件，比如表示上传和下载过程的事件。HttpResponse类实际上本身也是一个事件，只是它的type是
+        HttpEventType.HttpResponseEvent;
+        四：当我们在一个应用中提供了多个拦截器时，Angular 会按照你提供时的顺序应用它们;    
+
+
+        在一种情况下类型安全体系无法在写拦截器时保护请求体body，在拦截器中修改请求体本应是无效的，但类型检查系统无法发现它。
+        如果确实需要修改请求体，我们就得自己复制它，修改这个复本，然后使用clone()来复制这个请求，并使用这个新的请求体。
+        由于请求都是不可变的，所以不能直接修改它们。要想修改，就使用clone()函数： 
+            intercept(req: HttpRequest<span><</span>any>, next: HttpHandler): Observable<span><</span>HttpEvent<span><</span>any>> {
+              // This is a duplicate. It is exactly the same as the original.
+              const dupReq = req.clone({headers: req.headers.set('Authorization', 'test')});
+
+              // Change the URL and replace 'http://' with 'https://'
+              //const secureReq = req.clone({url: req.url.replace('http://', 'https://')});
+              return next.handle(dupReq)
+            }   
             </pre>
-            <div class="explain">还有跨域的jsonp方法，输入搜索subject流的优化等，可查上面的angular中文网;对于更多的默认参数设置以及http拦截器等可查网上资料</div>
+            <div class="explain">当然还有http缓存等高级实用功能请查看相关文档</div>
 
             <div class="title">angular常用的几个小功能</div>
             <pre>
@@ -349,6 +436,12 @@
             { provide: MinimalLogger, useExisting: LoggerService },  //别名-提供商
             { provide: RUNNERS_UP,    useFactory:  runnersUpFactory(2), deps: [Hero, HeroService] } //工厂-提供商
         ] 
+        上面的工厂提供商的函数不是提供商工厂函数。真正的提供商工厂函数是runnersUpFactory返回的函数
+        function runnersUpFactory(take: number) {
+          return (winner: Hero, heroService: HeroService): string => {
+            /* ... */
+          };
+        };依赖两个服务，写在deps数组里面
         上面对象中provide对应你使用该服务的时候的使用方法的名字，useClass对应用来实例化的那个类的方法
 
         3.使用@Optional()和@Host()装饰器来限定依赖查找方式
@@ -415,6 +508,7 @@
             之后在方法里面do(event:Event){
                 event.stopPropagation();
             }
+            或者直接绑定的时候就这样写：(click)="$event.stopPropagation(); doSomething()"
 
         8.通常我们会在ngOninit里面去做值的获取赋值等，但是里面必须是异步的，他会等待里面异步结束之后执行检测，否则直接赋值就：
                 Expression has changed after it was checked. Previous value......
@@ -424,6 +518,46 @@
                 enableProdMode();  这方法会调用生产模式就不会再报错了，但是不建议用
         我们可以在要改值的地方使用一个异步即可使用observable订阅使用async或者settimeout等能造成异步的东西即可达到效果
             </pre>
+
+            <div class="title">依赖注入@Injectable()介绍</div>
+            <pre>
+        @Component,@Directive和@Pipe是 Injectable 的子类型。正是这些@Injectable()装饰器是把一个类标识为注入器实例化的目标 
+        @Directive可用来自定义结构指令和属性指令如：
+            import {Directive, Input, ElementRef, Renderer, HostListener} from "@angular/core";
+            @Directive({
+              selector: '[exeBackground]'
+            })
+            export class ExeBackgroundDirective {
+              private _defaultColor = 'yellow';
+
+              @Input('exeBackground')
+              backgroundColor: string; // 输入属性，用于设置元素的背景颜色
+
+              constructor(private elementRef: ElementRef, private renderer: Renderer) {
+                this.setStyle(this._defaultColor);
+              }
+
+              @HostListener('click')
+              onClick() { // 监听宿主元素的点击事件，设置元素背景色
+                this.setStyle(this.backgroundColor || this._defaultColor);
+              }
+
+              private setStyle(color: string) { // 调用renderer对象提供的API设置元素的背景颜色
+                this.renderer.setElementStyle(this.elementRef.nativeElement, 
+                  'backgroundColor', color);
+              }
+            }
+
+            import { Component } from '@angular/core';
+            @Component({
+              selector: 'my-app', 
+              template: `<span><</span>h1 [exeBackground]="'red'">Hello {{name}}<span><</span>/h1>`,
+            })
+            export class AppComponent  {
+              name = 'Angular'; 
+            }       
+            </pre>
+            <div class="explain">实际上组件也是继承与指令的</div>
 
             <div class="title">获取父子组件的引用</div>
             <pre>
@@ -700,9 +834,119 @@
                 fn();
                 afterTask();
               }, time);
-            };
-             
+            };            
             </pre>
+
+            <div class="title">angular中的测试</div>
+            <pre>
+        以下只是简单的内联模板和外部模板的测试方法，关于测试有依赖组件等高级方法可在官网中查询不在赘述
+        import {ComponentFixture,TestBed,ComponentFixtureAutoDetect} from '@angular/core/testing';
+        import { By }              from '@angular/platform-browser';
+        import { DebugElement }    from '@angular/core';
+
+        import { BannerComponent } from './banner-inline.component';
+
+        describe('BannerComponent (inline template)', () => {
+
+          let comp:    BannerComponent;
+          let fixture: ComponentFixture<span><</span>BannerComponent>;
+          let de:      DebugElement;
+          let el:      HTMLElement;
+
+          //再每个测试程序之前，Jasmin都一次运行beforeEach函数：
+          //在beforeEach中调用configureTestingModule，以便TestBed可以在运行每个测试之前都把自己重置回它的基础状态
+          beforeEach(() => {
+            //TestBed（测试台）是Angular测试工具集中的首要概念。 它创建Angular测试模块（一个@NgModule类），我们可以通过调用它
+            //的configureTestingModule方法来为要测试的类生成模块环境。 其效果是，你可以把被测试的组件从原有的应用模块中剥离出
+            //来，把它附加到一个动态生成的Angular测试模块上，而该测试模块可以为这些测试进行特殊裁剪。
+
+            //configureTestingModule方法接受一个类似@NgModule的元数据对象。这个元数据对象具有标准Angular模块的大多数属性
+
+            //这里的元数据对象只是声明了要测试的组件BannerComponent。 这个元数据中没有imports属性，这是因为：(a) 默认的
+            //测试模块配置中已经有了BannerComponent所需的一切，(b) BannerComponent不需要与任何其它组件交互
+
+            //这个默认的配置只是测试的基础性工作。稍后我们会调用TestBed.configureTestingModule来传入更多元数据，这些元数据定义了
+            //额外的imports、declarations、providers和试用于这些测试的概要（Schema）.可选的override方法可以微调配置的各个方面
+            TestBed.configureTestingModule({
+              declarations: [ BannerComponent ], // 这里只是简单声明一下要测试的模块
+              //这个服务可以进行自动变更检测，我们可以直接不写手动调用变更检测fixture.detectChanges()
+              providers: [
+                  { provide: ComponentFixtureAutoDetect, useValue: true }
+                ]
+            });
+
+
+            //在配置好TestBed之后，我们可以告诉它创建一个待测组件的实例该方法封闭了当前的TestBed实例，以免将来再配置它。 我们不能
+            //再调用任何TestBed的方法修改配置：不能调用configureTestingModule或任何override方法。否则TestBed就会抛出错误
+
+            //createComponent方法返回ComponentFixture(可官网搜索一下查看还有哪些属性)，用来控制和访问已创建的组件所在的测试环境。
+            //这个fixture提供了对组件实例自身的访问，同时还提供了用来访问组件的DOM元素的DebugElement对象
+            fixture = TestBed.createComponent(BannerComponent);
+
+            comp = fixture.componentInstance; // BannerComponent test instance
+
+            // query for the title h1 by CSS element selector
+            de = fixture.debugElement.query(By.css('h1'));
+            el = de.nativeElement;
+          });
+            //在Angular初始化数据绑定或者调用生命周期钩子之前，它给测试者机会来查看或者改变组件的状态
+          it('no title in the DOM until manually call `detectChanges`', () => {
+            expect(el.textContent).toEqual('');
+          });
+
+          //每个测试程序都通过调用fixture.detectChanges()来通知Angular执行变更检测
+          //TestBed.createComponent不会触发变更检测。该工具不会自动将组件的title属性值推送到数据绑定的元素
+          it('should display original title', () => {
+            fixture.detectChanges();
+            expect(el.textContent).toContain(comp.title);
+          });
+          
+          //Angular测试环境不会知道测试程序改变了组件的title属性。 自动检测只对异步行为比如承诺的解析、计时器
+          //和DOM事件作出反应。 但是直接修改组件属性值的这种同步更新是不会触发自动检测的。 测试程序必须手动调
+          //用fixture.detectChange()，来触发新一轮的变更检测周期,所以不如每次直接手动调用
+          it('should display a different test title', () => {
+            comp.title = 'Test Title';
+            fixture.detectChanges();
+            expect(el.textContent).toContain('Test Title');
+          });
+        }); 
+
+
+
+        //测试外联模板的组件的方法(就是组件中有templateUrl和styleUrls配置的时候)
+        //当有外联模板的时候必须给Angular模板编译器一些时间来读取文件，只需把beforeEach中的逻辑被拆分成了两个beforeEach其他一样
+        //async参数的内容看起来非常像同步版beforeEach的函数体。 它并不能很明显的看出来这是异步函数。 比如它不返回承诺（Promise）
+        //并且也没有标准Jasmine异步测试时常用的done函数作为参数。 内部实现上，async会把beforeEach的函数体放进一个特殊的异步测试区
+        （async test zone），它隐藏了异步执行的内部机制
+        import { async } from '@angular/core/testing';
+        beforeEach(async(() => {
+          //TestBed.configureTestingModule方法返回TestBed类，以便你可以链式调用TestBed的其它静态方法，比如compileComponents
+          //TestBed.compileComponents方法会异步编译这个测试模块中配置的所有组件。 在这个例子中，BannerComponent是唯一要编译
+          //的组件。 当compileComponents完成时，外部组件和css文件会被“内联”
+          //WebPack用户不用调用compileComponents，因为它会在构建过程中自动内联模板和css，然后执行测试
+          //compileComponents方法封闭了当前的TestBed实例，不能再调用任何TestBed的方法修改配置：不能调用configureTestingModule
+          //或任何override...方法。如果这么做，TestBed就会抛出错误
+          TestBed.configureTestingModule({
+            declarations: [ BannerComponent ], // declare the test component
+          })
+          .compileComponents();  // compile template and css
+        }));
+        //测试运行器（runner）会先等待第一个异步beforeEach函数执行完再调用第二个
+        beforeEach(() => {
+          fixture = TestBed.createComponent(BannerComponent);
+          comp = fixture.componentInstance; 
+          de = fixture.debugElement.query(By.css('h1'));
+          el = de.nativeElement;
+        });  
+        //compileComponents方法返回一个承诺，来让我们可以在它完成之后立即执行额外的任务。 比如，我们也可以把第二个beforeEach中的
+        //同步代码移到一个compileComponents().then(...)回调中，从而只需要写一个beforeEach 
+            </pre>
+            <div class="explain">
+                独立单元测试用于测试那些完全不依赖Angular或不需要注入值的类实例，测试程序会new出一个测试类的实例，为构造函数参数提供
+                所需的测试替身，然后测试该实例的API接口;我们应该为管道和服务书写独立单元测试;我们也同样可以对组件写独立单元测试，独立
+                单元测试无法体现组件与Angular的交互,就是不能发现组件类如何与它的模板或其它组件交互，这时你需要Angular测试工具集，Angular
+                测试工具集包括TestBed类和一些来自@angular/core/testing的助手函数。
+            </div>
 
         </div>
     </body>
