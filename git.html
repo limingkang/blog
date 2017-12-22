@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,git">
+  </head>
+  <body>
+       <div class="big_container">
+           <div class="title" style="margin-top:0;">常用命令</div>
+           <pre>
+        git init                              初始化一个Git仓库
+
+        git add "filename"                    添加改动文件到暂存区
+
+        git commit -m "need change"           将暂存区的改动加到本地版本库
+
+        git status                            表示工作区的状态，如果git status告诉你有文件被修改过，用git diff可以查看修改内容
+
+        git log --pretty=oneline              也可不加参数就是比较多，这个命令可以查看提交历史，以便确定要回退到哪个版本  
+
+        git reflog                            查看命令历史，以便确定要回到未来的哪个版本 
+
+        git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本
+
+        git checkout -- file                  直接丢弃工作区的修改,命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令
+        这里有两种情况：
+            一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+            一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
+
+        git reset HEAD filename               直接丢弃暂存区的修改
+
+        git rm filename                       用于删除一个文件,注意这个删除的修改已经提到暂存区了，之后直接git commit就行了
+
+        git remote add origin git@github.com:limingkang/blog.git      关联远程库    
+
+        git remote -v                         列出所有远程库地址
+
+        git push origin "本地分支名字"        可以选择推送本地哪个分支进远程库
+
+        git clone https://github.com/jquery/jquery.git                克隆远程库
+
+        git branch                            查看分支
+
+        git branch "branchname"               创建分支
+
+        git checkout "branchname"             切换分支
+
+        git checkout -b "branchname"          创建+切换分支
+
+        git checkout -b [分支名] [远程名]/[分支名]
+            从远程分支 checkout 出来的本地分支，称为_跟踪分支(tracking branch)_。跟踪分支是一种和远程分支有直接联系的本地分
+            支。在跟踪分支里输入git push，Git 会自行推断应该向哪个服务器的哪个分支推送数据。反过来，在这些分支里运行
+            git pull 会获取所有远程索引并把它们的数据都合并到本地分支中来。在克隆仓库时，Git 通常会自动创建一个名为 master
+             的分支来跟踪 origin/master。这正是git push 和 git pull 一开始就能正常工作的原因。当然，你可以随心所欲地设定为
+             其它跟踪分支，比如origin 上除了 master 之外的其它分支
+
+        git merge "branchname"                合并某分支到当前分支
+
+        git branch -d "branchname"            删除分支,没有被合并的无法删除
+
+        git branch -D "branchname"            强制删除分支，不管其是否合并了
+
+        git branch --set-upstream branch-name origin/branch-name   建立本地分支和远程分支的关联,这样才可以使用git pull
+
+        git log --graph --pretty=oneline      git log --graph命令可以看到分支合并图
+
+        git merge --no-ff -m "merge with no-ff" dev
+            强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息
+            因为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
+
+        git stash                             当前工作现场“储藏”起来，等以后恢复现场后继续工作
+
+        git stash list                        查看所有保存的工作现场
+
+        git stash pop                         回到工作现场
+
+        git tag "tagname" "commitid"          如果commitid没写的话，默认标签是打在最新提交的commit上的
+
+        git tag                               查看所有标签
+
+        git show "tagname"                    查看标签信息
+
+        git push origin "tagname"             可以推送一个本地标签
+
+        git push origin --tags                可以推送全部未推送过的本地标签
+
+        git tag -d "tagname"                  可以删除一个本地标签
+
+        git push origin :refs/tags/tagname    可以删除一个远程标签
+
+        git config --global alias.co checkout 配置命令别名,若想删除某个别名,在仓库的Git配置文件.git/config文件中删除该行就行
+           </pre>
+           <div class="explain"><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001373962845513aefd77a99f4145f0a2c7a7ca057e7570000">git学习地址</a></div>
+
+           <div class="title">windows下面直接使用torrentgit更好用</div>
+           <pre>
+        1.先下载git安装之后，接着下载torrentgit
+        2.ssh-keygen -t rsa -C "limk@mail.com" 最后得到了两个文件：id_rsa和id_rsa.pub
+        3.id_rsa.pub打开这个拷贝到git公钥上面
+        4.打开小乌龟的setting配置，点击git配置名字和email
+        5.点击network配置ssh client 就是git安装时候下面git\usr\bin\ssh.exe文件指到即可，这个是用来连接github的
+
+        注意你push或者pull的地址必须是ssh的否则不能成功，通过git remote -v如果地址是https开头的则重新配置地址才行
+        git remote rm origin
+        git remote add origin git@github.com:test/myblog.git这是ssh的地址
+           </pre>
+       </div>
+  </body>
+</html>

@@ -104,7 +104,7 @@
         }
 
 
-        模型驱动表单一个简单例子:
+        模板驱动表单一个简单例子:
         <form class="form_layout" (ngSubmit)="login()" #loginForm="ngForm" [hidden]="registermark">
             <div>
                 <input type="text" name="loginname" pattern="^(?!\d+$)(?![a-zA-Z]+$)(?![!@#\$%\^\&\*]+$)[\w!@#\$%\^\&\*]{6,16}$" minlength="6" maxlength="16" required
@@ -146,6 +146,12 @@
             双向绑定使用  
                 [(target)]="expression"
                 bindon-target="expression"    
+
+        5.双绑的原理
+        //select框记得用(change)解决
+        <span><</span>input [value]="currentHero.name" (input)="currentHero.name=$event.target.value" >
+        //ngModel输入属性会设置该元素的值，并通过ngModelChange的输出属性来监听元素值的变化
+        <span><</span>input [ngModel]="currentHero.name" (ngModelChange)="currentHero.name=$event">
             </pre>
 
             <div class="title">angular动画</div>
@@ -301,6 +307,7 @@
         上面是rxjs的流式操作的方法最后去订阅，也可以强制改为promise对象
         return this.http.get(url,{ search: params})
            .toPromise()
+           //.then(response => response.text())如果直接返回一个字符串就不能用json方法解析用text
            .then(response => response.json())
            .catch(this.handleError); 
         如此的话调用的时候就是：
@@ -311,14 +318,46 @@
 
         对于post请求大体基本是一样的
         getHeroes(): Observable<span><</span>any> {
-            //let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' });           
             let headers = new Headers({ 'Content-Type': 'application/json' });
             let options = new RequestOptions({ headers: headers,search: params });
-            let senddata={};
+            let senddata={test:3333};
+            //json时候你传的值在请求体request payload中可以看
             return this.http.post(url,senddata,options)
                     .map(this.extractData)
                     .catch(this.handleError);
+
+            //x-www-form-urlencoded的时候在form data中可以看而且注意其格式'test=3&lmk=33'
+            //let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' });   
+            //let options = new RequestOptions({ headers: headers,search: params });
+            //var senddata: URLSearchParams = new URLSearchParams();
+            //senddata.set("test","value"); 
+            //return this.http.post(url,senddata,options)
+            //        .map(this.extractData)
+            //        .catch(this.handleError);       
         }
+
+
+
+        多个异步流的时候有提供类似于promise.all的方法forkJoin
+        import 'rxjs/add/observable/forkJoin';
+        import 'rxjs/add/operator/map';
+        loadBaseSet():Observable<span><</span>any> {
+          let whole = this.http.get('wbb/setting/global/readConfigLog?contextName=console');
+          let email = this.http.get('wbb/setting/mail/readMail');
+          let redis = this.http.get('wbb/setting/sysconf/readRedis');
+          return Observable.forkJoin([whole,email, redis]).map((response)=>response.map((val,index,arr)=>val.json()))
+        }
+        调用的时候
+        this.apiservice.loadBaseSet()
+          .subscribe(
+              response => {
+                this.whole_situation=response[0];
+                this.email_data=response[1];
+                this.cache_data=response[2];
+              },
+              error => {
+                Util.showMessage('数据获取失败', 'info');
+              }); 
 
 
 

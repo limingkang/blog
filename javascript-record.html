@@ -81,7 +81,7 @@
             <div class="explain">以后遇到比较的时候，就对着上面套，如果没有匹配的，就返回false就行了</div>
 
             <div class="title">js/jquery/zepto宽高的理解和应用</div>
-            <pre>
+            <pre style="overflow-x: hidden;">
             1.window对象是一种全局对象，而document是一个html文档对象，其实document对象只是window对象的一部分，例如：
                 window.location.href===document.location.href=loaction.href 注意window对象是可以省略的
             documentElement和body的区别
@@ -130,9 +130,9 @@
             domElement.scrollWidth和domElement.scrollHeight是不同于document.body的：
                 以任何一个节点的scrollWidth为例，没有滚动轴时候为clientWidth有滚动轴的时候为实际内容宽度加上左右padding值 
 
-            6.scrollTop和scrollLeft,这是一个可读写的属性，指的是当元素其中的内容超出其宽高的时候，元素被卷起的高度和宽度，我们
-            可以去设置节点的scrollTop和scrollLeft的值，判断页面有没有滚动到底部就用这个属性，还有style.width和style.height就是返回
-            元素的样式中实际宽高
+            6.scrollTop和scrollLeft,这是一个可读写的属性，指的是当元素其中的内容超出其宽高的时候，元素被卷起的高度和宽度，
+            我们可以去设置节点的scrollTop和scrollLeft的值，判断页面有没有滚动到底部就用这个属性，还有style.width和
+            style.height就是返回元素的样式中实际宽高
 
             7.event对象中的坐标的理解：
                 clientX和clientY            相对于浏览器（可视区左上角0,0）的坐标
@@ -250,57 +250,57 @@
 
             <div class="title">关于存储方式的小结</div>
             <pre>
-            1.http缓存也就是cookies的应用
-            2.web storage网络存储就是讲localstorage sessionstorage
-                网络存储为每个域提供5MB简单的键值形式的存储空间，在ios上网络存储可以存储utf-16格式的字符串文本，这意味着每个字符需要
-                两倍多的字节，所以在ios上存储的实际上是2.5MB,从localStorage获取数据比内存中慢得多，还不包括对json字符串解码增加的成
-                本(localStorage只能存储字符串,而且它最终的值也是存储在本地内存)
-        	3.application storage就是应用缓存，也就是h5的离线缓存,在html标签中写上manifest="clock.manifest"，
-        	并在同级目录下面建立clock.manifest文件，理论上随便什么后缀名都可以，但是一般写manifest
-        		下面说明书写 cache manifest 文件需要遵循的格式。
-        		      首行必须是 CACHE MANIFEST。
-        		      其后，每一行列出一个需要缓存的资源文件名。
-        		      可根据需要列出在线访问的白名单。单中所有资源不会被缓存，使用时直接在线访问。声明白名单用NETWORK：标识符
-        		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
-        		      如果要声明某URI不能访问时的替补URI，可使用FALLBACK：标识符。其后的每一行包含两个 URI，当第一个URI 
-        		      不可访问时，浏览器将尝试使用第二个 URI。
-        		      注释要另起一行，以 # 号开头。
-        		示例：
-        		      CACHE MANIFEST 
-        		       # 上一行是必须书写的。
+        1.http缓存也就是cookies的应用
+        2.web storage网络存储就是讲localstorage sessionstorage
+            网络存储为每个域提供5MB简单的键值形式的存储空间，在ios上网络存储可以存储utf-16格式的字符串文本，这意味着每个字符需要
+            两倍多的字节，所以在ios上存储的实际上是2.5MB,从localStorage获取数据比内存中慢得多，还不包括对json字符串解码增加的成
+            本(localStorage只能存储字符串,而且它最终的值也是存储在本地内存)
+    	3.application storage就是应用缓存，也就是h5的离线缓存,在html标签中写上manifest="clock.manifest"，
+    	并在同级目录下面建立clock.manifest文件，理论上随便什么后缀名都可以，但是一般写manifest
+    		下面说明书写 cache manifest 文件需要遵循的格式。
+    		      首行必须是 CACHE MANIFEST。
+    		      其后，每一行列出一个需要缓存的资源文件名。
+    		      可根据需要列出在线访问的白名单。单中所有资源不会被缓存，使用时直接在线访问。声明白名单用NETWORK：标识符
+    		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
+    		      如果要声明某URI不能访问时的替补URI，可使用FALLBACK：标识符。其后的每一行包含两个 URI，当第一个URI 
+    		      不可访问时，浏览器将尝试使用第二个 URI。
+    		      注释要另起一行，以 # 号开头。
+    		示例：
+    		      CACHE MANIFEST 
+    		       # 上一行是必须书写的。
 
-        		      CACHE: 
-        		      style/default.css 
+    		      CACHE: 
+    		      style/default.css 
 
-        		      FALLBACK: 
-        		      /files/projects /projects 
+    		      FALLBACK: 
+    		      /files/projects /projects 
 
-        		      NETWORK: 
-        		      comm.cgi
-        		文件的更新是它最大的难点，也是现在慎重使用的原因
-        		自动更新 
-        		    浏览器除了在第一次访问Web应用时缓存资源外,只会在cache manifest文件本身发生变化时更新缓存。而
-                            cache manifest 中的资源文件发生变化并不会触发更新。
-        		手动更新 
-        		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
-        		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
-        		    更新缓存。示范代码如下：
-        		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
-        		            ｛
-        		             window.applicationCache.update(); 
-        		            ｝
-        		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 表示离线。当网络状态发生变化时
-                        navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
+    		      NETWORK: 
+    		      comm.cgi
+    		文件的更新是它最大的难点，也是现在慎重使用的原因
+    		自动更新 
+    		    浏览器除了在第一次访问Web应用时缓存资源外,只会在cache manifest文件本身发生变化时更新缓存。而
+                        cache manifest 中的资源文件发生变化并不会触发更新。
+    		手动更新 
+    		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
+    		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
+    		    更新缓存。示范代码如下：
+    		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
+    		            ｛
+    		             window.applicationCache.update(); 
+    		            ｝
+    		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 表示离线。当网络状态发生变化时
+                    navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
 
-        		online/offline 事件 
-                        当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者要在网络状态变化时立刻得到通知，
-                        因此HTML5提供了online/offline事件。当在线 / 离线状态切换时，online/offline 事件将触发在body元素上，并且
-                        沿着document.body、document 和 window的顺序冒泡。因此,开发者可以通过监听online/offline事件来获悉网络状态
-        	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
-    		    先介绍三个核心方法
-    		        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
-    		        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
-    		        3、executeSql：这个方法用于执行真实的SQL查询。
+    		online/offline 事件 
+                    当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者要在网络状态变化时立刻得到通知，
+                    因此HTML5提供了online/offline事件。当在线 / 离线状态切换时，online/offline 事件将触发在body元素上，并且
+                    沿着document.body、document 和 window的顺序冒泡。因此,开发者可以通过监听online/offline事件来获悉网络状态
+    	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
+		    先介绍三个核心方法
+		        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
+		        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
+		        3、executeSql：这个方法用于执行真实的SQL查询。
             </pre>
             <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>            
 
@@ -428,42 +428,6 @@
             </pre>
             <div class="explain">所谓的继承只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
-            <div class="title">js实现二分法排序代码以及千分位处理</div>
-            <pre>
-                var quicksort = function(arr){
-                    if(arr.length <= 1){
-                        return arr;
-                    }
-                    var pivotIndex = Math.floor(arr.length / 2);
-                    var pivot = arr.splice(pivotIndex,1)[0];
-                    var left = [];
-                    var right = [];
-                    for(var i = 0;i < arr.length;i++){
-                        if(arr[i] < pivot){
-                            left.push(arr[i]);
-                        }else{
-                            right.push(arr[i]);
-                        }
-                    }
-                    return quicksort(left).concat([pivot],quicksort(right));
-                };
-
-                var array = [8,7,0,7,5,2,5,3,1];
-                quicksort(array); //[0,1,2,3,5,5,7,7,8]
-
-                function formatNum(str,digit){
-                    // 要保留的小数位数默认两位
-                    var digit_number=digit||2;
-                    //对字符串或者数字进行保留两位四舍五入处理
-                    str=parseFloat(str).toFixed(digit_number).toString();  
-                    var iffloat=str.indexOf(".")+1;
-                    var right=str.substr(iffloat);
-                    var left=str.substring(0,iffloat);
-                    left=left.replace(/(\d{3}(?!\.))/g,'$1,');
-                    return left+right;
-                }
-            </pre>
-
             <div class="title">js常用小技巧总结</div>
             <pre>
                  1.有时候我们需要对一个变量查检其是否存在或者检查值是否有一个有效值，如果存在就返回true值。
@@ -559,44 +523,13 @@
                      img.onload=imgs_onload;
                      img.src=imgurl[s];
                  }
-            </pre>
 
-            <div class="title">数组去重的方法</div>
-            <pre>
-                function unique1() {
-                   var newArray = [];
-                   this.forEach(function (index) {
-                       if (newArray.indexOf(index) == -1) {
-                           newArray.push(index);
-                       }
-                   });
-                   return newArray;
-                }
-                通过unique1.apply(arr)或unique1.call(arr)调用
-
-                Array.prototype.unique3 = function () {
-                     // 构建一个新数组存放结果
-                     var newArray = [];
-                     // 创建一个空对象
-                     var object = {};
-                     // for循环时，每次取出一个元素与对象进行对比
-                     // 如果这个元素不重复，则将它存放到结果数中
-                     // 同时把这个元素的内容作为对象的一个属性，并赋值为1,
-                     // 存入到第2步建立的对象中
-                     for (var i = 0; i < this.length; i++){
-                         // 检测在object对象中是否包含遍历到的元素的值
-                         if(!object[typeof(this[i]) + this[i]]) {
-                             // 如果不包含，将存入对象的元素的值推入到结果数组中typeof(this[i]) + this[i]在拼一个键
-                             newArray.push(this[i]);
-                             // 如果不包含，存入object对象中该属性名的值设置为1
-                             object[typeof(this[i]) + this[i]] = 1;
-                         }
-                     }
-                     return newArray;
-                }
-                var arr = [1,2,3,4,'a','b',1,3,4,56,32,34,2,'b','c',5,'1','2'];
-                arr.unique3(); // [1, 2, 3, 4, "a", "b", 56, 32, 34, "c", 5, "1", "2"]
-                但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
+                 11.+function(){}()   这里的加号也可以替换成!和~等其他一元操作符，其效果相当于立即执行函数：
+                 (function() { console.log("Foo!"); })();  
+                 // or  
+                 (function() { console.log("Foo!"); }());  
+                 如果没有这个加号的话，解析器会认为function是一个函数声明的开始，而后面（）将会导致语法错误。在
+                 function前面加上+号时，就变成了一个函数表达式，而函数表达式后面又添加了一个()就变成了一个立即执行的函数了
             </pre>
 
             <div class="title">h5使用formdata实现文件上传，主流使用flash开发的swfupload插件</div>
@@ -700,6 +633,39 @@
             </pre>
             <div class="explain">大多数框架都是用这个来实现绑定例如vue.js。把一个普通对象传给 Vue 实例作为它的 data 选项，Vue.js 将遍历它的属性，用 Object.defineProperty 将它们转为 getter/setter。这是 ES5 特性，不能打补丁实现，这便是为什么 Vue.js 不支持 IE8 及更低版本</div>
 
+            <div class="title">Thunkify 模块</div>
+            <pre>
+          功能是对多参数函数，将其替换成一个只接受回调函数作为参数的单参数函数   
+            function thunkify(fn) {
+              return function() {
+                var args = new Array(arguments.length);
+                var ctx = this;
+
+                for (var i = 0; i < args.length; ++i) {
+                  args[i] = arguments[i];
+                }
+
+                return function (done) {
+                  var called;
+
+                  args.push(function () {
+                    //thunkify只允许回调函数执行一次
+                    if (called) return;
+                    called = true;
+                    done.apply(null, arguments);
+                  });
+
+                  try {
+                    fn.apply(ctx, args);
+                  } catch (err) {
+                    done(err);
+                  }
+                }
+              }
+            }; 
+            </pre>
+            <div class="explain">当然这个得配合co模块使用才更好</div>
+
             <div class="title">尾调用优化和尾递归优化</div>
             <pre>
             1.首先得搞清楚apply,call,bind的区别：
@@ -721,8 +687,12 @@
                   if (n === 1) return total;
                   return factorial(n - 1, n + total);
                 }
-            上面就是尾递归,即使是向上面那样写还是调用栈太多，造成溢出，那么只要减少调用栈，就不会溢出只能采用“循环”换掉“递归”
-            蹦床函数（trampoline）可以将递归执行转为循环执行。
+            上面就是尾递归优化,但是只在严格模式下开启，正常模式是无效的，会造成溢出，这是因为在正常模式下，函数内部有两个变量，
+            可以跟踪函数的调用栈。
+                func.arguments：返回调用时函数的参数。
+                func.caller：返回调用当前函数的那个函数。
+            尾调用优化发生时，函数的调用栈会改写，因此上面两个变量就会失真。严格模式禁用这两个变量，所以尾调用模式仅在严格模式下生效
+            那么只要减少调用栈，就不会溢出只能采用“循环”换掉“递归”，蹦床函数（trampoline）可以将递归执行转为循环执行。
                 function trampoline(f) {
                   while (f && f instanceof Function) {
                     f = f();
@@ -738,44 +708,44 @@
                 trampoline(factorial(100000, 1));
 
             4.上面尾递归优化有兼容问题,下面这个没兼容问题,而且没有改动很多源码，只是以直接量的形式使用tco函数包裹源码
-                function tco(f) {
-                    var value;
-                    var active = false;
-                    var accumulated = [];
+            function tco(f) {
+                var value;
+                var active = false;
+                var accumulated = [];
 
-                    return function accumulator() {
-                        accumulated.push(arguments);
-                        if (!active) {
-                            active = true;
-                            while (accumulated.length) {
-                                value = f.apply(this, accumulated.shift());
-                            }
-                            active = false;
-                            return value;
+                return function accumulator() {
+                    accumulated.push(arguments);
+                    if (!active) {
+                        active = true;
+                        while (accumulated.length) {
+                            value = f.apply(this, accumulated.shift());
                         }
+                        active = false;
+                        return value;
                     }
                 }
-                var sum = tco(function(x, y) {
-                    if (y > 0) {
-                      return sum(x + 1, y - 1)
-                    }else {
-                      return x
-                    }                   
-                });
-                console.log(sum(12, 100000)) // => 100012 没有造成栈溢出
-                上面函数自己的理解：
-                    一：首先以函数表达式的形式将tco函数的返回值赋给sum，tco函数的返回值是accumulator函数，也就是说所有的函数包括返回
-                    的函数当执行sum(1,10)的时候即是在执行accumulator(1,10)
-                    二：accumulator 将实参传入accumulated数组,比如执行sum(1,10)那么这里传入的就是类数组对象[1，10],accumulated现
-                    在就是一个length为1的二维数组
-                    三：匿名函数f判断y的值返回一个sum，sum的参数被改变了，前面提到执行sum相当于执行accumulator，于是新的参数被加入到
-                    了accumulator但是因为这时active的值依然是true（因为现在执行流还在while循环里），所以执行这个被返回的sum就会得到
-                    一个undefined的值，value被赋值为undefined
-                    四：可是因为执行了被返回的sum（也就是执行了accumulator）尽管没有进入if(!active),但是执行了第一条语句，所以
-                    accumulated被重新push进了在外包的匿名函数中被修改的实参，所以while循环继续
-                    五：while循环执行到accumulated中值为空,在value=f.apply(this, accumulated.shift());每次return一次sum后
-                    accumulated 都会被重新推入一个实参（accumulated的length始终为1），直到匿名的外包函数return出x，于是x的值被赋给
-                    value被返回出来
+            }
+            var sum = tco(function(x, y) {
+                if (y > 0) {
+                  return sum(x + 1, y - 1)
+                }else {
+                  return x
+                }                   
+            });
+            console.log(sum(12, 100000)) // => 100012 没有造成栈溢出
+            上面函数自己的理解：
+                一：首先以函数表达式的形式将tco函数的返回值赋给sum，tco函数的返回值是accumulator函数，也就是说所有的函数包括返回
+                的函数当执行sum(1,10)的时候即是在执行accumulator(1,10)
+                二：accumulator 将实参传入accumulated数组,比如执行sum(1,10)那么这里传入的就是类数组对象[1，10],accumulated现
+                在就是一个length为1的二维数组
+                三：匿名函数f判断y的值返回一个sum，sum的参数被改变了，前面提到执行sum相当于执行accumulator，于是新的参数被加入到
+                了accumulator但是因为这时active的值依然是true（因为现在执行流还在while循环里），所以执行这个被返回的sum就会得到
+                一个undefined的值，value被赋值为undefined
+                四：可是因为执行了被返回的sum（也就是执行了accumulator）尽管没有进入if(!active),但是执行了第一条语句，所以
+                accumulated被重新push进了在外包的匿名函数中被修改的实参，所以while循环继续
+                五：while循环执行到accumulated中值为空,在value=f.apply(this, accumulated.shift());每次return一次sum后
+                accumulated 都会被重新推入一个实参（accumulated的length始终为1），直到匿名的外包函数return出x，于是x的值被赋给
+                value被返回出来
             </pre>
 
             <div class="title">正则表达式小结</div>

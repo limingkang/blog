@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Blog by limingkang</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="前端开发记录">
+    <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
+  </head>
+  <body>
+       	<div class="big_container">  			
+            <div class="title" style="margin-top:0;">js实现二分法排序代码以及千分位处理</div>
+            <pre>
+                var quicksort = function(arr){
+                    if(arr.length <= 1){
+                        return arr;
+                    }
+                    var pivotIndex = Math.floor(arr.length / 2);
+                    var pivot = arr.splice(pivotIndex,1)[0];
+                    var left = [];
+                    var right = [];
+                    for(var i = 0;i < arr.length;i++){
+                        if(arr[i] < pivot){
+                            left.push(arr[i]);
+                        }else{
+                            right.push(arr[i]);
+                        }
+                    }
+                    return quicksort(left).concat([pivot],quicksort(right));
+                };
+
+                var array = [8,7,0,7,5,2,5,3,1];
+                quicksort(array); //[0,1,2,3,5,5,7,7,8]
+
+                function formatNum(str,digit){
+                    // 要保留的小数位数默认两位
+                    var digit_number=digit||2;
+                    //对字符串或者数字进行保留两位四舍五入处理
+                    str=parseFloat(str).toFixed(digit_number).toString();  
+                    var iffloat=str.indexOf(".")+1;
+                    var right=str.substr(iffloat);
+                    var left=str.substring(0,iffloat);
+                    left=left.replace(/(\d{3}(?!\.))/g,'$1,');
+                    return left+right;
+                }
+            </pre>
+
+            <div class="title">数组去重的方法</div>
+            <pre>
+                function unique1() {
+                   var newArray = [];
+                   this.forEach(function (index) {
+                       if (newArray.indexOf(index) == -1) {
+                           newArray.push(index);
+                       }
+                   });
+                   return newArray;
+                }
+                通过unique1.apply(arr)或unique1.call(arr)调用
+
+                Array.prototype.unique3 = function () {
+                     // 构建一个新数组存放结果
+                     var newArray = [];
+                     // 创建一个空对象
+                     var object = {};
+                     // for循环时，每次取出一个元素与对象进行对比
+                     // 如果这个元素不重复，则将它存放到结果数中
+                     // 同时把这个元素的内容作为对象的一个属性，并赋值为1,
+                     // 存入到第2步建立的对象中
+                     for (var i = 0; i < this.length; i++){
+                         // 检测在object对象中是否包含遍历到的元素的值
+                         if(!object[typeof(this[i]) + this[i]]) {
+                             // 如果不包含，将存入对象的元素的值推入到结果数组中typeof(this[i]) + this[i]在拼一个键
+                             newArray.push(this[i]);
+                             // 如果不包含，存入object对象中该属性名的值设置为1
+                             object[typeof(this[i]) + this[i]] = 1;
+                         }
+                     }
+                     return newArray;
+                }
+                var arr = [1,2,3,4,'a','b',1,3,4,56,32,34,2,'b','c',5,'1','2'];
+                arr.unique3(); // [1, 2, 3, 4, "a", "b", 56, 32, 34, "c", 5, "1", "2"]
+                但是不同的键可能会被误认为一样；例如： a[1]、a["1"] 这种方法所费时间是最短，但就是占用内存大一些。
+            </pre>
+       	</div>    
+  </body>
+</html>

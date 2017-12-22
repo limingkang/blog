@@ -11,26 +11,25 @@
     <meta name="keywords" content="gulp,react,node,webpack,redux,require,mysql,mongodb">
   </head>
   <body>
+  <!-- https://data.imfbp.com/portal/index.html?page=index -->
        <div class="big_container">
-           <div class="title" style="margin-top:0;"><a href="http://es6.ruanyifeng.com/#docs/let">es6完整学习地址</a></div>
+           <div class="title" style="margin-top:0;">常用1</div>
            <pre>
-        1.使用let来声明一个块级作用域，使用const变量来声明一个常量
-
-        2.顶层对象，在浏览器环境指的是window对象，在Node指的是global对象，顶层对象的属性与全局变量挂钩，被认为是JavaScript语
+        1.顶层对象，在浏览器环境指的是window对象，在Node指的是global对象，顶层对象的属性与全局变量挂钩，被认为是JavaScript语
         言最大的设计败笔之一，ES6为了改变这一点，一方面规定，为了保持兼容性，var命令和function命令声明的全局变量，依旧是顶层
         对象的属性；另一方面规定，let命令、const命令、class命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全
         局变量将逐步与顶层对象的属性脱钩
 
-        3.变量的解构赋值
+
+
+        2.变量的解构赋值
             let [x = 1, y = x] = [2];    // x=2; y=2
             var { foo: baz } = { foo: 'aaa', bar: 'bbb' };   baz // "aaa"
         这里一定要搞清楚谁是模式谁是变量以及对面全等于比较的时候才使用默认值
 
-        4.ES6中允许使用反引号 ` 来创建字符串，此种方法创建的字符串里面可以包含由美元符号加花括号包裹的变量${vraible}
-            let num = Math.random();
-            console.log(`your num is ${num}`);
 
-        5.Object.assign()是es6复制对象的方法是浅复制,只能复制到一层
+
+        3.Object.assign()是es6复制对象的方法是浅复制,只能复制到一层
             var o1 = { a: 1 };
             var o2 = { b: 2,d:{test:111,e:333} };
             var o3 = { c: 3 ,d:{test:2222}};
@@ -39,22 +38,62 @@
             console.log(o1);  // { a: 1, b: 2, c: 3,d:{test:222}}   
             第一个对象是要最终输出的目标对象所以一般在前面写个空对象，相同属性会合并更新
 
-        6.Object.values方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值而Object.keys方法
+
+
+        4.Object.values方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值而Object.keys方法
         返回的是键值，Object.entries方法返回一个数组,成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组
             var obj = { foo: 'bar', baz: 42 };
             Object.values(obj)  // ["bar", 42]
             Object.keys(obj)    // ["foo", "baz"]
             Object.entries(obj) // [ ["foo", "bar"], ["baz", 42] ]
 
-        7.Object.create()可以用来创建一个新对象。新对象的原型就是调用 create 方法时传入的第一个参数
 
-        8.扩展预算符(...)的使用
+
+        5.Object.create()可以用来创建一个新对象。新对象的原型就是调用 create 方法时传入的第一个参数
+        Object.is就是部署这个算法的新方法。它用来比较两个值是否严格相等，与严格比较运算符（===）的行为基本一致
+        不同之处只有两个：一是+0不等于-0，二是NaN等于自身
+            +0 === -0 //true
+            NaN === NaN // false
+            Object.is(+0, -0) // false
+            Object.is(NaN, NaN) // true
+        底层实现：
+            Object.defineProperty(Object, 'is', {
+              value: function(x, y) {
+                if (x === y) {
+                  // 针对+0 不等于 -0的情况
+                  return x !== 0 || 1 / x === 1 / y;
+                }
+                // 针对NaN的情况
+                return x !== x && y !== y;
+              },
+              configurable: true,
+              enumerable: false,
+              writable: true
+            });
+
+
+
+        6.扩展预算符(...)和rest 参数
+        rest参数和一个变量名搭配使用，生成一个数组，用于获取函数多余的参数
+            function input(...params){  
+                console.log(params)  
+            }            
+            input(1,2,3,4)  //[1,2,3,4]            
+            function input2(a,b,...params){  
+                console.log(params)  
+            }         
+            input2(1,2,3,4)  //[3,4]  
+        扩展运算符可以理解为rest参数的逆运算，将数组转换为逗号分隔的参数序列
             let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
             x // 1
             y // 2
             z // { a: 3, b: 4 }
+            console.log(1, ...[2, 3, 4], 5)   // 1 2 3 4 5
+            [...'hello']                      // [ "h", "e", "l", "l", "o" ]
 
-        9.ES5的对象属性名都是字符串，这容易造成属性名的冲突。为了防止属性名的冲突ES6引入了一种新的原始数据类型Symbol，表示独一无二的
+
+
+        7.ES5的对象属性名都是字符串，这容易造成属性名的冲突。为了防止属性名的冲突ES6引入了一种新的原始数据类型Symbol，表示独一无二的
         值。它是JavaScript语言的第七种数据类型
             var s1 = Symbol.for('foo');
             var s2 = Symbol.for('foo');
@@ -66,125 +105,323 @@
             var s2 = Symbol('foo');
             s1 === s2 // false
 
-        10.使用promise对象来解决异步问题,可以捕捉成功也可以捕捉失败抛出错误的时候的回调
-            function timeout(ms) {
-              return new Promise((resolve, reject) => {
-                setTimeout(resolve, ms, 'done');
-              });
-            }
-            timeout(100).then((value) => {
-              console.log(value);
-            });
 
-        11.ES6中新增的箭头操作符 => 简化了函数的书写。操作符左边为输入的参数，而右边则是进行的操作以及返回的值，这样的写法可以为我们
-        减少大量的代码，注意这会改变this指针的指向
 
-        11.使用es6的generator函数来解决异步问题也可以内部调用yeild即可，对于该函数的封装的有co函数thunk函数等，注意还有一个
-        async函数内部使用的是await也可以用来来解决异步问题
+        8.使用promise对象来解决异步问题,可以捕捉成功也可以捕捉失败抛出错误的时候的回调：
+        所有的promise都fulfilled最终状态才会fulfilled只要有一个rejected则整个状态rejected
+           Promise.all([p1, p2, p3]).then((values)=>{}).catch((error)=>{})
 
-        12.es6也引入class的用法，其本质就是添加自身属性和原型对象上加属性也可以实现类的继承但是内部注意要去掉一个super()方法否则没办
+        Promise.race方法同样是将多个 Promise 实例，包装成一个新的 Promise 实例，只要p1、p2、p3之中有
+        一个实例率先改变状态，p的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给p的回调函数
+            Promise.race([p1, p2, p3]);
+
+        Promise.resolve方法将现有对象转为 Promise 对象
+
+        Promise.reject(reason)方法也会返回一个新的 Promise 实例，该实例的状态为rejected
+
+        Promise 对象的回调链，不管以then方法或catch方法结尾，要是最后一个方法抛出错误，都有可能无法捕捉到（因为
+        Promise 内部的错误不会冒泡到全局）。因此提供一个done方法，总处于回调链的尾端，保证抛出任何可能出现的错误
+
+        finally方法用于指定不管 Promise 对象最后状态如何，都会执行的操作。它与done方法的最大区别，它接受一个普通
+        的回调函数作为参数，该函数不管怎样都必须执行
+
+
+
+        9.es6也引入class的用法，其本质就是添加自身属性和原型对象上加属性也可以实现类的继承但是内部注意要去调用super()方法否则没办
         法用this。但是他没办法去定义私有属性和公有属性只能通过命名的规则或者函数二次嵌套调用勉强实现
 
-        13.模块化开发要去了解import和export的用法和开发相应的规范
-           </pre>
 
-           <div class="title"><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001373962845513aefd77a99f4145f0a2c7a7ca057e7570000">git学习地址</a></div>
+
+        10.指定了默认值以后，函数的length属性，将返回没有指定默认值的参数个数。也就是说，指定了默认值后，length属性将失真
+        (function (a) {}).length // 1
+        (function (a = 5) {}).length // 0
+        (function (a, b, c = 5) {}).length // 2
+        因为length属性的含义是，该函数预期传入的参数个数。某个参数指定默认值以后，预期传入的参数个数就不包括这个参数了
+        (function(...args) {}).length // 0
+        如果设置了默认值的参数不是尾参数，那么length属性也不再计入后面的参数了
+        (function (a = 0, b, c) {}).length // 0
+        (function (a, b = 1, c) {}).length // 1
+           </pre>
+           <div class="explain"><a href="http://es6.ruanyifeng.com/#docs/let">es6完整学习地址</a></div>
+
+           <div class="title">常用2</div>
            <pre>
-        git init                              初始化一个Git仓库
+        1.数组的复制
+            const a1 = [1, 2];
+            const a2 = a1.concat();
+            a2[0] = 2;
+            a1 // [1, 2]  
+            上面代码中，a1会返回原数组的克隆，再修改a2就不会对a1产生影响
+            扩展运算符提供了复制数组的简便写法
+            const a1 = [1, 2];
+            // 写法一
+            const a2 = [...a1];
+            // 写法二
+            const [...a2] = a1;  
 
-        git add "filename"                    添加改动文件到暂存区
+        2.forEach和map方法对比
+            var ary = [12,23,24,42,1];  
+            var res = ary.forEach(function (item,index,input) {  
+                   input[index] = item*10;  
+            })  
+            console.log(res);//--> undefined;  
+            console.log(ary);//--> 通过数组索引改变了原数组；
+            var ary = [12,23,24,42,1];  
+            var res = ary.map(function (item,index,input) {  
+                return item*10;  
+            })  
+            console.log(res);//-->[120,230,240,420,10];  原数组拷贝了一份，并进行了修改
+            console.log(ary);//-->[12,23,24,42,1]；  原数组并未发生变化 
 
-        git commit -m "need change"           将暂存区的改动加到本地版本库
+        3.数组的扩展方法
+            一：Array.from方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象
+            （包括 ES6 新增的数据结构 Set 和 Map）
+            二：Array.of方法用于将一组值，转换为数组
+                Array.of(3, 11, 8) // [3,11,8]
+            三：数组实例的copyWithin方法，在当前数组内部，将指定位置的成员复制到其他位置（会覆盖原有成员），然后返回当前数
+            组。也就是说，使用这个方法，会修改当前数组
+                [1, 2, 3, 4, 5].copyWithin(0, 3, 4)     // [4, 2, 3, 4, 5]
+                从 3 号位直到数组4号位置的成员（4），复制到从 0 号位开始的位置  
+            四：数组实例的find方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函
+            数，直到找出第一个返回值为true的成员，然后返回该成员。如果没有符合条件的成员，则返回undefined
+                [1, 5, 10, 15].find(function(value, index, arr) {
+                  return value > 9;
+                }) // 10
+            五：findIndex方法的用法与find方法类似，返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回-1
+                [1, 5, 10, 15].findIndex(function(value, index, arr) {
+                  return value > 9;
+                }) // 2
+            六：fill方法使用给定值，填充一个数组
+                ['a', 'b', 'c'].fill(7)
+                // [7, 7, 7]
+                new Array(3).fill(7)
+                // [7, 7, 7]
+                ['a', 'b', 'c'].fill(7, 1, 2)   代码表示，fill方法从 1 号位开始，向原数组填充 7，到 2 号位之前结束
+                // ['a', 7, 'c']
+            七：entries()，keys()和values()也可用于遍历数组，includes方法返回一个布尔值，表示某个数组是否包含给定的值
 
-        git status                            表示工作区的状态，如果git status告诉你有文件被修改过，用git diff可以查看修改内容
+        4.Symbol 作为属性名，该属性不会出现在for...in、for...of循环中，也不会被Object.keys()、Object.getOwnPropertyNames()、
+        JSON.stringify()返回。但是它不是私有属性，有一个Object.getOwnPropertySymbols方法，可以获取指定对象的所有Symbol属性名
+        Object.getOwnPropertySymbols方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值
+            const obj = {};
+            let a = Symbol('a');
+            let b = Symbol('b');
+            obj[a] = 'Hello';
+            obj[b] = 'World';
+            const objectSymbols = Object.getOwnPropertySymbols(obj);        // [Symbol(a), Symbol(b)]
+            Symbol.for("bar") === Symbol.for("bar")     // true
+            Symbol("bar") === Symbol("bar")             // false
+            let s1 = Symbol.for("foo");
+            Symbol.keyFor(s1)                           // "foo"
 
-        git log --pretty=oneline              也可不加参数就是比较多，这个命令可以查看提交历史，以便确定要回退到哪个版本  
+        5.Proxy 用于修改某些操作的默认行为,等同于在语言层面做出修改,所以属于一种“元编程”(meta programming)即对编程语言进行编程
+        Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外
+        界的访问进行过滤和改写,用的比较少想看可取相应网站上看详细内容
 
-        git reflog                            查看命令历史，以便确定要回到未来的哪个版本 
-
-        git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本
-
-        git checkout -- file                  直接丢弃工作区的修改,命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令
-        这里有两种情况：
-            一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
-            一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
-
-        git reset HEAD filename               直接丢弃暂存区的修改
-
-        git rm filename                       用于删除一个文件,注意这个删除的修改已经提到暂存区了，之后直接git commit就行了
-
-        git remote add origin git@github.com:limingkang/blog.git      关联远程库    
-
-        git remote -v                         列出所有远程库地址
-
-        git push origin "本地分支名字"        可以选择推送本地哪个分支进远程库
-
-        git clone https://github.com/jquery/jquery.git                克隆远程库
-
-        git branch                            查看分支
-
-        git branch "branchname"               创建分支
-
-        git checkout "branchname"             切换分支
-
-        git checkout -b "branchname"          创建+切换分支
-
-        git checkout -b [分支名] [远程名]/[分支名]
-            从远程分支 checkout 出来的本地分支，称为_跟踪分支(tracking branch)_。跟踪分支是一种和远程分支有直接联系的本地分
-            支。在跟踪分支里输入git push，Git 会自行推断应该向哪个服务器的哪个分支推送数据。反过来，在这些分支里运行
-            git pull 会获取所有远程索引并把它们的数据都合并到本地分支中来。在克隆仓库时，Git 通常会自动创建一个名为 master
-             的分支来跟踪 origin/master。这正是git push 和 git pull 一开始就能正常工作的原因。当然，你可以随心所欲地设定为
-             其它跟踪分支，比如origin 上除了 master 之外的其它分支
-
-        git merge "branchname"                合并某分支到当前分支
-
-        git branch -d "branchname"            删除分支,没有被合并的无法删除
-
-        git branch -D "branchname"            强制删除分支，不管其是否合并了
-
-        git branch --set-upstream branch-name origin/branch-name   建立本地分支和远程分支的关联,这样才可以使用git pull
-
-        git log --graph --pretty=oneline      git log --graph命令可以看到分支合并图
-
-        git merge --no-ff -m "merge with no-ff" dev
-            强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息
-            因为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
-
-        git stash                             当前工作现场“储藏”起来，等以后恢复现场后继续工作
-
-        git stash list                        查看所有保存的工作现场
-
-        git stash pop                         回到工作现场
-
-        git tag "tagname" "commitid"          如果commitid没写的话，默认标签是打在最新提交的commit上的
-
-        git tag                               查看所有标签
-
-        git show "tagname"                    查看标签信息
-
-        git push origin "tagname"             可以推送一个本地标签
-
-        git push origin --tags                可以推送全部未推送过的本地标签
-
-        git tag -d "tagname"                  可以删除一个本地标签
-
-        git push origin :refs/tags/tagname    可以删除一个远程标签
-
-        git config --global alias.co checkout 配置命令别名,若想删除某个别名,在仓库的Git配置文件.git/config文件中删除该行就行
+        6.Reflect对象与Proxy对象一样，也是 ES6 为了操作对象而提供的新 API。Reflect对象的设计目的有多个例如：
+            (1) 将Object对象的一些明显属于语言内部的方法（比如Object.defineProperty），放到Reflect对象上。现阶段，某些方法同
+            时在Object和Reflect对象上部署，未来的新方法将只部署在Reflect对象上。也就是说，从Reflect对象上可以拿到语言内部的方法。
+            (2)修改某些Object方法的返回结果，让其变得更合理。比如，Object.defineProperty(obj, name, desc)在无法定义属性时，会
+            抛出一个错误，而Reflect.defineProperty(obj, name, desc)则会返回false。
            </pre>
 
-           <div class="title">windows下面直接使用torrentgit更好用</div>
+           <div class="title">Iterator接口的介绍</div>
            <pre>
-        1.先下载git安装之后，接着下载torrentgit
-        2.ssh-keygen -t rsa -C "limk@mail.com" 最后得到了两个文件：id_rsa和id_rsa.pub
-        3.id_rsa.pub打开这个拷贝到git公钥上面
-        4.打开小乌龟的setting配置，点击git配置名字和email
-        5.点击network配置ssh client 就是git安装时候下面git\usr\bin\ssh.exe文件指到即可，这个是用来连接github的
+        1.遍历器（Iterator）是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署Iterator接口，就可以完
+        成遍历操作（即依次处理该数据结构的所有成员）;
+        2.Iterator的作用有三个：一是为各种数据结构，提供一个统一的、简便的访问接口；二是使得数据结构的成员能够按某种次序排
+        列；三是ES6创造了一种新的遍历命令for...of循环，Iterator接口主要供for...of消费;
+        3.在ES6中，有些数据结构原生具备Iterator接口（比如数组），即不用任何处理，就可以被for...of循环遍历，有些就不行
+        （比如对象）。原因在于，这些数据结构原生部署了Symbol.iterator属性（详见下文），另外一些数据结构没有。凡是部署了
+        Symbol.iterator属性的数据结构，就称为部署了遍历器接口。调用这个接口，就会返回一个遍历器对象;
+        4.在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象(如string)、Set和Map结构。
 
-        注意你push或者pull的地址必须是ssh的否则不能成功，通过git remote -v如果地址是https开头的则重新配置地址才行
-        git remote rm origin
-        git remote add origin git@github.com:test/myblog.git这是ssh的地址
+
+
+        部署Iterator接口：
+            拿一个数组举例如var arr = [1,2,3,4];
+            let iterator = arr[Symbol.iterator]();
+            console.log(iterator.next());  //{ value: 1, done: false }
+            console.log(iterator.next());  //{ value: 2, done: false }
+            console.log(iterator.next());  //{ value: 3, done: false }
+            console.log(iterator.next());  //{ value: 4, done: false }
+            console.log(iterator.next());  //{ value: undefined, done: true } 
+        至于对象没有布置iterator接口的原因是因为数组，Map等结构中的成员都是有顺序的，即都是线性的结构，而对象，各成员并没有一
+        个确定的顺序，所以遍历时先遍历谁后遍历谁并不确定。所以，给一个对象部署iterator接口，其实就是对该对象做一种线性转换。如
+        果你有这种需要，就需要手动给你的对象部署iterator接口如：
+            let obj = {
+                data: [ 'hello', 'world' ],
+                [Symbol.iterator]() {
+                    const self = this;
+                    let index = 0;
+                    return {
+                        next() {
+                            if (index < self.data.length) {
+                                return {
+                                    value: self.data[index++],
+                                    done: false
+                                };
+                            } else {
+                                return { value: undefined, done: true };
+                            }
+                        }
+                    };
+                }
+            }; 
+        可以看到，Symbol.iterator会返回一个对象，这就是一个遍历器对象，而作为遍历器对象，其必须具备的特征就是必须具备next()方法
+        还有2个可选方法。return()和throw()。当一个解构在遍历的时候异常提前退出(比如break,continue或者出错)的时候，就会调用return
+        方法，其次，return方法必须返回一个对象。至于throw方法，则是用于抛出错误，Generator.prototype.throw这里不展开讲了，感兴趣
+        的可以搜索一下。所以上述方法可以简写为Generator函数：
+            var yieldIterator = {};
+            yieldIterator[Symbol.iterator] = function* () {
+                yield 1;
+                yield 2;
+                yield 3;
+            };
+
+            [...yieldIterator] // [1, 2, 3] 
+
+
+
+        至于可以使用Array.from转换成数组的类数组对象，部署iterator有一种很简单的方法，即直接使用数组的[Symbol.iterator]接口
+        fakeArray.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+
+
+
+        for in 和 for of的区别：
+        let aArray = ['a',123,{a:'1',b:'2'}]
+        for(let index in aArray){
+            console.log(index);    //输出字符串0 1 2
+        }
+        for(var value of aArray){
+            console.log(value);    //直接输出值
+        }
+        假设我们往数组添加一个属性aArray.name = 'demo'
+        作用于数组的for-in循环除了遍历数组元素以外,还会遍历自定义属性所以还会输出name这个自定义属性
+        for...of循环不会循环对象的key，只会循环出数组的value，因此for...of输出和上面一样
+        如果实在想用for...of来遍历普通对象的属性的话，可以通过和Object.keys()搭配使用:
+            var student={
+                name:'wujunchuan',
+                age:22,
+                locate:{
+                country:'china',
+                city:'xiamen',
+                school:'XMUT'
+                }
+            }
+            for(var key of Object.keys(student)){
+                //使用Object.keys()方法获取对象key的数组
+                console.log(key+": "+student[key]);
+            }
            </pre>
+
+           <div class="title">新增的数据结构map和set</div>
+           <pre>
+        数据结构Set类似于数组，但是成员的值都是唯一的,没有重复的值;Set函数可以接受一个数组（或类似数组的对象）作为参数来初始化
+            var set = new Set([1, 2, 3, 4, 4]);
+            [...set]
+            // [1, 2, 3, 4]
+            var s = new Set();
+            [2, 3, 5, 4, 5, 2, 2].map(x => s.add(x));
+            for (let i of s) {
+              console.log(i);
+            } 
+        在Set内部，两个NaN是相等。两个对象总是不相等的。可以用length来检测,四个操作方法：
+            add(value)：添加某个值，返回Set结构本身。
+            delete(value)：删除某个值，返回一个布尔值，表示删除是否成功。
+            has(value)：返回一个布尔值，表示该值是否为Set的成员。
+            clear()：清除所有成员，没有返回值 
+
+
+        Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。它类似于对象
+        也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键 
+            var m = new Map();
+            var o = {p: "Hello World"};
+            m.set(o, "content")
+            m.get(o) // "content"
+            m.has(o) // true
+            m.delete(o) // true
+            m.has(o) // false 
+        只有对同一个对象的引用，Map结构才将其视为同一个键,下面代码的set和get方法，表面是针对同一个键，但实际上这是两个值，内存
+        地址是不一样的，因此get方法无法读取该键，返回undefined
+            var map = new Map();
+            map.set(['a'], 555);
+            map.get(['a']) // undefined 
+        如果Map的键是一个简单类型的值（数字、字符串、布尔值），则只要两个值严格相等，Map将其视为一个键，包括0和-0。另外，虽然
+        NaN不严格相等于自身，但Map将其视为同一个键。
+        实例属性和方法：size、set、get、has、delete、clear
+        遍历方法：keys（）、values（）、entries（）、forEach（）
+           </pre>
+           <div class="explain">感兴趣的还可以去看看WeakSet和WeakMap数据结构</div>
+
+           <div class="title">箭头函数</div>
+           <pre>
+        function Timer() {
+          this.s1 = 0;
+          this.s2 = 0;
+          setInterval(() => this.s1++, 1000);
+          setInterval(function () {
+            this.s2++;
+          }, 1000);
+        }
+        var timer = new Timer();
+        setTimeout(() => console.log('s1: ', timer.s1), 3100);      // s1: 3
+        setTimeout(() => console.log('s2: ', timer.s2), 3100);      // s2: 0
+        面代码中，Timer函数内部设置了两个定时器，分别使用了箭头函数和普通函数。前者的this绑定定义时所在的作用域（即Timer函数）
+        后者的this指向运行时所在的作用域（即全局对象）。所以，3100 毫秒之后，timer.s1被更新了 3 次，而timer.s2一次都没更新
+
+        箭头函数可以让this指向固定化，这种特性很有利于封装回调函数。下面是一个例子，DOM 事件的回调函数封装在一个对象里面
+        var handler = {
+          id: '123456',
+          init: function() {
+            document.addEventListener('click',
+              event => this.doSomething(event.type), false);
+          },
+          doSomething: function(type) {
+            console.log('Handling ' + type  + ' for ' + this.id);
+          }
+        };
+        上面代码的init方法中，使用了箭头函数，这导致这个箭头函数里面的this，总是指向handler对象。否则，回调函数运行时
+        this.doSomething这一行会报错，因为此时this指向document对象 
+
+        this指向的固定化，并不是因为箭头函数内部有绑定this的机制，实际原因是箭头函数根本没有自己的this，导致内部的this就
+        是外层代码块的this。正是因为它没有this，所以也就不能用作构造函数,除了this，以下三个变量在箭头函数之中也是不存在的
+        指向外层函数的对应变量：arguments、super、new.target,其实箭头函数转成 ES5 的代码如下:
+        // ES6
+        function foo() {
+          setTimeout(() => {
+            console.log('id:', this.id);
+          }, 100);
+        }
+        // ES5
+        function foo() {
+          var _this = this;
+          setTimeout(function () {
+            console.log('id:', _this.id);
+          }, 100);
+        }
+        由于箭头函数没有自己的this，所以用call()、apply()、bind()这些方法去改变this的指向是无效的      
+           </pre>
+
+           <div class="title">async函数和Generator函数的区别</div>
+           <pre>
+        （1）内置执行器。
+        Generator 函数的执行必须靠执行器，所以才有了co模块，而async函数自带执行器。也就是说，async函数的执行，与
+        普通函数一模一样，只要一行如asyncReadFile();这完全不像 Generator 函数，需要调用next方法，或者用co模块，才
+        能真正执行，得到最后结果。
+
+        （2）更好的语义。
+        async和await比起星号和yield语义更清楚。async表示函数里有异步操作，await表示紧跟在后面的表达式需要等待结果
+
+        （3）更广的适用性。
+        co模块约定，yield命令后面只能是 Thunk 函数或 Promise 对象，而async函数的await命令后面，可以是 Promise 对
+        象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+
+        （4）返回值是 Promise。
+        async函数的返回值是Promise对象,这比Generator函数的返回值是Iterator对象方便多。你能用then方法指定下一步操作
+        进一步说，async函数完全可以看作多个异步操作，包装成的一个 Promise 对象，而await命令就是内部then命令的语法糖。       
+           </pre>
+           <div class="explain">async函数其实就是Generator函数的语法糖</div>
        </div>
   </body>
 </html>
