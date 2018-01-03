@@ -530,6 +530,10 @@
                  (function() { console.log("Foo!"); }());  
                  如果没有这个加号的话，解析器会认为function是一个函数声明的开始，而后面（）将会导致语法错误。在
                  function前面加上+号时，就变成了一个函数表达式，而函数表达式后面又添加了一个()就变成了一个立即执行的函数了
+
+                 12.实现深复制我们可以使用jq的extend方法也可以：
+                  const obj1 = JSON.parse(JSON.stringify(obj));    
+                  就是将一个对象转成json字符串，然后又将字符串转回对象,注意这里obj必须是标准的json对象否则报错
             </pre>
 
             <div class="title">h5使用formdata实现文件上传，主流使用flash开发的swfupload插件</div>
