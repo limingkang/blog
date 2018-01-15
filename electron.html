@@ -14,18 +14,18 @@
       <div class="big_container">
            <div class="title">electron简单介绍</div>
            <pre>
-        1.即使在移动端和云端大行其道而，桌面端日渐落末的现在，我的心中仍然为桌面应用留有一个特殊的位置。和 Web 应用比起来桌面应用的优点还
-        是很多的：只要把它们放在开始菜单栏或者 dock 上，你就能随时打开它们；还可以通过 alt-tab 或者 cmd-tab 切换应用；和操作系统之间的
-        交互更良好（快捷键，通知栏等），而且electron写出的应用太大，因为要在内部配置node等环境
+    1.即使在移动端和云端大行其道而，桌面端日渐落末的现在，我的心中仍然为桌面应用留有一个特殊的位置。和 Web 应用比起来桌面应用的优点还
+    是很多的：只要把它们放在开始菜单栏或者 dock 上，你就能随时打开它们；还可以通过 alt-tab 或者 cmd-tab 切换应用；和操作系统之间的
+    交互更良好（快捷键，通知栏等），而且electron写出的应用太大，因为要在内部配置node等环境
 
-        2.Electron 提供了一个实时构建桌面应用的纯JavaScript环境。Electron可以获取到你定义在package.json中main文件内容,然后执行它。
-        不过这个文件（通常我们称之为main.js）,可以创建一个应用窗口,这个应用窗口包含一个渲染好的web界面，还可以和系统原生的 GUI 交互。
-	具体来说，就是当你启动了一个Electron应用，就有一个主进程（main process）被创建了。这条进程将负责创建出应用的GUI（也就是应用
-	的窗口），并处理用户与这个GUI之间的交互。但直接启动main.js是无法显示应用窗口的，在 main.js 中通过调用BrowserWindow模块才能将
-	使用应用窗口。然后每个浏览器窗口将执行它们各自的渲染器进程（ renderer process ）。渲染器进程将会处理一个真正的 web 页面
-	（HTML + CSS + JavaScript），将页面渲染到窗口中。鉴于Electron使用的是基于Chrominum的浏览器内核，你就不太需要考虑兼容的问题
+    2.Electron 提供了一个实时构建桌面应用的纯JavaScript环境。Electron可以获取到你定义在package.json中main文件内容,然后执行它。
+    不过这个文件（通常我们称之为main.js）,可以创建一个应用窗口,这个应用窗口包含一个渲染好的web界面，还可以和系统原生的 GUI 交互。
+    具体来说，就是当你启动了一个Electron应用，就有一个主进程（main process）被创建了。这条进程将负责创建出应用的GUI（也就是应用
+    的窗口），并处理用户与这个GUI之间的交互。但直接启动main.js是无法显示应用窗口的，在 main.js 中通过调用BrowserWindow模块才能将
+    使用应用窗口。然后每个浏览器窗口将执行它们各自的渲染器进程（ renderer process ）。渲染器进程将会处理一个真正的 web 页面
+    （HTML + CSS + JavaScript），将页面渲染到窗口中。鉴于Electron使用的是基于Chrominum的浏览器内核，你就不太需要考虑兼容的问题
            </pre>
-           <div class="explain"><a href="https://github.com/electron/electron/tree/master/docs-translations/zh-CN">API配置地址</a></div>
+           <div class="explain"><a href="https://electronjs.org/docs">配置地址</a></div>
 
            <div class="title">使用electron创建一个简单应用</div>
            <pre>
@@ -40,7 +40,7 @@
 			├── main.js
 			└── index.html
 		index.html就是正常的html页面就行
-		package.json 的格式与Node的模块格式是一致的，其中 main 字段指定的脚本就是你应用的启动脚本，该脚本将运行在主进程中。
+		package.json 的格式与Node的模块格式是一致的，其中main字段指定的脚本就是你应用的启动脚本，该脚本将运行在主进程中
 		你的package.json 也许看上去像下面这个例子：
 			{
 			  "name"    : "your-app",
@@ -106,12 +106,11 @@
 		    如果你只是在本地安装了该模块，那么运行：
 		   		./node_modules/.bin/electron .
 
-		   	或者手动下载Electron二进制包
-		   	如果手动下载了Electron二进制包,你可以通过执行其中包含的二进制文件来直接执行你的应用,或者直接打开electron.exe
-		   	文件之后将你的应用拖拽进去即可
-		   	Windows:  $ .\electron\electron.exe your-app\
-		   	Linux: 	  $ ./electron/electron your-app/
-		   	OS X：    $ ./Electron.app/Contents/MacOS/Electron your-app/
+	   	    或者手动下载Electron二进制包,下载好之后你可以通过执行其中包含的二进制文件来直接执行你的应用,或
+	   	    者直接打开electron.exe文件之后将你的应用拖拽进去即可
+	   	    Windows:  $ .\electron\electron.exe your-app\
+	   	    Linux:    $ ./electron/electron your-app/
+	   	    OS X:     $ ./Electron.app/Contents/MacOS/Electron your-app/
            </pre>
            <div class="explain">
                具体在应用的时候最好再建立一个inject.js文件，在主进程中通过win.webContents.executeJavaScript()方法来插入js文件，在该js文
