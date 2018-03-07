@@ -403,6 +403,42 @@
 			</pre>
 			<div class="explain">Expires 表示存在时间，允许客户端在这个时间之前不去检查（发请求），等同max-age的 效果。但是如果同时存在，则被Cache-Control的max-age覆盖</div>
 
+			<div class="title">异步对象promise和setTimeout的区别</div>
+			<pre>
+	setTimeout(function(){
+	  console.log(4)
+	},0); 
+	new Promise(function(resolve){
+	   console.log(1)
+	   for( var i=0 ; i<10000 ; i++ ){ 
+	     i==9999 && resolve() 
+	   } 
+	   console.log(2) 
+	}).then(function(){ 
+	   console.log(5) 
+	}); 
+	 console.log(3);
+	输出：1 2 3 5 4
+	有一个事件循环，但是任务队列可以有多个。整个script代码，放在了macrotask queue中，setTimeout也放入macrotask queue。
+	但是，promise.then放到了另一个任务队列microtask queue中。这两个任务队列执行顺序如下，取1个macrotask queue中的task，
+	执行之。然后把所有microtask queue顺序执行完，再取macrotask queue中的下一个任务。
+	new Promise是同步的，会马上执行function参数中的事情。等function参数执行完，new Promise才返回一个promise实例对象
+
+	setTimeout(function(){
+		  console.log(4)
+		},0); 
+		new Promise(function(resolve){
+		   console.log(1)
+		   setTimeout(function(){resolve()},2000)
+		   console.log(2) 
+		}).then(function(){ 
+		   console.log(5) 
+		}); 
+		console.log(3);
+		输出：1 2 3 4 5
+	注意：同一个任务队列中的任务必须按先进先出的顺序执行
+			</pre>
+
        </div>
   </body>
 </html>

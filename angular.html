@@ -560,6 +560,8 @@
                 import { enableProdMode } from '@angular/core';
                 enableProdMode();  这方法会调用生产模式就不会再报错了，但是不建议用
         我们可以在要改值的地方使用一个异步即可使用observable订阅使用async或者settimeout等能造成异步的东西即可达到效果
+
+        9.当组件间共享数据，且嵌套层数过多的时候可以使用service的EventEmitter来做组件之间的沟通
             </pre>
 
             <div class="title">依赖注入@Injectable()介绍</div>
