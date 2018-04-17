@@ -150,6 +150,19 @@
         :wq 保存并退出
         :q! 强制退出    
            </pre>
+
+           <div class="title">指定以前的commit的进行修改之后提交并替换该commit</div>
+           <pre>
+        1.将当前分支无关的工作状态进行暂存 git stash
+        2.git rebase -i 你要修改的那个commit的下一个commitID
+        3.此时会列出你的commit,将你要修改的首行的pick全部改成edit(下面会有提示可以改成不同的标示会有不同的功能)
+        4.解决你的bug之后git add将文件添加到暂存区
+        5.git commit --amend 追加改动到提交
+        6.git rebase --continue 移动head到最新的commit
+        7.如果将上面多个commit改动了做了这些之后就进入下一个要修改的commit，再次执行4-5-6
+        8.恢复之前的工作状态git stash pop     
+           </pre>
+
        </div>
   </body>
 </html>
