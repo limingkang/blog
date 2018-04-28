@@ -26,15 +26,6 @@
 
         git reflog                            查看命令历史，以便确定要回到未来的哪个版本 
 
-        git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本
-
-        git checkout -- file                  直接丢弃工作区的修改,命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令
-        这里有两种情况：
-            一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
-            一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
-
-        git reset HEAD filename               直接丢弃暂存区的修改
-
         git rm filename                       用于删除一个文件,注意这个删除的修改已经提到暂存区了，之后直接git commit就行了
 
         git remote add origin git@github.com:limingkang/blog.git      关联远程库    
@@ -49,7 +40,7 @@
 
         git branch "branchname"               创建分支
 
-        git checkout "branchname"             切换分支
+        git checkout "branchname/tagname"     切换分支或标签
 
         git checkout -b "branchname"          创建+切换分支
 
@@ -94,9 +85,53 @@
 
         git push origin :refs/tags/tagname    可以删除一个远程标签
 
+        git pull [options] <远程主机名> <远程分支名>:<本地分支名>
+
         git config --global alias.co checkout 配置命令别名,若想删除某个别名,在仓库的Git配置文件.git/config文件中删除该行就行
            </pre>
            <div class="explain"><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001373962845513aefd77a99f4145f0a2c7a7ca057e7570000">git学习地址</a></div>
+
+           <div class="title">指定以前的commit的进行修改之后提交并替换该commit</div>
+           <pre>
+        1.将当前分支无关的工作状态进行暂存 git stash
+        2.git rebase -i 你要修改的那个commit的下一个commitID
+        3.此时会列出你的commit,将你要修改的首行的pick全部改成edit(下面会有提示可以改成不同的标示会有不同的功能)
+        4.解决你的bug之后git add将文件添加到暂存区
+        5.git commit --amend 追加改动到提交
+        6.git rebase --continue 移动head到最新的commit
+        7.如果将上面多个commit改动了做了这些之后就进入下一个要修改的commit，再次执行4-5-6
+        8.恢复之前的工作状态git stash pop     
+           </pre>
+
+           <div class="title">git撤销修改的操作</div>
+           <pre>
+        改变了工作区但是没有添加到暂存区时：
+          git checkout -- filename/.            直接丢弃工作区的修改,命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令
+          这里有两种情况：
+              一种是文件自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+              一种是文件已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
+        
+        改变之后还添加到了暂存区，想丢弃暂存区：
+          git reset HEAD filename/.             直接丢弃暂存区的修改 
+
+
+        已经commit到了版本库时候，使用版本回退：
+          git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本    
+           </pre>
+
+           <div class="title">git比较好用的功能</div>
+           <pre>
+        1.git pull --rebase
+        用这个指令在拉取代码的时候不会产生Merge remote-tracking branch ‘origin/master’这种提交信息
+
+        2.修复而非新建提交git commit --amend
+
+        3.git cherry-pick commitId 可以选择某一个分支中的一个或几个commit(s)来进行操作
+
+        4.git merge branchname 和git rebase branchname都是把当前分支合并到另一个分支，但是使用rebase
+        合并的话不会产生另一条分支线，而且在任何时候，你可以用--abort参数来终止rebase的行动，并且"mywork" 分支会回到rebase开始前的状态git rebase --abort    
+           </pre>
+
 
            <div class="title">windows下面直接使用torrentgit更好用</div>
            <pre>
@@ -151,17 +186,6 @@
         :q! 强制退出    
            </pre>
 
-           <div class="title">指定以前的commit的进行修改之后提交并替换该commit</div>
-           <pre>
-        1.将当前分支无关的工作状态进行暂存 git stash
-        2.git rebase -i 你要修改的那个commit的下一个commitID
-        3.此时会列出你的commit,将你要修改的首行的pick全部改成edit(下面会有提示可以改成不同的标示会有不同的功能)
-        4.解决你的bug之后git add将文件添加到暂存区
-        5.git commit --amend 追加改动到提交
-        6.git rebase --continue 移动head到最新的commit
-        7.如果将上面多个commit改动了做了这些之后就进入下一个要修改的commit，再次执行4-5-6
-        8.恢复之前的工作状态git stash pop     
-           </pre>
 
        </div>
   </body>
