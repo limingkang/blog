@@ -22,13 +22,13 @@
 
         git status                            表示工作区的状态，如果git status告诉你有文件被修改过，用git diff可以查看修改内容
 
-        git log --pretty=oneline              也可不加参数就是比较多，这个命令可以查看提交历史，以便确定要回退到哪个版本  
+        git log --pretty=oneline              也可不加参数就是比较多，这个命令可以查看提交历史，以便确定要回退到哪个版本
 
-        git reflog                            查看命令历史，以便确定要回到未来的哪个版本 
+        git reflog                            查看命令历史，以便确定要回到未来的哪个版本
 
         git rm filename                       用于删除一个文件,注意这个删除的修改已经提到暂存区了，之后直接git commit就行了
 
-        git remote add origin git@github.com:limingkang/blog.git      关联远程库    
+        git remote add origin git@github.com:limingkang/blog.git      关联远程库
 
         git remote -v                         列出所有远程库地址
 
@@ -100,7 +100,7 @@
         5.git commit --amend 追加改动到提交
         6.git rebase --continue 移动head到最新的commit
         7.如果将上面多个commit改动了做了这些之后就进入下一个要修改的commit，再次执行4-5-6
-        8.恢复之前的工作状态git stash pop     
+        8.恢复之前的工作状态git stash pop
            </pre>
 
            <div class="title">git撤销修改的操作</div>
@@ -110,13 +110,13 @@
           这里有两种情况：
               一种是文件自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
               一种是文件已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
-        
+
         改变之后还添加到了暂存区，想丢弃暂存区：
-          git reset HEAD filename/.             直接丢弃暂存区的修改 
+          git reset HEAD filename/.             直接丢弃暂存区的修改
 
 
         已经commit到了版本库时候，使用版本回退：
-          git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本    
+          git reset --hard HEAD~1               回到上一个版本也可以将HEAD~1改成相应版本id前几位，从而确定回到那个版本
            </pre>
 
            <div class="title">git比较好用的功能</div>
@@ -129,7 +129,7 @@
         3.git cherry-pick commitId 可以选择某一个分支中的一个或几个commit(s)来进行操作
 
         4.git merge branchname 和git rebase branchname都是把当前分支合并到另一个分支，但是使用rebase
-        合并的话不会产生另一条分支线，而且在任何时候，你可以用--abort参数来终止rebase的行动，并且"mywork" 分支会回到rebase开始前的状态git rebase --abort    
+        合并的话不会产生另一条分支线，而且在任何时候，你可以用--abort参数来终止rebase的行动，并且"mywork" 分支会回到rebase开始前的状态git rebase --abort
            </pre>
 
 
@@ -154,7 +154,7 @@
 
         如果不行的话，试试这个地址：http://idea.imsxm.com/
            </pre>
-         
+
            <div class="title">MAC上使用秘钥文件登录git可视化操作工具sourcetree的操作步骤</div>
            <pre>
         1、打开控制台：ssh-keygen -t rsa -C "GIT上的账号邮箱"
@@ -163,13 +163,13 @@
         4、确认密码
         5、输入命令 cd .ssh
         6、输入命令 cat id_rsa.pub
-        7、复制出现的代码，打开GIT平台，找到SSH KEY管理菜单，在对应输入框里输入刚复制的代码，保存   
+        7、复制出现的代码，打开GIT平台，找到SSH KEY管理菜单，在对应输入框里输入刚复制的代码，保存
            </pre>
 
            <div class="title">mac上git alias配置</div>
            <pre>
         git config --global alias.gpush '!sh -c "git push origin HEAD:refs/for/$1%r=$2@hellobike.com"'
-        此时git gpush mybranch limingkang  相当于git push origin mybranch limingkang@hellobike.com     
+        此时git gpush mybranch limingkang  相当于git push origin mybranch limingkang@hellobike.com
            </pre>
 
            <div class="title">vim快捷键和常用unix命令</div>
@@ -183,7 +183,7 @@
         :w  保存
         :q  退出
         :wq 保存并退出
-        :q! 强制退出    
+        :q! 强制退出
            </pre>
 
 
