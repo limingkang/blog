@@ -22,6 +22,7 @@
   <body>
        <div class="container">
            <a href="./h5_drag.html">svg动态加载logo</a>
+           <a href="./iqiyi.html">各主流网站vip视频解析</a>
            <a href="./scatter.html">散列图片画廊</a>
            <a href="./tetris.html">俄罗斯方块小游戏</a>
            <a href="./edit_word.html">实现类似word的文字编辑器</a>
@@ -59,21 +60,21 @@
                          { name: "react"    }, { name: "vue"   },
                          { name: "node.js"   }, { name: "bom"    },
                          { name: "dom"    } ];
-                        
+
            var edges = [  { source : 0  , target: 1 } , { source : 0  , target: 2 } ,
                           { source : 0  , target: 3 } , { source : 1  , target: 4 } ,
-                          { source : 1  , target: 5 } , { source : 1  , target: 6 }  ];  
-           //  数字代表节点两侧，0表示上面数组第一元素，以此类推 
-           
+                          { source : 1  , target: 5 } , { source : 1  , target: 6 }  ];
+           //  数字代表节点两侧，0表示上面数组第一元素，以此类推
+
            var width = 400;
            var height = 400;
-           
-           
+
+
            var svg = d3.select("#game")
                        .append("svg")
                        .attr("width",width)
                        .attr("height",height);
-           
+
            var force = d3.layout.force()
                    .nodes(nodes)       //指定节点数组
                    .links(edges)       //指定连线数组
@@ -88,18 +89,18 @@
 
            //节点被转化的值的介绍   index：节点的索引号,  px和py：节点上一个时刻的坐标，x和y：节点的当前坐标，weight：节点的权重
            // 连线被转化的值，其中包含着上个数组
-           
-           //添加连线      
+
+           //添加连线
            var svg_edges = svg.selectAll("line")
                                .data(edges)
                                .enter()
                                .append("line")
                                .style("stroke","#ccc")
                                .style("stroke-width",1);
-           
+
            var color = d3.scale.category20();
-                   
-           //添加节点          
+
+           //添加节点
            var svg_nodes = svg.selectAll("circle")
                                .data(nodes)
                                .enter()
@@ -120,7 +121,7 @@
                                .attr("dy", 8)
                                .text(function(d){
                                    return d.name;
-                               });                   
+                               });
            force.on("tick", function(){    //对于每一个时间间隔
            // console.log(3);
                 //更新连线坐标
@@ -128,7 +129,7 @@
                        .attr("y1",function(d){ return d.source.y; })
                        .attr("x2",function(d){ return d.target.x; })
                        .attr("y2",function(d){ return d.target.y; });
-                
+
                 //更新节点坐标
                 svg_nodes.attr("cx",function(d){ return d.x; })
                        .attr("cy",function(d){ return d.y; });
