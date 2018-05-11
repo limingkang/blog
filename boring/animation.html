@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.div
+{
+width:100px;
+height:100px;
+background:red;
+position:relative;
+/*animation:mymove 2s linear;*/
+
+top:0;
+/* Safari and Chrome */
+/*-webkit-animation:mymove 2s linear;*/
+/*-webkit-animation-iteration-count:3;*/
+}
+.transition {
+  transition: top 2s linear;
+-moz-transition: top 2s linear; /* Firefox 4 */
+-webkit-transition: top 2s linear; /* Safari 和 Chrome */
+}
+
+@keyframes mymove
+{
+from {top:0px;}
+to {top:200px;}
+}
+
+@-webkit-keyframes mymove /* Safari and Chrome */
+{
+from {top:0px;}
+to {top:200px;}
+}
+.second {
+    width:100px;
+height:100px;
+top: 200px;
+background:green;
+position:relative;
+transition: top .2s linear;
+-moz-transition: top .2s linear; /* Firefox 4 */
+-webkit-transition: top .2s linear; /* Safari 和 Chrome */
+}
+</style>
+</head>
+<body>
+
+<p><strong>注释：</strong>Internet Explorer 9 以及更早的版本不支持 animation-iteration-count 属性。</p>
+
+<div class="div transition"></div>
+<div class="second"></div>
+<script type="text/javascript">
+    function whichTransitionEvent(){
+   var t,
+       el = document.createElement('surface'),
+       transitions = {
+         'transition':'transitionend',
+         'OTransition':'oTransitionEnd',
+         'MozTransition':'transitionend',
+         'WebkitTransition':'webkitTransitionEnd'
+       }
+
+       for(t in transitions){
+           if( el.style[t] !== undefined ){
+               return transitions[t];
+           }
+       }
+   }
+    var element= document.getElementsByTagName('div')[0];
+    var element1= document.getElementsByTagName('div')[1];
+    var control=0;
+    element.addEventListener('animationiteration', function(){
+        console.log(222);
+        a();
+    });
+    whichTransitionEvent() && element.addEventListener('transitionend', function(){
+      // setTimeout(function(){
+        // element.style.top = '10px';
+        // console.log(element);
+        element.className='div';
+        element.style.top='0px';
+        if (control>=5) {
+          return;
+        }
+        control++;
+        // console.log(element);
+        // window.b=element.offsetWidth;
+        setTimeout(function(){
+          element.className='div transition';
+        // window.b=element.offsetWidth;
+        element.style.top='200px';
+
+        console.log(333);
+      },0);
+        a();
+      // },0)
+
+    });
+    var num=210;
+    setTimeout(function(){
+        element.style.top='200px';
+    },0)
+
+    function a(){
+        num+=10;
+        element1.style.top=num+'px';
+    }
+</script>
+</body>
+</html>
+
