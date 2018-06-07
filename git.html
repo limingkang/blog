@@ -89,7 +89,10 @@
 
         git config --global alias.co checkout 配置命令别名,若想删除某个别名,在仓库的Git配置文件.git/config文件中删除该行就行
            </pre>
-           <div class="explain"><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001373962845513aefd77a99f4145f0a2c7a7ca057e7570000">git学习地址</a></div>
+           <div class="explain">
+            <a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001373962845513aefd77a99f4145f0a2c7a7ca057e7570000">git学习地址</a>
+            <a href="https://learngitbranching.js.org/">git可视化学习</a>
+           </div>
 
            <div class="title">指定以前的commit的进行修改之后提交并替换该commit</div>
            <pre>
@@ -132,6 +135,21 @@
         合并的话不会产生另一条分支线，而且在任何时候，你可以用--abort参数来终止rebase的行动，并且"mywork" 分支会回到rebase开始前的状态git rebase --abort
            </pre>
 
+           <div class="title">分离头指针</div>
+           <pre>
+        1. git checkout HEAD^ 指的是到上一次提交，假如现在提交来自于提交一和提交二的两个提交的合并那么就到提交一，如果
+        git checkout HEAD^2就到提交二，如果现在的提交不是一次合并产生的提交那么就是直接头指针指到上一次提交
+        2. git checkout HEAD~2 指的是父提交的父提交，假如现在提交来自于提交一和提交二的两个提交的合并那么就到提交一的上一次提交
+        3. 通常，我们工作在某一个分支上，比如 master 分支。这个时候 master 指针和 HEAD 指针是一起前进的，每做一次提交，这两个指针就会
+        一起向前挪一步。但是在某种情况下（例如 checkout 了某个具体的 commit），master 指针 和 HEAD 指针这种「绑定」的状态就被打破了，
+        变成了分离头指针状态。master 和 HEAD 指针看上去指在同一个 commit 上，但其实已经处在分离头指针状态。当我在此时又做了一次新的提
+        交时，HEAD 指针跑到 master 指针前面去了。如果我直接检出 master 分支，HEAD 指针就会回退一格到 master 指针的位置，而最新的那次
+        提交就变成了孤立的提交，没有任何分支能追踪到它，刚才的活白干了。解决办法：
+          # 强制将 master 分支指向当前头指针的位置
+          $ git branch -f master HEAD
+          # 检出 master 分支
+          $ git checkout master
+           </pre>
 
            <div class="title">windows下面直接使用torrentgit更好用</div>
            <pre>

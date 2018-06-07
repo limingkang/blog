@@ -15,9 +15,9 @@
             <div class="title">清除浮动</div>
             <pre>
         1.最直接的方式，直接给父级元素设置高度，缺点就是高度被写死了
-        2.IE8以上和非IE浏览器才支持:after，zoom(IE转有属性)可解决ie6,ie7浮动问题  
-        	.clearfloat:after{display:block;clear:both;content:"";visibility:hidden;height:0} 
-        	.clearfloat{zoom:1}    
+        2.IE8以上和非IE浏览器才支持:after，zoom(IE转有属性)可解决ie6,ie7浮动问题
+        	.clearfloat:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+        	.clearfloat{zoom:1}
         3.给父元素设置overflow:hidden因为触发了BFC
         	BFC 全称是块级排版上下文，用于对块级元素排版，默认情况下只有根元素（body)一个块级上下文，但是如果一个块级元素 设置了
         	float:left，overflow:hidden或position:absolute样式，就会为这个块级元素生成一个独立的块圾上下文,像在window全局作用
@@ -31,12 +31,12 @@
             <pre>
         div{
              border:1px solid #000;
-        }    
+        }
         @media (-webkit-min-device-pixel-ratio: 2) {
             div{
                   border:0.5px solid #000;
             }
-        }  
+        }
         但在ios7以下，android等其他系统里，0.5px会被显示为0px，所以需要写hack来兼容旧版本的系统
 
         如果只是画一条边框的话可以使用
@@ -46,7 +46,7 @@
         	        -webkit-transform-origin:0 0;
         	        overflow: hidden;
         	        background: #000;
-        	} 	
+        	}
 
         使用 background-image 实现1px有两种方式: 渐变 linear-gradient 或直接使用图片(base64)
             </pre>
@@ -63,26 +63,26 @@
 		                return _this.apply(this instanceof  fNOP ?　this : that||window,
 		                    args.concat(slice.apply(arguments,[0]))
 		                )
-		            }    
+		            }
 		        fNOP.prototype = _this.prototype;
-		      
-		        bound.prototype = new fNOP();
-		      
-		        return bound;
-		    }	
 
-		var test = function(a,b){    
-		console.log('作用域绑定 '+ this.value)    
-		console.log('testBind参数传递 '+ a.value2)    
+		        bound.prototype = new fNOP();
+
+		        return bound;
+		    }
+
+		var test = function(a,b){
+		console.log('作用域绑定 '+ this.value)
+		console.log('testBind参数传递 '+ a.value2)
 		console.log('调用参数传递 ' + b) }
 		var obj = {     value:'ok' }
-		var fun_new = test.testBind(obj,{value2:'also ok'}) 
+		var fun_new = test.testBind(obj,{value2:'also ok'})
 		fun_new ('hello bind')
 		// 作用域绑定 ok
 		// testBind参数传递 also ok
 		// 调用参数传递  hello bind
 
-		var new_test=new fun_new('hello')  
+		var new_test=new fun_new('hello')
 		绑定过后的函数被new实例化之后，需要继承原函数的原型链方法，且绑定过程中提供的this被忽略(继承原函数的this对象)，
 		但是参数还是会可以传递使用
 			</pre>
@@ -91,14 +91,14 @@
 			<pre>
 	<textarea>
 	html结构：<input type="file" id="photo" />
-	</textarea>	
+	</textarea>
 	var photo = $('#photo');
 	//检测是否支持canvas
 	function isCanvasSupported(){
 	    var elem = document.createElement('canvas');
 	    return !!(elem.getContext && elem.getContext('2d'));
 	}
-	//选择图片的时候触发的事件 
+	//选择图片的时候触发的事件
 	photo.on('change', function(event){
 	    if(!canvasSupported){
 	        return;
@@ -114,35 +114,35 @@
 	　　　　　   }
 	　　　　　});
 	　　　});
-	});	 
+	});
 	function compress(event, callback){
 	    var file = event.currentTarget.files[0];
 	    var reader = new FileReader();
 	 	//成功读取之后的回调
-	    reader.onload = function (e) {	 
+	    reader.onload = function (e) {
 	        var image = $(<span>'<</span><span>img</span><span>/>'</span>);
 	        image.on('load', function () {
 	             var square = 700;
 	             var canvas = document.createElement('canvas');
-	 
+
 	             canvas.width = square;
 	             canvas.height = square;
-	 
+
 	             var context = canvas.getContext('2d');
 	             context.clearRect(0, 0, square, square);
 	             var imageWidth;
 	             var imageHeight;
 	             var offsetX = 0;
 	             var offsetY = 0;
-	 
+
 	            if (this.width > this.height) {
 	                  imageWidth = Math.round(square * this.width / this.height);
 	                  imageHeight = square;
 	                 offsetX = - Math.round((imageWidth - square) / 2);
 	           } else {
 	                 imageHeight = Math.round(square * this.height / this.width);
-	                 imageWidth = square; 
-	                 offsetY = - Math.round((imageHeight - square) / 2); 
+	                 imageWidth = square;
+	                 offsetY = - Math.round((imageHeight - square) / 2);
 	           }
 	 			//用canvas绘制出数据
 	            context.drawImage(this, offsetX, offsetY, imageWidth, imageHeight);
@@ -177,17 +177,17 @@
 	    类型统一设成jpeg，而压缩比就自己控制了
 	    二：如果是png转jpg，绘制到canvas上的时候，canvas存在透明区域的话，当转成jpg的时候透明区域会变成黑色，因为 canvas的透明
 	    素默认为rgba(0,0,0,0)，所以转成jpg就变成rgba(0,0,0,1)，就是透明背景会变成了黑色。解决办法就 是绘制之前在canvas上铺一
-	    层白色的底色	
+	    层白色的底色
 			</pre>
 
 			<div class="title">css和js的相互阻塞关系</div>
 			<pre>
 	js的阻塞特性：
 		所有浏览器在下载JS的时候，会阻止一切其他活动，比如其他资源的下载，内容的呈现等等。直到JS下载、解析、执行完毕后才开始继续
-		并行下载其他资源并呈现内容。新一代浏览器都支持并行下载JS，但是JS下载仍然会阻塞其它资源的下载（例如.图片，css文件等）	
+		并行下载其他资源并呈现内容。新一代浏览器都支持并行下载JS，但是JS下载仍然会阻塞其它资源的下载（例如.图片，css文件等）
 	结论：
-		外部样式会阻塞后面内联脚本的执行	
-		外部样式不会阻塞外部脚本的加载，但会阻塞外部脚本的执行	
+		外部样式会阻塞后面内联脚本的执行
+		外部样式不会阻塞外部脚本的加载，但会阻塞外部脚本的执行
 		对于具有async属性的脚本，外部css不会阻塞
 	建议：
 		脚本应该放在外部css的前面，不论脚本是内联还是外部（最好是脚本放在body的最后面），可以的话，外部css最好直接内联到页面
@@ -204,16 +204,16 @@
 	var b = a;
 	a.x = a = {n: 2}
 	console.log(a.x);     //undefined
-	console.log(b.x);     // {n:2}	
+	console.log(b.x);     // {n:2}
 	首先连续赋值语句是遵从从右至左依次赋值的规则
-	我猜测：js内部为了保证赋值语句的正确，会在一条赋值语句执行前，先把所有要赋值的引用地址取出一个副本，再依次赋值	
+	我猜测：js内部为了保证赋值语句的正确，会在一条赋值语句执行前，先把所有要赋值的引用地址取出一个副本，再依次赋值
 	那么可能执行的步骤：
 		1、在执行前，会先将a和a.x中的a的引用地址都取出来，此值他们都指向{n:1}
 		2、在内存中创建一个新对象{n:2}
 		3、执行a={n:2}，将a的引用从指向{n:1}改为指向新的{n:2}
 		4、执行a.x=a，此时a已经指向了新对象，而a.x因为在执行前保留了原引用，所以a.x的a依然指向原先的{n:1}对象，所以给原对象新
 		增一个属性x，内容为{n:2}也就是现在a
-		5、语句执行结束，原对象由{n:1}变成{n:1,x:{n:2}}	
+		5、语句执行结束，原对象由{n:1}变成{n:1,x:{n:2}}
 
 	var a=123;
 	a.obj="asdfadfs";
@@ -230,11 +230,11 @@
 			<pre>
 	var obj  = {};
 	obj.__proto__ = Base.prototype;
-	Base.call(obj);		
+	Base.call(obj);
 	第一步，我们创建了一个空对象obj
 	第二步，我们将这个空对象的__proto__成员指向了Base函数对象prototype成员对象
 	第三步，我们将Base函数对象的this指针替换成obj，然后再调用Base函数，于是我们就给obj对象赋值了一个id成员变量，这个成员变量的
-	值是”base”，关于call函数的用法	
+	值是”base”，关于call函数的用法
 			</pre>
 
 			<div class="title">js作用域和作用域链的理解</div>
@@ -249,13 +249,13 @@
 	JS函数作用域是指在函数内声明的所有变量在函数体内始终是可见的，也就是说在函数体内变量声明之前就已经可用了,就是下面这样：
     function func() {
 	    var num;
-        console.log(num);           
-        num = 1;                
-        console.log(num);         
+        console.log(num);
+        num = 1;
+        console.log(num);
     }
 
     注意条件判断中变量也会被提升，因为它不是一个作用域
-    console.log(a);      //undefined  
+    console.log(a);      //undefined
     if ("a" in window) {
       var a="test";
     };
@@ -297,7 +297,7 @@
 			<pre style="overflow-x:hidden;">
 	Native调用Javascript语言:
 		android:webview.loadUrl("javascript:functionName(\"" + argument + "\")");
-		ios:是通过UIWebView组件的stringByEvaluatingJavaScriptFromString方法来实现的，该方法返回js脚本的执行结果	
+		ios:是通过UIWebView组件的stringByEvaluatingJavaScriptFromString方法来实现的，该方法返回js脚本的执行结果
 
 	Javascript调用Native:
 		1.没现成的API可以直接拿来用，需要间接地通过一些方法来实现。UIWebView有个特性：在UIWebView内发起的所有网络请求，都可通过
@@ -308,13 +308,13 @@
 			webView.addJavascriptInterface(pandoInterface, "pando");
 		将java对象pandoInterface生成js对象pando，然后直接window.pando就可以调用pandoInterface对象里面的方法。需要注意的是供
 		js调用的pandoInterface对象里面的java方法需手动加上@JavascriptInterface注解，这个是Google为解决安全问题引入的
-	
+
 	使用注意事项：
 		1.通过修改window.location.href也可以达到发起网络请求的效果，但是有一个问题，如果连续多次修改window.location.href的
 		值，在Native层只能接收到最后一次请求，前面的请求都会被忽略掉。所以JS端发起网络请求的时候，需要使用动态创建iframe标
 		签插入即可，这样就可以避免这个问题
 		2.在项目的实践中，我们逐渐抽象出一些通用的方法，这些方法基本上都是可以满足项目的需求,如：
-			JSBridge.getData()	JSBridge.putData() JSBridge.gotoWebview()		
+			JSBridge.getData()	JSBridge.putData() JSBridge.gotoWebview()
 			</pre>
 
 			<div class="title">http头中常用的参数的记录</div>
@@ -324,20 +324,20 @@
 
 		Accept-Charset	浏览器可以接受的字符编码集。	Accept-Charset: iso-8859-5
 
-		Accept-Encoding	指定浏览器可以支持的web服务器返回内容压缩编码类型。	Accept-Encoding: compress, gzip	
+		Accept-Encoding	指定浏览器可以支持的web服务器返回内容压缩编码类型。	Accept-Encoding: compress, gzip
 
 		Cache-Control	指定请求和响应遵循的缓存机制	Cache-Control: no-cache
 
-		Cookie		HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器。	
+		Cookie		HTTP请求发送时，会把保存在该请求域名下的所有cookie值一起发送给web服务器。
 					Cookie: $Version=1; Skin=new;
 
 		Content-Length	请求的内容长度	Content-Length: 348
 
-		Content-Type	请求的与实体对应的MIME信息		Content-Type: application/x-www-form-urlencoded	
+		Content-Type	请求的与实体对应的MIME信息		Content-Type: application/x-www-form-urlencoded
 
 		Host		指定请求的服务器的域名和端口号	Host: www.zcmhi.com
 
-		If-Modified-Since	如果请求的部分在指定时间之后被修改则请求成功，未被修改则返回304代码	
+		If-Modified-Since	如果请求的部分在指定时间之后被修改则请求成功，未被修改则返回304代码
 					If-Modified-Since: Sat, 29 Oct 2010 19:43:31 GMT
 
 		If-None-Match	如果内容未改变值为false并返回304代码，参数为服务器先前发送的Etag，与服务器的Etag比较判断是否改变
@@ -399,7 +399,7 @@
 		（4） 按刷新按扭
 		　 无论为何值，都会重复访问
 		（5）Cache-control值为“no-cache”时，访问此页面不会在Internet临时文章夹留下页面备份
-		（6）http优化方面最好.去掉Date, Expires而只保留Cache-Control来控制本地缓存			
+		（6）http优化方面最好.去掉Date, Expires而只保留Cache-Control来控制本地缓存
 			</pre>
 			<div class="explain">Expires 表示存在时间，允许客户端在这个时间之前不去检查（发请求），等同max-age的 效果。但是如果同时存在，则被Cache-Control的max-age覆盖</div>
 
@@ -407,16 +407,16 @@
 			<pre>
 	setTimeout(function(){
 	  console.log(4)
-	},0); 
+	},0);
 	new Promise(function(resolve){
 	   console.log(1)
-	   for( var i=0 ; i<10000 ; i++ ){ 
-	     i==9999 && resolve() 
-	   } 
-	   console.log(2) 
-	}).then(function(){ 
-	   console.log(5) 
-	}); 
+	   for( var i=0 ; i<10000 ; i++ ){
+	     i==9999 && resolve()
+	   }
+	   console.log(2)
+	}).then(function(){
+	   console.log(5)
+	});
 	 console.log(3);
 	输出：1 2 3 5 4
 	有一个事件循环，但是任务队列可以有多个。整个script代码，放在了macrotask queue中，setTimeout也放入macrotask queue。
@@ -426,18 +426,75 @@
 
 	setTimeout(function(){
 		  console.log(4)
-		},0); 
+		},0);
 		new Promise(function(resolve){
 		   console.log(1)
 		   setTimeout(function(){resolve()},2000)
-		   console.log(2) 
-		}).then(function(){ 
-		   console.log(5) 
-		}); 
+		   console.log(2)
+		}).then(function(){
+		   console.log(5)
+		});
 		console.log(3);
 		输出：1 2 3 4 5
 	注意：同一个任务队列中的任务必须按先进先出的顺序执行
 			</pre>
+
+			<div class="title">类中super的引用</div>
+			<pre>
+	class A {
+	  constructor() {
+	    this.x = 1;
+	  }
+	  print() {
+	      console.log(this.x)
+	    }
+
+	}
+
+	class B extends A {
+	  constructor() {
+	    super();
+	    this.x = 2;
+	    super.x = 3;
+	    Object.defineProperty(A.prototype, 'x', {
+          set: function(val) {
+            console.log(this, val)
+             //B {x: 2} 3,证明对super的赋值最终作用到了B {x: 2}身上，也就是新生成的实例，this
+          },
+          get: function(){
+          	return this.x;
+          }
+        })
+	    console.log(this.x); // 3
+	  }
+	  m() {
+	      // super.print()//上下两句等价的，所以上面这句隐含转换了this
+	      super.print.call(this)
+	    }
+	}
+
+	let b = new B();
+			</pre>
+
+			<div class="title">异步队列的更新</div>
+			<pre>
+	let x = 0;
+	async function test() {
+	    x+= await 2;
+	    console.log(x);
+	}
+	test();
+	x += 1;
+	console.log(x);
+	执行test函数此时x+=await 2等价于x = x + await Promise.resolve(2)，表达式右边在求值的时候遇到了await，所以
+	这个时候x已经求值了，也就是说上面的函数等价于x = 0 + await Promise.resolve(2)。这里还有一点需要注意的是
+	Promise只有then和catch里面的是真正异步执行的，想new Promise(resolve=>{console.log(123)})这种事直接同步执
+	行的，而这里的Promise.resolve(2)也是同步执行的。这个时候继续执行x+=1;console.log(x)输出的结果是1
+	macroTask执行结束之后去执行microTask，这个时候就会回来执行x = 0 + 2;console.log(x)，所以这个时候输出的是2
+			</pre>
+			<div class="explain">
+				await后面的语句并不是放到micro去执行的，而是直接同步执行的。也就是说await并不直接将后面要执行的代码放到microTask中，await只是等待microTask执行完才把await后面的表达式求值结果返回给左值。
+			</div>
 
        </div>
   </body>
