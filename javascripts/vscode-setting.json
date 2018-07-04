@@ -1,0 +1,39 @@
+{
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "vue",
+            "autoFix": true
+        }
+    ],
+    "git.autofetch": true,
+    "nativescript.analytics.enabled": true,
+    "editor.renderWhitespace": "all",
+    "editor.minimap.maxColumn": 100,
+    "editor.rulers": [
+        100,
+        100
+    ],
+    "workbench.activityBar.visible": true,
+    "editor.minimap.enabled": false,
+    "workbench.colorTheme": "Monokai",
+    "editor.fontFamily": "Menlo, Consolas, 'Courier New', monospace",
+    "editor.fontSize": 13,
+    "editor.fontWeight": "300",
+    "git.ignoreMissingGitWarning": true,
+    "workbench.iconTheme": "vscode-icons",
+    "editor.multiCursorModifier": "alt",
+    "editor.formatOnPaste": true,
+    "editor.fontLigatures": true,
+    "files.associations": {
+        "*.tpl": "html",
+        "*.acss": "css",
+        "*.axml": "html"
+    },
+    "emmet.triggerExpansionOnTab": true,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2,
+    "vsicons.dontShowNewVersionMessage": true
+  }
