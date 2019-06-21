@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Blog by limingkang</title>
+  <link rel="stylesheet" href="stylesheets/styles.css">
+  <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="前端开发记录">
+  <meta name="keywords" content="gulp,react,node,webpack,vue,server">
+</head>
+<style>
+  .alert-img {
+    width: 600px;
+  }
+</style>
+<body>
+  <div class="big_container">
+    <div class="title" style="margin-top:0;">Linux下的tar压缩解压缩命令详解</div>
+    <pre>
+  tar参数介绍：
+    -c: 建立压缩档案
+    -x：解压
+    -t：查看内容
+    -r：向压缩归档文件末尾追加文件
+    -u：更新原压缩包中的文件
+    这五个是独立的命令，压缩解压都要用到其中一个，可以和别的命令连用但只能用其中一个。下面的参数是根据需要在压缩或解压档案时可选的
+        
+    -z：有gzip属性的
+    -j：有bz2属性的
+    -Z：有compress属性的
+    -v：显示所有过程
+    -O：将文件解开到标准输出
+
+    下面的参数-f是必须的
+    -f: 使用档案名字，切记，这个参数是最后一个参数，后面只能接档案名。
+    
+    # tar -cf all.tar *.jpg
+    这条命令是将所有.jpg的文件打成一个名为all.tar的包。-c是表示产生新的包，-f指定包的文件名。
+    
+    # tar -rf all.tar *.gif
+    这条命令是将所有.gif的文件增加到all.tar的包里面去。-r是表示增加文件的意思。
+    
+    # tar -uf all.tar logo.gif
+    这条命令是更新原来tar包all.tar中logo.gif文件，-u是表示更新文件的意思。
+    
+    # tar -tf all.tar
+    这条命令是列出all.tar包中所有文件，-t是列出文件的意思
+    
+    # tar -xf all.tar
+    这条命令是解出all.tar包中所有文件，-t是解开的意思
+
+
+  压缩 
+  tar -cvf jpg.tar *.jpg //将目录里所有jpg文件打包成tar.jpg
+  tar -czf jpg.tar.gz *.jpg //将目录里所有jpg文件打包成jpg.tar后，并且将其用gzip压缩，生成一个gzip压缩过的包，命名为jpg.tar.gz
+  tar -cjf jpg.tar.bz2 *.jpg //将目录里所有jpg文件打包成jpg.tar后将其用bzip2压缩，生成一个bzip2压缩的包，命名为jpg.tar.bz2
+  tar -cZf jpg.tar.Z *.jpg //将目录里所有jpg文件打包成jpg.tar后将其用compress压缩，生成一个umcompress压缩的包，命名为jpg.tar.Z
+  rar a jpg.rar *.jpg //rar格式的压缩，需要先下载rar for linux
+  zip jpg.zip *.jpg //zip格式的压缩，需要先下载zip for linux
+
+  解压
+  tar -xvf file.tar //解压 tar包
+  tar -xzvf file.tar.gz //解压tar.gz
+  tar -xjvf file.tar.bz2 //解压 tar.bz2
+  tar -xZvf file.tar.Z //解压tar.Z
+  unrar e file.rar //解压rar
+  unzip file.zip //解压zip
+
+  总结
+  1、*.tar 用 tar -xvf 解压
+  2、*.gz 用 gzip -d或者gunzip 解压
+  3、*.tar.gz和*.tgz 用 tar -xzf 解压
+  4、*.bz2 用 bzip2 -d或者用bunzip2 解压
+  5、*.tar.bz2用tar -xjf 解压
+  6、*.Z 用 uncompress 解压
+  7、*.tar.Z 用tar -xZf 解压
+  8、*.rar 用 unrar e解压
+  9、*.zip 用 unzip 解压
+    </pre>
+    <div class="title">常用linux命令</div>
+    <pre>
+  ll -a显示当前目录所有文件、文件夹的详细信息，包括权限、大小、用户、组等
+  ls -a显示当前目录下所有文件、文件夹的简略信息，只有文件(夹)的名称，以"."开头的都是隐藏文件 
+  l.（这是个命令别名，实际命令为ls -d .* --color=auto）显示当前目录下的所有隐藏文件，只显示名称，不显示详情
+
+  rm 命令 可以删除一个目录中的一个或多个文件或目录，也可以将某个目录及其下属的所有文件及其子目录均删除掉。对于
+  链接文件，只是删除整个链接文件，而原有文件保持不变
+      -d：直接把欲删除的目录的硬连接数据删除成0，删除该目录；
+      -f：强制删除文件或目录；
+      -i：删除已有文件或目录之前先询问用户；
+      -r或-R：递归处理，将指定目录下的所有文件与子目录一并处理；
+      --preserve-root：不对根目录进行递归操作；
+      -v：显示指令的详细执行过程
+  比如rm -rf /tmp/ 就是删除/tmp/这个文件夹下面的所有东西，但是如果后面的文件夹路径没有加，rm -rf / 在服务器上也就意味着….
+
+  ln [参数][源文件或目录][目标文件或目录]
+    当我们需要在不同的目录，用到相同的文件时，我们不需要在每一个需要的目录下都放一个必须相同的文件，我们只要在某个固定的目
+    录，放上该文件，然后在 其它的目录下用ln命令链接（link）它就可以，不必重复的占用磁盘空间
+    例如创建软链接，使node和npm命令全局有效。通过创建软链接的方法，使得在任意目录下都可以直接使用node和npm命令
+    ln -s /root/node-v6.9.5-linux-x64/bin/node /usr/local/bin/node
+    ln -s /root/node-v6.9.5-linux-x64/bin/npm /usr/local/bin/npm
+
+  source命令通常用于重新执行刚修改的初始化文件，使之立即生效，而不必注销并重新登录
+    用法：source filename 或 . filename
+  
+  ”/“是根目录，”~“是家目录。Linux存储是以挂载的方式，相当于是树状的，源头就是”/“，也就是根目录。而每个用户都有”家“目录，也
+  就是用户的个人目录，比如root用户的”家“目录就是/root,普通用户a的家目录就是/home/a.可以看到
+  <image class="alert-img" src="./images/linux1.png"></image>
+  用户创建完后，我们就可以在/home目录下看到，就是系统默认创建的该用户的”家“目录
+  <image class="alert-img" src="./images/linux2.png"></image>
+  /home/a 就是切到a用户后的家目录”~“
+  <image class="alert-img" src="./images/linux3.png"></image>
+    </pre>
+    <div class="title">在服务器上安装node环境</div>
+    <pre>
+  我们可以直接下载二进制文件解压之后设置软连接来在服务器上装node环境
+  wget https://npm.taobao.org/mirrors/node/v10.16.0/node-v10.16.0-linux-x64.tar.xz"
+  tar xvf node-v10.16.0-linux-x64.tar.xz
+
+  建议通过nvm安装node环境
+    安装git: yum install git-core
+    切换到用户的根目录下载nvm：
+      cd ~/ from anywhere then git clone https://github.com/nvm-sh/nvm.git .nvm
+      cd ~/.nvm and check out the latest version with git checkout v0.34.0
+      activate nvm by sourcing it from your shell: . nvm.sh
+    分别在这cd到这三个文件中加入~/.bashrc, ~/.profile, ~/.zshrc
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+    加入之后一定要source这几个文件让其立即生效
+    nvm install node
+
+  服务器上下载代码时候看下cd ~/.ssh有没有相应密钥，没有的话通过ssh-keygen生成配置一下即可
+  我们在下载npm包的时候一定要指定的公网地址ip，内部私网才能用私网地址ip
+  可以使用ping命令来对域名网站，这样就看到其ip地址
+
+  最后安装pm2启动一下即可
+    </pre>
+    <div class="explain">
+      <a src="https://github.com/nvm-sh/nvm/blob/master/README.md#install--update-script">nvm的github地址</a>
+      <a src="https://pm2.io/doc/en/runtime/reference/ecosystem-file/">pm2配置文件</a>
+    </div>
+  </div>
+</body>
+
+</html>

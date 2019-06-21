@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Blog by limingkang</title>
+  <link rel="stylesheet" href="stylesheets/styles.css">
+  <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="前端开发记录">
+  <meta name="keywords" content="gulp,react,node,webpack,vue">
+</head>
+<style>
+  .alert-img {
+    width: 600px;
+  }
+</style>
+<body>
+  <div class="big_container">
+    <div class="title" style="margin-top:0;">Mac下安装SecureCRT并激活</div>
+    <pre>
+  1.先下载SecureCRT和破解文件 默认下载到了当前用户的”下载”目录下的secureCRT中
+  2.双击scrt-7.3.0-657.osx_x64.dmg，并将 SecureCRT复制到”应用程序”中. 这时SecureCRT的路径是:
+    /Applications/SecureCRT.app/Contents/MacOS/SecureCRT
+  3.终端输入：
+      sudo perl ~/Downloads/secureCRT/securecrt_mac_crack.pl /Applications/SecureCRT.app/Contents/MacOS/SecureCRT
+  4.在应用程序中secureCRT图标，会弹出如下界面点击
+      <image class="alert-img" src="./images/secuceCRT1.png"></image>
+  5.直接Continue，空白不填写
+      <image class="alert-img" src="./images/secuceCRT2.png"></image>
+  6.点击Enter Licence Manually
+    <image class="alert-img" src="./images/secuceCRT3.png"></image>
+  7.Name:输入bleedfly Company:输入 bleedfly.com
+    <image class="alert-img" src="./images/secuceCRT4.png"></image>
+  8.Serial number: 03-29-002542
+    License key: ADGB7V 9SHE34 Y2BST3 K78ZKF ADUPW4 K819ZW 4HVJCE P1NYRC
+    <image class="alert-img" src="./images/secuceCRT5.png"></image>
+  9.Issue date: 09-17-2013
+    <image class="alert-img" src="./images/secuceCRT6.png"></image>
+  10.点击 Done,破解完成
+    </pre>
+    <div class="title">linux服务器登录方法--跳板机登录-密码登录</div>
+    <pre>
+      1.使用SecureCRT 7.3.0，新建一个SSH Session，如下:
+          <image class="alert-img" src="./images/secuceCRT7.png"></image>
+      2.然后在弹出的下拉列表，按图所示操作如下：
+          <image class="alert-img" src="./images/secuceCRT8.png"></image>
+      3.操作如下：
+        <image class="alert-img" src="./images/secuceCRT9.png"></image>
+      4.session 配置,跳板机、端口按图所示填写，用户名为你本人的用户名。如下:
+        <image class="alert-img" src="./images/secuceCRT10.png"></image>
+      5.重新命名session.如图：
+        <image class="alert-img" src="./images/secuceCRT11.png"></image>
+      6.建完后如图:
+        <image class="alert-img" src="./images/secuceCRT12.png"></image>
+      7.session 属性配置，如图：
+        <image class="alert-img" src="./images/secuceCRT13.png"></image>
+      8.这里配置的是密码登录跳板机的方式，keyboard interactive是基于键盘交互的验证方式，也就是后面上面提到的身份宝验证码
+        <image class="alert-img" src="./images/secuceCRT14.png"></image>
+      9.防止终端中文乱码，请设置终端为Linux模式，如下图所示：
+        <image class="alert-img" src="./images/secuceCRT15.png"></image>
+      10.配置好session后，我们就可以双击跳板机进行登录了，如图：
+        <image class="alert-img" src="./images/secuceCRT16.png"></image>
+      11.输入身份宝6位数字，如图：
+        <image class="alert-img" src="./images/secuceCRT17.png"></image>
+      12.输入你的登录密码，如图：
+        <image class="alert-img" src="./images/secuceCRT18.png"></image>
+      13.如果身份宝6位数字或者登录密码输入错误，会报如下提示：,请点ok后重新输入登录
+        <image class="alert-img" src="./images/secuceCRT19.png"></image>
+      14.如果用户名和密码都输入正确，你将看到登录成功的画面，如下图：
+        <image class="alert-img" src="./images/secuceCRT20.png"></image>
+        </pre>
+    <div class="title">linux服务器登录方法--跳板机登录-密钥登录</div>
+    <pre>
+      1.首先在我们的MAC上用户目录下生成key,如图,输入ssh-keygen
+          <image class="alert-img" src="./images/secuceCRT21.png"></image>
+      2.如下图，直接回车：(注意，如果提示id_rsa already exists: 请选择y,覆盖之前的文件。)
+          <image class="alert-img" src="./images/secuceCRT22.png"></image>
+          <image class="alert-img" src="./images/secuceCRT23.png"></image>
+          <image class="alert-img" src="./images/secuceCRT24.png"></image>
+      上图蓝筐中的信息请重点关注，id_rsa 和id_rsa.pub文件的存储目录。注意：在你使用这两个文件的目录时，
+      不要照抄我们上面的目录路径，要根据你本机的生成的实际目录。
+      3.用上边已经配置好的密码方式登录跳板机，进入家目录下的.ssh目录。另外再将你MAC本机的公钥(id_rsa.pub)也就是上边刚生成的，拷贝
+      到跳板机上的/home/你的用户名/.ssh/authorized_keys，没有authorized_keys的话，新建一个。
+      不知道怎么把自己电脑本机上的公钥id_rsa.pub写入到跳机板上的请自行百度。如图：注意如果你之前自己操作过authorized_keys里已经
+      有内容了，请也要把MAC本机里的id_rsa.pub这个文件的内容再拷贝一次，覆盖掉。
+        <image class="alert-img" src="./images/secuceCRT25.png"></image>
+      4.并保证authorized_keys这个文件的权限是600,如图：
+        <image class="alert-img" src="./images/secuceCRT26.png"></image>
+    </pre>
+    <div class="title">配置CRT端免密登跳板机操作</div>
+    <pre>
+      1.配置CRT端免密登跳板机操作，如图：
+          <image class="alert-img" src="./images/secuceCRT27.png"></image>
+      2.配置session的认证方式，publickey,然后对publickey的属性做配置.如图：
+          <image class="alert-img" src="./images/secuceCRT28.png"></image>
+      3.配置pulickey的目录文件，这个目录要注意了，是你上面生成key时，给出的私钥id_rsa
+        <image class="alert-img" src="./images/secuceCRT29.png"></image>
+      4.在弹出的目录框中根据图中所示，按你的id_rsa文件的实际路径做选择
+        <image class="alert-img" src="./images/secuceCRT30.png"></image>
+      5.publickey配置如图：上一步的open按扭点击后，如下图，不做其它操作，可以直接点ok结束
+        <image class="alert-img" src="./images/secuceCRT31.png"></image>
+        <image class="alert-img" src="./images/secuceCRT32.png"></image>
+      以上我们已经完成了密钥登录配置.可以直接点击session免密登录了
+      6.跳板机上操作sshgo登录目标主机
+        <image class="alert-img" src="./images/secuceCRT33.png"></image>
+      回车后会弹出操作菜单如图：
+        <image class="alert-img" src="./images/secuceCRT34.png"></image>
+      快捷键 K J 上下移动，空格键展开列表，选中主机后空格键登录，Q 键退出
+        <image class="alert-img" src="./images/secuceCRT35.png"></image>
+      登录目标主机后，sudo su - deploy 命令切换至 deploy 用户
+        <image class="alert-img" src="./images/secuceCRT36.png"></image>
+      deploy 用户相关操作如果需要提权，命令前添加 sudo 即可
+        <image class="alert-img" src="./images/secuceCRT37.png"></image>
+    </pre>
+    <div class="title">服务器与本地文件上传与下载</div>
+    <pre>
+      我们除了使用scp还可以在命令行下，rz 命令可上传本地主机文件至目标服务器，sz filename 可下载服务器上文件至本地。
+      对于体积过大的文件，sz/rz 可能会出错，可以使用sz/rz -be，或者通过 command + shift + p 键调出 sftp 窗口
+      通过 sftp 进行上传下载 (sftp上传文件至跳板机，再scp至目标主机)
+
+
+      sshgo 键盘快捷方式：
+        exit: q
+        scroll up: k
+        scroll down: j
+        page up: u
+        page down: d
+        select host: space
+        search mode: /
+        exit from search result: q
+        expand tree node: o
+        collapse tree node: c
+        expand all nodes: O
+        collapse all nodes: C
+    </pre>
+    <div class="explain">
+      跳板机（Jump Server），也称堡垒机，是一类可作为跳板批量操作远程设备的网络设备，是运系统管理员或运维人员常用的操作平台之一。
+      跳板机最核心的功能是以本机作为跳板来操作远程设备，较为普遍地是通过ssh协议实现远程管理，使用单位一般会自己开发或选择性地使用自动化运维工具
+    </div>
+  </div>
+</body>
+
+</html>
