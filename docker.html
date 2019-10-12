@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <title>Blog by limingkang</title>
+  <link rel="stylesheet" href="stylesheets/styles.css">
+  <!-- <link rel="stylesheet" href="stylesheets/github-light.css"> -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="前端开发记录">
+  <meta name="keywords" content="gulp,react,node,web,docker,server">
+</head>
+<style>
+  .alert-img {
+    width: 600px;
+  }
+</style>
+<body>
+  <div class="big_container">
+    <div class="title" style="margin-top:0;">前言</div>
+    <pre>
+记得以前一个前端开发，那时候号称一个记事本就能写html。现在随着项目复杂度提高，你需要安装vscode，node，webpack等等为了开发，
+打包等一系列工具。随着人越来越多，团队成长速度越来越快，每位新进入的同学都要这样让老司机带着撸一次，原来快乐的事次数多了也就麻
+木了，要命的还有进来的人安装环境的时间不一样。导致有些全局的工具包是有小版本差异的。这在新进入的员工有时候碰到的一些莫名其妙的
+问题，最后查下来好多都是环境不统一导致的。这才开始慢慢重视起来。以前npm是没有锁版本机制的。特别是一些全局的工具库，每个人都有
+自己的一套，线上环境的打包机器上也有一套。不少时候开发是好的，线上打包发布的时候会出现和预期不一样的情况。
+    </pre>
+    <div class="explain">
+      如果你的开发环境简单其实就没有必要如此了，但是如果复杂了还有nginx、tomcat等这是一种解决方法，用了之后热更新可能就用不了了，但是有方案解决
+      可以自行google
+    </div>
+    <div class="title">docker介绍</div>
+    <pre>
+Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中，然后发布到任何流行的 Linux机器上，
+也可以实现虚拟化。容器是完全使用沙箱机制，相互之间不会有任何接口，主要包含四个部分：
+  dockerClient客户端
+  Docker Daemon守护进程
+  Docker Image镜像
+  DockerContainer容器
+一个命令就用到了上面4个部分，这个命令也是后面我们最常用的：
+  docker run -v "$(PWD)":/data -p 8000:8000 harbor.ymmoa.com/h5/ymmbaseup npm run dev
+通过dockerclient 发送run指令到 dockerDaemon,dockerDaemon 通过harbor.ymmoa.com/h5/ymmbaseup镜像创建了一个容器去运
+行 npm run dev的命令。容器暴露了8000端口，并关联了$(PWD)(本地目录)到容器里面的/data 目录，这次docker你可以简单理解为他可
+以把 linux+node+npm装的依赖包打包成一个镜像，然后其他电脑安装docker后，可以快速下载这个镜像到电脑中进行使用，如何使用我们后
+面说。再简单点，你就把你个docker打包好的镜像当做一个应用程序，每个电脑都可以下载下来然后运行他。
+    </pre>
+    <div class="explain">
+      docker安装自行百度，推荐使用阿里云做加速 https://dev.aliyun.com/search.html，否则下载镜像特别慢
+    </div>
+    <div class="title">docker制作镜像</div>
+    <pre>
+  1.新建一个目录，并在里面创建Dockerfile文件。内容如下:
+      ## 指定这个镜像的基础是什么，我们选择了node: 8.9.3这个版本作为基础镜像
+      FROM node:8.9.3
+      
+      MAINTAINER stoneship stoneship <邮箱@qq.com>
+      
+        ##安装node相关依赖
+        RUN \
+        npm install yarn -g \
+        yarn global add nrm && \
+        nrm use taobao &&\
+        yarn global add vue-cli &&\
+        yarn global add cross-env
+      
+        ## 安装nginx
+      
+        ## 安装数据库...
+      
+        ## 创建一个目录
+        RUN mkdir /data
+        ## 指定命令运行的目录
+        WORKDIR /data
+      特别说明的是，每条run指令在当前基础镜像执行，并且提交新镜像。当命令比较长时，可以使用“/”换行。这里
+      这个demo里面我们就打包了些node依赖的工具，你可以自己添加自己的 run 命令达到你环境需要依赖
+    
+  2.在Dockerfile目录运行下面的build命令， -t 参数指定了 创建好的镜像的名称
+        docker build -t dockerdemo .
+    build成功后可以通过下面命令查询你的镜像列表
+        docker images
+    <image class="alert-img" src="./images/docker1.jpg"></image>
+
+  3.上传到服务器
+    docker push dockerdemo:latest
+
+  4.我们在dockerdemo镜像里面打包了 vue-cli ，下面我们尝试通过deckerdemo镜像里面的 vue-cli来创建
+  一个项目，注意有些网络慢的。通过 vue init webpack-simple my-project下载模板项目可能会失败。这
+  个只做演示说明如何使用docker去运行相关命令。你可以尝试运行其他命令：
+    docker run -v "$(PWD)":/data dockerdemo vue init webpack-simple my-project
+  简单解释下：上面命令表示docker通过dockerdemo镜像创建了一个容器，把当前目录关联到了容器的/data目
+  录，并在目录中运行 vue init webpack-simple my-project 命令,同样你可以运行其他命令。
+
+  5.改造已有项目进行适配
+  有了自己项目统一的环境镜像后，也知道如何用docker来运行命令后，原来的项目开发打包通过 npm run 的
+  现在可用通过 docker来运行。命令如下：
+    docker run -v "$(PWD)":/data dockerdemo npm run dev
+    docker run -v "$(PWD)":/data dockerdemo npm run dist
+  对这些命令可以结合makefile 或者 .bat 文件进行整合。现在运满满前端项目对 makefile进行了调整。如下可以进行参考
+  <image class="alert-img" src="./images/docker2.jpg"></image>
+  <image class="alert-img" src="./images/docker3.jpg"></image>
+  现在我们的项目打包的命令由原来的 npm run build_dist 变成了 make build_dist(win 上是 Makefile.bat build_dist)
+  简单的改变却是换了另外的docker容器进行打包，环境统一了
+    </pre>
+    <div class="explain">
+      经过使用docker构建统一的前端开发环境后，新来的人安装环境的步骤就变成如下3步，并且不会出现开发环境版本不同的问题1.安装docker
+      2.clone代码，安装项目依赖3.然后直接通过docker容器运行项目或者打包项目
+    </div>
+    <div class="title">Docker上传镜像至私有仓库</div>
+    <pre>
+  1.启动私有 Registry:
+  docker run -d -p 5000:5000 --name="docker-registry" --restart=always -v 
+  /root/docker/registry/:/var/lib/registry/registry
+  即后台启动 registry 镜像构建出来的容器，并命名为 docker-registry，端口号映射为 5000 到 5000
+  --restart=always 代表当容器因为某些原因停止时，不管退出码是什么都自动重启。除了 always 还有 on-failure 代表只有退出码不为 0 时
+  才重启，并且接受重启次数参数：--restart=on-failture:5
+  -v 指定将宿主机的 /root/docker/registry/ 目录挂载到容器的 /var/lib/registry/ 目录。这样我们不用进入容器，在宿主机上就能访问
+  到容器内我们感兴趣的目录了;
+  为什么是 /var/lib/registry/ 目录?
+    仓库默认存放镜像等信息在容器的 /var/lib/registry/docker 目录下，可以进入该目录查看已上传镜像信息
+  执行 run 命令成功后使用 docker ps 能看到 registry 服务已经启动：
+  <image class="alert-img" src="./images/docker4.jpg"></image>
+
+  2.要上传镜像到私有仓库，需要在镜像的 tag 上加入仓库地址：
+    docker tag express-app 111.111.111.111:5000/sunhengzhe/express-app:v1
+  为了不与其他镜像冲突，可以加入命名空间如 sunhengzhe，另外最好给镜像打上 tag 如 v1。
+  注意仓库地址没有加协议部分，docker 默认的安全策略需要仓库是支持 https 的，如果服务器只能
+  使用 http 传输，那么直接上传会失败，需要在 docker 客户端的配置文件中进行声明;
+  在 /etc/docker/daemon.json 文件中写入：
+      {
+      "registry-mirror": [
+      "https://registry.docker-cn.com"
+      ],
+      "insecure-registries": [
+      "[私有仓库 ip:port]"
+      ]
+      }
+  然后重启 docker: systemctl restart docker
+
+  3.打完 tag 后使用 push 命令推送即可：
+    docker push 111.111.111.111:5000/sunhengzhe/express-app:v1
+  如果出现 Retrying in 5 seconds 然后上传失败的问题。可以首先在服务器上使用 logs 命令查看日志：
+    docker logs -f docker-registry
+  如果出现 filesystem: mkdir /var/lib/registry/docker: permission denied，可能是一个 selinux 问
+  题，需要在服务器上对挂载目录进行处理：
+    chcon -Rt svirt_sandbox_file_t /root/docker/registry/
+  此示例中即 /root/docker/registry/
+
+  4.使用 pull 命令即可
+    docker pull 111.111.111.111:5000/sunhengzhe/express-app:v1
+    </pre>
+  </div>
+</body>
+</html>

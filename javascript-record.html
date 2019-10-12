@@ -14,7 +14,7 @@
        	<div class="big_container">
        		<div class="title" style="margin-top:0;">jquery对异步对象封装时候的调用方法</div>
    			<pre>
-   				var dfd = $.Deferred(); 
+   				var dfd = $.Deferred();
    				var dfd2 = $.Deferred();
    				function fn1(d){
    				    setTimeout( function(){
@@ -44,7 +44,7 @@
                 读状态resolve,reject,pendding状态，配合when来处理对个异步，之后就可以调用done方法了，当然也可以
                 直接使用rxjs
             </div>
-       		
+
             <div class="title">js相等==运算符的比较规则小结</div>
             <pre>
             如果x不是正常值（比如抛出一个错误），中断执行。
@@ -62,12 +62,12 @@
             两边都是引用类型的时候则比较引用地址,估计是都不相同
 
             {}==null  //false
-            {}==0  //false       只要你使用了对象比较的就是它的地址了，估计是存储在栈区的对堆区的引用地址，和谁都不相同了  
+            {}==0  //false       只要你使用了对象比较的就是它的地址了，估计是存储在栈区的对堆区的引用地址，和谁都不相同了
             {}==1  //false
             []==[]    //false
-            0==null   //false    
-            false==[]   //true    
-            true==!![]   //true   碰到!是先将[]转化为布尔值为true   
+            0==null   //false
+            false==[]   //true
+            true==!![]   //true   碰到!是先将[]转化为布尔值为true
 
             0==[]     //true    原始值转化规则为调用toString方法对于数组[],[0]都是变为"0"而[1,2,3]变为"1,2,3"
             0==[0]    //true
@@ -104,7 +104,7 @@
                 window.screenTop              浏览器距离屏幕上边顶的距离
                 window.screenLeft             浏览器距离屏幕左边边顶的距离
             注意：innerHeight,innerWidth,outHeight,outWidth不兼容ie9以下的浏览器，但是screen对象全部兼容而且其是不变的
-            
+
             3.与document相关的宽高，clientHeight和clientWidth所有浏览器处理都一样
                 clientHeight               元素padding上下值加上内容高度值之和减去滚动条的高度不用加上border的高度
                 clientWidth                元素padding左右值加上内容宽度之和减去滚动条的宽度不用加上border宽度
@@ -119,16 +119,16 @@
                 offsetWidth                元素padding左右值加上内容宽度之和再加上border宽度不用管滚动条
                 offsetTop ：
                     如果他的父级元素中没有定位元素的话就是相当于父元素为body，在ie8,9,10以及chrome中为自己的margin-left加
-                    父元素上下padding加父元素的宽度加父元素的margin-left，但是在firefox中是不要加上父元素的宽度的                
-                offsetLeft                 同上offsetTop理解一样 
-            这些属性可以使用document.body.offsetWidth访问也可以使用任何一个节点点offsetWidth来访问 
+                    父元素上下padding加父元素的宽度加父元素的margin-left，但是在firefox中是不要加上父元素的宽度的
+                offsetLeft                 同上offsetTop理解一样
+            这些属性可以使用document.body.offsetWidth访问也可以使用任何一个节点点offsetWidth来访问
 
             5.document.body.scrollHeight和document.body.scrollWidth存在兼容性问题,这里只是针对谷歌浏览器
                 以document.body.scrollHeight为例，如果给定宽高小于浏览器大小的话，那么值就是浏览器的可视区域的高度，如果大于的
                 话值就是body的高度加上margin上下加上border上下值，如果给定宽高大于浏览器窗口而且内容大于给定宽高的话，那么值就
-                是内容高度加上自己的上padding和上margin值 
+                是内容高度加上自己的上padding和上margin值
             domElement.scrollWidth和domElement.scrollHeight是不同于document.body的：
-                以任何一个节点的scrollWidth为例，没有滚动轴时候为clientWidth有滚动轴的时候为实际内容宽度加上左右padding值 
+                以任何一个节点的scrollWidth为例，没有滚动轴时候为clientWidth有滚动轴的时候为实际内容宽度加上左右padding值
 
             6.scrollTop和scrollLeft,这是一个可读写的属性，指的是当元素其中的内容超出其宽高的时候，元素被卷起的高度和宽度，
             我们可以去设置节点的scrollTop和scrollLeft的值，判断页面有没有滚动到底部就用这个属性，还有style.width和
@@ -144,7 +144,7 @@
             touches:     //当前屏幕上所有手指的列表通过touches[0]以数组的方式来找第几个
             targetTouches:      //当前dom元素上手指的列表，尽量使用这个代替touches
             changedTouches:     //涉及当前事件的手指的列表，尽量使用这个代替touches
-            
+
             8.判断页面滑动到底部还是顶部：
                 var clients=window.innerHeight||document.documentElement.cilentHeight||document.body.clientHeight
                 var scrollTop=document.body.scrollTop;
@@ -162,7 +162,7 @@
                 var wholeHeight=$(document).height();
             在移动端用zepto的时候可以这样写：
                 var windowHeight = document.documentElement.clientHeight;
-                var documentHeight = $(document).height();              
+                var documentHeight = $(document).height();
                 var bodyScrollTop = document.body.scrollTop;
                 if(windowHeight+bodyScrollTop>=documentHeight){
                     //dosomething
@@ -225,7 +225,7 @@
                         }
                         if (browser.versions.ios) {
                                 //是否在IOS浏览器打开
-                        } 
+                        }
                         if(browser.versions.android){
                                 //是否在安卓浏览器打开
                         }
@@ -233,7 +233,7 @@
                         //否则就是PC浏览器打开
                 }
 
-                监听横屏竖屏状态：                
+                监听横屏竖屏状态：
                     window.addEventListener("orientationonchange",function(){})
                     window.orientation为0则它是纵向的，横向的则是90或者-90
                     但是这个事件不是所有的android设备都可以触发，可以加一个window.addEventListener("resize",function(){})
@@ -262,47 +262,47 @@
     		      其后，每一行列出一个需要缓存的资源文件名。
     		      可根据需要列出在线访问的白名单。单中所有资源不会被缓存，使用时直接在线访问。声明白名单用NETWORK：标识符
     		      如果在白名单后还要补充需要缓存的资源，可以使用 CACHE：标识符。
-    		      如果要声明某URI不能访问时的替补URI，可使用FALLBACK：标识符。其后的每一行包含两个 URI，当第一个URI 
+    		      如果要声明某URI不能访问时的替补URI，可使用FALLBACK：标识符。其后的每一行包含两个 URI，当第一个URI
     		      不可访问时，浏览器将尝试使用第二个 URI。
     		      注释要另起一行，以 # 号开头。
     		示例：
-    		      CACHE MANIFEST 
+    		      CACHE MANIFEST
     		       # 上一行是必须书写的。
 
-    		      CACHE: 
-    		      style/default.css 
+    		      CACHE:
+    		      style/default.css
 
-    		      FALLBACK: 
-    		      /files/projects /projects 
+    		      FALLBACK:
+    		      /files/projects /projects
 
-    		      NETWORK: 
+    		      NETWORK:
     		      comm.cgi
     		文件的更新是它最大的难点，也是现在慎重使用的原因
-    		自动更新 
+    		自动更新
     		    浏览器除了在第一次访问Web应用时缓存资源外,只会在cache manifest文件本身发生变化时更新缓存。而
                         cache manifest 中的资源文件发生变化并不会触发更新。
-    		手动更新 
-    		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status 
-    		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update() 
+    		手动更新
+    		    开发者也可以使用 window.applicationCache 的接口更新缓存。方法是检测 window.applicationCache.status
+    		    的值，如果是 UPDATEREADY，那么可以调用 window.applicationCache.update()
     		    更新缓存。示范代码如下：
-    		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY) 
+    		             if (window.applicationCache.status == window.applicationCache.UPDATEREADY)
     		            ｛
-    		             window.applicationCache.update(); 
+    		             window.applicationCache.update();
     		            ｝
     		navigator.onLine 属性表示当前是否在线。如果为 true, 表示在线；如果为 false, 表示离线。当网络状态发生变化时
                     navigator.onLine 的值也随之变化。开发者可以通过读取它的值获取网络状态。
 
-    		online/offline 事件 
+    		online/offline 事件
                     当开发离线应用时，通过 navigator.onLine 获取网络状态通常是不够的。开发者要在网络状态变化时立刻得到通知，
                     因此HTML5提供了online/offline事件。当在线 / 离线状态切换时，online/offline 事件将触发在body元素上，并且
                     沿着document.body、document 和 window的顺序冒泡。因此,开发者可以通过监听online/offline事件来获悉网络状态
-    	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库 
+    	4.Web SQL Database可以我完成复杂的关心型数据存储，就是通过建立本地内存中的一个数据库
 		    先介绍三个核心方法
 		        1、openDatabase：这个方法使用现有数据库或创建新数据库创建数据库对象。
 		        2、transaction：这个方法允许我们根据情况控制事务提交或回滚。
 		        3、executeSql：这个方法用于执行真实的SQL查询。
             </pre>
-            <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>            
+            <div class="explain">IndexedDB是HTML5-WebStorage的重要一环，是一种轻量级NOSQL数据库</div>
 
             <div class="title">无刷新改变url，还点击前进后退按钮，ajax只能改变页面内容，这里就得加上pushState,简称pjax</div>
             <pre>
@@ -362,7 +362,7 @@
                 MouseEvents   MouseEvent    initMouseEvent()
                 UIEvents      UIEvent       initUIEvent()
                 initEvent()方法用于初始化通过DocumentEvent接口创建的Event的值。
-                支持三个参数：initEvent(eventName, canBubble, preventDefault). 
+                支持三个参数：initEvent(eventName, canBubble, preventDefault).
                 分别表示事件名称，是否可以冒泡，是否阻止事件的默认操作。
             </pre>
             <div class="explain">先自定义tap事件然后触发他，在tap事件当中先绑定touchstart,touchend事件，判断事件间隔之后给个回调就行</div>
@@ -414,7 +414,7 @@
                 console.log(typeof Person.prototype);   //object   该对向包含两个属性，一个是constructor一个是_proto_
                 console.log(Person.prototype==one.__proto__);  //true
                 console.log(Person.prototype.constructor);  //打印出函数本身
-                one.form();   //123 
+                one.form();   //123
 
                 function sub(){}
                 sub.prototype=new Person();
@@ -424,7 +424,7 @@
                 console.log(subone);   //{_proto_:Person}
                 subone.form();   //123
                 console.log(subone.constructor); //function Person(){}
-                console.log(sub.prototype.constructor); //function Person(){}  
+                console.log(sub.prototype.constructor); //function Person(){}
             </pre>
             <div class="explain">所谓的继承只需要把子类的prototype设置为父类的一个实例化对象即可</div>
 
@@ -444,7 +444,7 @@
                  var emptyAccount = new Account(0);
                  console.log(emptyAccount.cash); // 0
                  console.log(emptyAccount.hasMoney); // false
-                 
+
                  2.使用+将字符串转换成数字，不过其只适合用于字符串数据，否则将返回NaN
                  function toNumber(strNumber) {
                      return +strNumber;
@@ -488,7 +488,7 @@
                  var arrayElements = [].slice.call(elements); // Now the NodeList is an array
 
                  7.对于需要遍历是否错误的时候可以
-                 var flag=true;                
+                 var flag=true;
                  在一个正确的事件中：  flag=flag && true
                  在一个错误的事件中：  flag=false;
                  这样只要flag错一次，那就即使运行正确事件几次也注定是false了
@@ -525,14 +525,14 @@
                  }
 
                  11.+function(){}()   这里的加号也可以替换成!和~等其他一元操作符，其效果相当于立即执行函数：
-                 (function() { console.log("Foo!"); })();  
-                 // or  
-                 (function() { console.log("Foo!"); }());  
+                 (function() { console.log("Foo!"); })();
+                 // or
+                 (function() { console.log("Foo!"); }());
                  如果没有这个加号的话，解析器会认为function是一个函数声明的开始，而后面（）将会导致语法错误。在
                  function前面加上+号时，就变成了一个函数表达式，而函数表达式后面又添加了一个()就变成了一个立即执行的函数了
 
                  12.实现深复制我们可以使用jq的extend方法也可以：
-                  const obj1 = JSON.parse(JSON.stringify(obj));    
+                  const obj1 = JSON.parse(JSON.stringify(obj));
                   就是将一个对象转成json字符串，然后又将字符串转回对象,注意这里obj必须是标准的json对象否则报错
             </pre>
 
@@ -540,13 +540,13 @@
             <pre>
             表单中enctype="multipart/form-data"的意思是设置表单的MIME编码,默认编码格式是application/x-www-form-urlencoded
             不能用于文件上传；只有使用了multipart/form-data，才能完整的传递文件数据，进行下面的操作.
-            form设置了enctype="multipart/form-data" 属性后，就是2进制传输数据了 
+            form设置了enctype="multipart/form-data" 属性后，就是2进制传输数据了
 
             FormData可以把它理解成一个虚拟的表单对象，它只有一个方法append，这个可以在浏览器console一下就知道了。
             我们可以通过append向FormData里面添加各种需要提交的数据
             你可以先创建一个空的 FormData 对象,然后使用 append() 方法向该对象里添加字段，如下：var oMyForm = new FormData();
             oMyForm.append("username", "Groucho");
-            oMyForm.append("accountnum", 123456); // 数字123456被立即转换成字符串"123456"           
+            oMyForm.append("accountnum", 123456); // 数字123456被立即转换成字符串"123456"
             // fileInputElement中已经包含了用户所选择的文件
             oMyForm.append("userfile", fileInputElement.files[0]);var oReq = new XMLHttpRequest();
             oReq.open("POST", "http://foo.com/submitform.php");
@@ -579,7 +579,7 @@
             oReq.onreadystatechange=function(){
               if(oReq.readyState==4){
                 if(oReq.status==200){
-                   
+
                 }
               }
             }
@@ -603,10 +603,10 @@
                                            set : function(newValue){ bValue = newValue; },
                                            enumerable : true,
                                            configurable : true});
-            o.b = 38;  
+            o.b = 38;
             给对象o定义新的属性b，并且定义属性b的get和set方法，当o.b的时候会调用b属性的get方法，给b属性赋值的时候，会调用set方法，
             这就是修改数据的时候，视图会自动更新的关键前端获取数据后，需要根据数据操作dom，视图变化后，需要修改不少代码，
-            有没有方法将数据和dom操作隔离，看一个例子 
+            有没有方法将数据和dom操作隔离，看一个例子
             <textarea style="height:110px;">
                 <div>
                     <p>你好，<span id='nickName'></span></p>
@@ -639,7 +639,7 @@
 
             <div class="title">Thunkify 模块</div>
             <pre>
-          功能是对多参数函数，将其替换成一个只接受回调函数作为参数的单参数函数   
+          功能是对多参数函数，将其替换成一个只接受回调函数作为参数的单参数函数
             function thunkify(fn) {
               return function() {
                 var args = new Array(arguments.length);
@@ -666,9 +666,65 @@
                   }
                 }
               }
-            }; 
+            };
             </pre>
             <div class="explain">当然这个得配合co模块使用才更好</div>
+
+            <div class="title">多个promise的串并行</div>
+            <pre>
+          /**
+					 * 创建promise
+					 * @param {Number} value
+					 */
+					function makePromise (value) {
+					  return new Promise((resolve) => {
+					    setTimeout(() => {
+					      resolve(value);
+					    }, Math.random() * 1000)
+					  })
+					}
+					/**
+					 * 打印结果
+					 * @param {Number} value
+					 */
+					function print (value) {
+					  return value
+					}
+
+					let promises = [1, 3, 4, 5, 6].map((item, index) => {
+					  return makePromise(item)
+					});
+
+					// 并行执行
+					Promise.all(promises)
+					.then(() => {
+					  console.log('done')
+					})
+					.catch(() => {
+					  console.log('error')
+					})
+
+					// 串行执行
+					let parallelPromises = promises.reduce(
+					  (total, currentValue) => total.then(() => currentValue.then(print)),Promise.resolve()
+					)
+
+					parallelPromises
+					.then(() => {
+					  // console.log('done')
+					})
+					.catch(() => {
+					  console.log('done')
+					})
+
+					// 顺带复习一下reduce方法
+
+					reduce((total, currentValue, currentIndex, arr) => {}, initialValue)
+					let arr1 = [1, 2, 3, 4, 5]
+					let res = arr1.reduce((total, currentValue, currentIndex, arr) => {
+					    return total + currentValue
+					});
+            </pre>
 
             <div class="title">尾调用优化和尾递归优化</div>
             <pre>
@@ -682,7 +738,7 @@
                 function f(x){                           function f(x){
                   let y = g(x);                              return g(x);
                   return y;                              }
-                }                                                   
+                }
             上面就叫做"尾调用优化"（Tail call optimization），即只保留内层函数的调用记录。如果所有函数都是尾调用，那么完全可以做到每
             次执行时，调用记录只有一项，这将大大节省内存。这就是"尾调用优化"的意义
 
@@ -734,7 +790,7 @@
                   return sum(x + 1, y - 1)
                 }else {
                   return x
-                }                   
+                }
             });
             console.log(sum(12, 100000)) // => 100012 没有造成栈溢出
             上面函数自己的理解：
@@ -817,7 +873,7 @@
             其中ret是一个对象数组，第一个表示匹配到的值，后面是对应的分组匹配到的值，有几个分组，就有几个这个值，index值对应匹配到的
             字符串的开始位置，input对应你要查询的原字符串
             while(reg4.exec(ts)){
-               console.log(reg4.lastIndex + ret.index + ret.toString());   
+               console.log(reg4.lastIndex + ret.index + ret.toString());
             }
             //"5 1 1ab2,a,b"     "11 7 3cy4,c,y"     输出值同非全局模式下面的一样只是多了循环而已
 
@@ -832,14 +888,14 @@
             var reg3=/\d(\w)\d/;
             var reg4=/\d(\w)\d/g;
             var ts='$1a2b3c4d5e';
-            var ret=ts.match(reg3);       
-            console.log(ret);             //["1a2", "3c4",index: 1, input: "$1a2b3c4d5e"]   
+            var ret=ts.match(reg3);
+            console.log(ret);             //["1a2", "3c4",index: 1, input: "$1a2b3c4d5e"]
             console.log(ret.index);       //  1
             console.log(ret[0]);          // "1a2"
             console.log(ret.toString());  //"1a2,3c4"    这是一个字符串
-            match方法非全局模式下返回值和exec一样，没有匹配到的时候返回null 
-            var ret2=ts.match(reg4);       
-            console.log(ret2);             //["1a2", "3c4"]   
+            match方法非全局模式下返回值和exec一样，没有匹配到的时候返回null
+            var ret2=ts.match(reg4);
+            console.log(ret2);             //["1a2", "3c4"]
             console.log(ret2.index);       //  undefined
             console.log(ret2[0]);          // "1a2"
             全局模式下只是返回匹配值的对象数组，没有就返回null，这个功能比exec弱一些，但是速度快一些
@@ -856,6 +912,6 @@
             <div class="explain">注意上面的返回值都新开了内存区块，原字符串并没有改变</div>
 
        	</div>
-       
+
   </body>
 </html>
